@@ -1,0 +1,6 @@
+# 3rd party
+node_modules
+
+# build artifacts
+dist/
+stats.json
