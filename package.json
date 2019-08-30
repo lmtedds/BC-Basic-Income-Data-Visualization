@@ -8,9 +8,11 @@
     "analyze": "webpack-bundle-analyzer stats.json dist/",
     "clean": "npm run build:clean",
     "build": "npm run build:website",
-    "build:clean": "npm run build:clean:website",
+    "build:clean": "npm run build:clean:website && npm run build:clean:data",
+    "build:clean:data": "rimraf dist_data/",
     "build:clean:website": "rimraf dist/",
     "build:website": "npm run build:clean:website && webpack --mode production --profile --json > stats.json && npm run lint",
+    "convert:data:csv:to:json": "make-dir dist_data && foreach -g \"data/*.csv\" -x \"csvtojson --trim=true #{path} > dist_data/#{name}.json\"",
     "deploy": "echo \"Nowhere to deploy yet",
     "lint": "tslint -p tsconfig.json",
     "lint:fix": "npm run lint -- --fix"
@@ -20,11 +22,13 @@
   "devDependencies": {
     "css-loader": "^3.2.0",
     "cssnano-preset-advanced": "^4.0.7",
+    "csvtojson": "^2.0.10",
     "file-loader": "^4.2.0",
     "foreach-cli": "^1.8.1",
     "glob-all": "^3.1.0",
     "html-loader": "^0.5.5",
     "license-webpack-plugin": "^2.1.2",
+    "make-dir-cli": "^2.0.0",
     "mini-css-extract-plugin": "^0.8.0",
     "node-sass": "^4.12.0",
     "optimize-css-assets-webpack-plugin": "^5.0.3",
@@ -43,5 +47,6 @@
     "webpack-bundle-analyzer": "^3.4.1",
     "webpack-cli": "^3.3.7",
     "webpack-dev-server": "^3.8.0"
-  }
+  },
+  "dependencies": {}
 }
