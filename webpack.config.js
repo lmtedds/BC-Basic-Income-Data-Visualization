@@ -85,12 +85,9 @@ const websiteConfig = (env, argv) => {
               }
             }
           ]
-        }//module.exports = [ websiteConfig ];
-// module.exports = [ toolConfig ];
-      ]//module.exports = [ websiteConfig ];
-// module.exports = [ toolConfig ];
-    },//module.exports = [ websiteConfig ];
-// module.exports = [ toolConfig ];
+        }
+      ]
+    },
     devServer: {
       open: true,
       historyApiFallback: true,
