@@ -1,5 +1,6 @@
 const path = require("path");
 const webpack = require("webpack");
+const HtmlWebPackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const OptimizeCssAssetsPlugin = require("optimize-css-assets-webpack-plugin");
 const LicenseWebpackPlugin = require("license-webpack-plugin").LicenseWebpackPlugin;
@@ -95,6 +96,22 @@ const websiteConfig = (env, argv) => {
     },
     devtool: "source-map",
     plugins: [
+      new HtmlWebPackPlugin({
+        template: path.resolve(__dirname, "index.html"),
+        filename: path.resolve(__dirname, "dist", "index.html"),
+
+        //favicon: "public/img/favicon.ico",
+
+        minify: devMode ? false : {
+          collapseWhitespace: true,
+          removeComments: true,
+          removeRedundantAttributes: true,
+          removeScriptTypeAttributes: true,
+          removeStyleLinkTypeAttributes: true,
+          useShortDoctype: true,
+          minifyJS: true
+        }
+      }),
       new MiniCssExtractPlugin({
         filename: "[name].[chunkhash].css",
         chunkFilename: "[id].[chunkhash].css"
