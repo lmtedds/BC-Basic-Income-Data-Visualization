@@ -7,6 +7,11 @@
     "reactNamespace": "app",
     "lib": ["dom", "es2015", "es5"],
     "experimentalDecorators": true,
-    "sourceMap": true
+    "sourceMap": true,
+
+    "baseUrl": "./",
+    "paths": {
+      "~data/*": ["src/data/*"]
+    }
   }
 }

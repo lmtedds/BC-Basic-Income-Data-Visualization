@@ -5,6 +5,7 @@ const OptimizeCssAssetsPlugin = require("optimize-css-assets-webpack-plugin");
 const LicenseWebpackPlugin = require("license-webpack-plugin").LicenseWebpackPlugin;
 const TerserPlugin = require("terser-webpack-plugin");
 const PurgecssPlugin = require("purgecss-webpack-plugin");
+const TsconfigPathsPlugin = require("tsconfig-paths-webpack-plugin");
 
 const glob = require("glob-all");
 
@@ -43,7 +44,8 @@ const websiteConfig = (env, argv) => {
       path: path.resolve(__dirname, "dist")
     },
     resolve: {
-      extensions: [".ts", ".tsx", ".js"]
+      extensions: [".ts", ".tsx", ".js"],
+      plugins: [new TsconfigPathsPlugin({ /*configFile: "./path/to/tsconfig.json" */ })]
     },
     module: {
       rules: [
