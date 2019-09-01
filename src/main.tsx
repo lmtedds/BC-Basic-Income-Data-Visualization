@@ -14,45 +14,70 @@ interface IMinistry {
 }
 
 interface ID3Hierarchy {
-	program: string;
+	ministry: string;
 	showName: boolean;
 	value: number;
 
+	program?: string;
 	children?: this[];
 }
 
 // Rearrange the data into the format that d3 is expecting
 function generateHierarchicalData(rawData: IMinistry[]): ID3Hierarchy {
 
-	const getProgramsForLevelAsChildren = (level: string): ID3Hierarchy[] => {
-		return rawData.reduce((accum: ID3Hierarchy[], ele: IMinistry, index: number) => {
+	const getMinistriesForLevelAsChildren = (level: string): ID3Hierarchy[] => {
+		const leveledMinistries = rawData.reduce((accum: ID3Hierarchy[], ele: IMinistry, index: number) => {
 			// Ignore programs not for this level of government.
 			if(ele["Level of Government"] !== level) {
 				return accum;
 			} else {
-				return accum.concat([{
-					program: ele["Managed by (Ministry):"],
-					showName: ele["Importance Ranking"] === "2" ? true : false,
-					value: 1,
-					// children: undefined as a program doesn't have children
-				}]);
+				// Provide an inner circle in the case where the program is
+				// administered by another
+				if(ele["Ministry - point of contact/administration:"]) {
+					return accum.concat([{
+						ministry: ele["Ministry - point of contact/administration:"],
+						showName: true, // FIXME: What's the decision to show here?
+						value: 1,
+						children: [{
+							ministry: ele["Managed by (Ministry):"],
+							showName: ele["Importance Ranking"] === "2" ? true : false,
+							value: 1,
+							program: ele.Program,
+							// children: undefined as does not have administrator
+						}],
+					}]);
+				} else {
+					return accum.concat([{
+						ministry: ele["Managed by (Ministry):"],
+						showName: ele["Importance Ranking"] === "2" ? true : false,
+						value: 1,
+						program: ele.Program,
+						// children: undefined as a program may not have children
+					}]);
+				}
 			}
 		}, []);
+
+		// FIXME: Do we need to go through and find anything that has the same ministry or adminstrators etc?
+
+		console.log(`For level ${level} => ${JSON.stringify(leveledMinistries,  null, 4)}`);
+
+		return leveledMinistries;
 	};
 
 	return {
-		program: "Ministries",
+		ministry: "Ministries",
 		showName: true,
 		value: 0,
 		children: [{
-			program: "Federal",
+			ministry: "Federal",
 			showName: true,
 			value: 1,
-			children: getProgramsForLevelAsChildren("Federal").concat([{
-				program: "Province",
+			children: getMinistriesForLevelAsChildren("Federal").concat([{
+				ministry: "Province",
 				showName: true,
 				value: 0,
-				children: getProgramsForLevelAsChildren("Provincial"),
+				children: getMinistriesForLevelAsChildren("Provincial"),
 			}]),
 		}],
 	};
@@ -109,7 +134,7 @@ function buildZoomablePackedCircleChart() {
 		.join("text")
 		.style("fill-opacity", (d) => d.parent === root ? 1 : 0)
 		.style("display", (d) => d.parent === root ? "inline" : "none")
-		.text((d) => d.data.showName ? d.data.program : null);
+		.text((d) => d.data.showName ? d.data.ministry : null);
 
 	console.log(`root is ${root}`);
 	zoomTo([root.x, root.y, root.r * 2]);
