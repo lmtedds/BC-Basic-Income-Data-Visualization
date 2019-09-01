@@ -25,16 +25,18 @@ interface ID3Hierarchy {
 function generateHierarchicalData(rawData: IMinistry[]): ID3Hierarchy {
 
 	const getProgramsForLevelAsChildren = (level: string): ID3Hierarchy[] => {
-		// console.log("Printing for ", level);
-
 		return rawData.reduce((accum: ID3Hierarchy[], ele: IMinistry, index: number) => {
-			// console.log(`${JSON.stringify(accum)} and ${ele} index: ${index}`);
-			return ele["Level of Government"] === level ? accum : accum.concat([{
-				program: ele["Managed by (Ministry):"],
-				showName: ele["Importance Ranking"] === "2" ? true : false,
-				value: 1,
-				// children: undefined as a program doesn't have children
-			}]);
+			// Ignore programs not for this level of government.
+			if(ele["Level of Government"] !== level) {
+				return accum;
+			} else {
+				return accum.concat([{
+					program: ele["Managed by (Ministry):"],
+					showName: ele["Importance Ranking"] === "2" ? true : false,
+					value: 1,
+					// children: undefined as a program doesn't have children
+				}]);
+			}
 		}, []);
 	};
 
