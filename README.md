@@ -70,7 +70,7 @@ fi
 
 PASS=true
 
-printf "\nValidating Javascript:\n"
+printf "\nValidating TypeScript:\n"
 
 for FILE in $STAGED_FILES
 do
@@ -84,7 +84,7 @@ do
   fi
 done
 
-printf "\nJavascript validation completed!\n"
+printf "\nTypeScript validation completed!\n"
 
 if ! $PASS; then
   printf "\033[41mCOMMIT FAILED:\033[0m Your commit contains files that should pass TSLint but do not. Please fix the TSLint errors and try again.\n"
