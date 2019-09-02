@@ -1,2 +1,6 @@
 @import "./bootstrap_theme";
 @import "~bootstrap/scss/bootstrap";
+
+.nav-item.active {
+    font-weight: bold;
+}

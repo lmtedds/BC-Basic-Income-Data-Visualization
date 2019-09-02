@@ -9,6 +9,6 @@ app.on(ROUTER_EVENT, (route) => {
 	menus.forEach((menu) => { menu.classList.remove("active"); });
 
 	// Mark the active route element with the active class
-	const item = document.querySelector(`[href='${route}']`);
+	const item = document.querySelector(`.nav-item a[href='${route}']`);
 	item && item.parentElement.classList.add("active");
 });
