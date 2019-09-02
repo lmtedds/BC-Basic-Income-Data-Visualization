@@ -1,5 +1,6 @@
 // This is where typescript/javascript starts from. A reference to it is automatically added to index.html (via webpack).
 import * as d3 from "d3";
+import clonedeep from "lodash.clonedeep";
 
 import { data } from "~data/20190824_ministries";
 
@@ -25,44 +26,135 @@ interface ID3Hierarchy {
 // Rearrange the data into the format that d3 is expecting
 function generateHierarchicalData(rawData: IMinistry[]): ID3Hierarchy {
 
-	const getMinistriesForLevelAsChildren = (level: string): ID3Hierarchy[] => {
-		const leveledMinistries = rawData.reduce((accum: ID3Hierarchy[], ele: IMinistry, index: number) => {
+	// Pull out all the programs for this level from the data.
+	const getProgramsForLevelAsChildren = (level: string): ID3Hierarchy[] => {
+	// 	const leveledPrograms = rawData.reduce((accum: ID3Hierarchy[], ele: IMinistry, index: number) => {
+	// 		// Ignore programs not for this level of government.
+	// 		if(ele["Level of Government"] !== level) {
+	// 			return accum;
+	// 		}
+
+	// 		// Provide an inner circle in the case where the program is
+	// 		// administered by another
+	// 		if(ele["Ministry - point of contact/administration:"]) {
+	// 			return accum.concat([{
+	// 				ministry: ele["Ministry - point of contact/administration:"],
+	// 				showName: true, // FIXME: What's the decision to show here?
+	// 				value: 1,
+	// 				children: [{
+	// 					ministry: ele["Managed by (Ministry):"],
+	// 					showName: ele["Importance Ranking"] === "2" ? true : false,
+	// 					value: 1,
+	// 					program: ele.Program,
+	// 					// children: undefined as does not have administrator
+	// 				}],
+	// 			}]);
+	// 		} else {
+	// 			return accum.concat([{
+	// 				ministry: ele["Managed by (Ministry):"],
+	// 				showName: ele["Importance Ranking"] === "2" ? true : false,
+	// 				value: 1,
+	// 				program: ele.Program,
+	// 				// children: undefined as a program may not have children
+	// 			}]);
+	// 		}
+	// 	}, []);
+
+	// 	console.log(`For level ${level} => ${JSON.stringify(leveledPrograms,  null, 4)}`);
+
+	// 	// Now go through all this list of programs to join all programs under the same ministry
+	// 	// so that we don't have millions of bubbles.
+
+	// return leveledPrograms;
+
+		// Alternative implementation using a dictionary:
+		// FIXME: The ministries names are incorrect... pushing down the wrong value it seems.
+		const programDictionary = {};
+
+		console.log(`Length of the data is ${rawData.length}`);
+
+		for(const ele of rawData) {
+			console.log(`${JSON.stringify(ele)}`);
+
 			// Ignore programs not for this level of government.
 			if(ele["Level of Government"] !== level) {
-				return accum;
-			} else {
-				// Provide an inner circle in the case where the program is
-				// administered by another
-				if(ele["Ministry - point of contact/administration:"]) {
-					return accum.concat([{
-						ministry: ele["Ministry - point of contact/administration:"],
-						showName: true, // FIXME: What's the decision to show here?
-						value: 1,
-						children: [{
-							ministry: ele["Managed by (Ministry):"],
-							showName: ele["Importance Ranking"] === "2" ? true : false,
-							value: 1,
-							program: ele.Program,
-							// children: undefined as does not have administrator
-						}],
-					}]);
-				} else {
-					return accum.concat([{
+				continue;
+			}
+
+			// Create the entry
+			let entry: ID3Hierarchy;
+			if(ele["Ministry - point of contact/administration:"]) {
+				entry = {
+					ministry: ele["Ministry - point of contact/administration:"],
+					showName: true, // FIXME: What's the decision to show here?
+					value: 1,
+					children: [{
 						ministry: ele["Managed by (Ministry):"],
 						showName: ele["Importance Ranking"] === "2" ? true : false,
 						value: 1,
 						program: ele.Program,
-						// children: undefined as a program may not have children
-					}]);
-				}
+						// children: undefined as does not have administrator
+					}],
+				};
+			} else {
+				entry = {
+					ministry: ele["Managed by (Ministry):"],
+					showName: ele["Importance Ranking"] === "2" ? true : false,
+					value: 1,
+					program: ele.Program,
+					// children: undefined as a program may not have children
+				};
 			}
-		}, []);
 
-		// FIXME: Do we need to go through and find anything that has the same ministry or adminstrators etc?
+			console.log(`created entry is ${JSON.stringify(entry)}`);
 
-		console.log(`For level ${level} => ${JSON.stringify(leveledMinistries,  null, 4)}`);
+			// Add or merge it into the dictionary. FIXME: Should be generic.
+			if(!programDictionary[entry.ministry]) {
+				// Add
+				programDictionary[entry.ministry] = entry;
+			} else {
+				if(!entry.children) {
+					// Merge with no child
+					if(!programDictionary[entry.ministry].children) {
+						// Merge with both no children (so just programs)
+						programDictionary[entry.ministry].children = [
+							{
+								showName: programDictionary[entry.ministry].showName,
+								program: programDictionary[entry.ministry].program,
+								value: programDictionary[entry.ministry].value,
+							},
+							entry, // delete below will remove ministry entry.
+						];
+						delete programDictionary[entry.ministry].program;
+						delete entry.ministry;
+					} else {
+						// Merge with existing having children (programs or ministry w/ or w/o programs) but entry not (program)
+						if(entry.program) {
+							programDictionary[entry.ministry].children.push(entry);
+							delete entry.ministry;
+						} else {
+							// debugger;
+							console.error("Unimplemented");
+						}
 
-		return leveledMinistries;
+					}
+				} else {
+					// Merge with child
+					programDictionary[entry.ministry].children.push(clonedeep(entry.children[0])); // FIXME: Doesn't handle a 1st or 2nd level rejig
+				}
+
+			}
+		}
+
+		// console.log(`For level ${level} => ${JSON.stringify(programDictionary,  null, 4)}`);
+
+		// each key should be an array entry.
+		const programArray = [];
+		Object.keys(programDictionary).forEach((key) => { programArray.push(programDictionary[key]); });
+
+		console.log(`For level ${level} => ${JSON.stringify(programArray,  null, 4)}`);
+
+		return programArray;
 	};
 
 	return {
@@ -73,11 +165,11 @@ function generateHierarchicalData(rawData: IMinistry[]): ID3Hierarchy {
 			ministry: "Federal",
 			showName: true,
 			value: 1,
-			children: getMinistriesForLevelAsChildren("Federal").concat([{
+			children: getProgramsForLevelAsChildren("Federal").concat([{
 				ministry: "Province",
 				showName: true,
 				value: 0,
-				children: getMinistriesForLevelAsChildren("Provincial"),
+				children: getProgramsForLevelAsChildren("Provincial"),
 			}]),
 		}],
 	};
@@ -134,7 +226,7 @@ function buildZoomablePackedCircleChart() {
 		.join("text")
 		.style("fill-opacity", (d) => d.parent === root ? 1 : 0)
 		.style("display", (d) => d.parent === root ? "inline" : "none")
-		.text((d) => d.data.showName ? d.data.ministry : null);
+		.text((d) => d.data.ministry /*d.data.showName ? d.data.ministry : null*/);
 
 	console.log(`root is ${root}`);
 	zoomTo([root.x, root.y, root.r * 2]);
