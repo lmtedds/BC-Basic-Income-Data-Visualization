@@ -1,0 +1,33 @@
+// import only the necessary Bootstrap files
+@import "~bootstrap/scss/functions"; 
+@import "~bootstrap/scss/variables";
+
+$website-light-green: #A1C423;
+$website-dark-green:  #455900;
+$website-dark-blue-grey: #55595C;
+$website-dark-brown: darken(#7C4325,20%);
+
+
+$website-primary-colour: $white; 
+$website-link-colour: $black;
+
+// Add the color theme
+$theme-colors: (
+  website: $website-primary-colour
+);
+
+// Links need to have more contrast against the $website-primary-colour than the default (.5 & .9 $black)
+$navbar-light-active-color: rgba($website-link-colour, 1);
+$navbar-light-brand-color: $navbar-light-active-color; 
+$navbar-light-brand-hover-color: $navbar-light-active-color;
+$navbar-light-color: rgba($website-link-colour, .7);
+$navbar-light-hover-color: rgba($website-link-colour, .9);
+$navbar-light-disabled-color: rgba($website-link-colour, .3);
+$navbar-light-toggler-border-color: rgba($website-link-colour, .2);
+
+
+// Dropdown links
+$dropdown-link-color: rgba($website-link-colour, .9);
+
+// Text colour
+$body-color: $website-link-colour;

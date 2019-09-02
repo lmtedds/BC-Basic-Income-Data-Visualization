@@ -11,8 +11,12 @@
 
     "baseUrl": "./",
     "paths": {
+      "~charts/*": ["src/charts/*"],
+      "~components/*": ["src/components/*"],
       "~data/*": ["src/data/*"],
-      "~charts/*": ["src/charts/*"]
+      "~pages/*": ["src/pages/*"],
+      "~router/*": ["src/router/*"],
+      "~styles/*": ["src/styles/*"]
     }
   }
 }
