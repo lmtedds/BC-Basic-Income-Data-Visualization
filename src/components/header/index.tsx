@@ -17,6 +17,9 @@ const Header = () => {
 			<div className="collapse navbar-collapse" id="navbarResponsive">
 				<ul className="navbar-nav ml-auto">
 					<li className="nav-item">
+						<a className="nav-link" href={HOME_PAGE_URL} onclick={(e) => (app.route as IPrettyRoute).linkClick(e)}>Home</a>
+					</li>
+					<li className="nav-item">
 						<a className="nav-link" href={CV_PAGE_URL} onclick={(e) => (app.route as IPrettyRoute).linkClick(e)}>CV</a>
 					</li>
 					<li className="nav-item">
