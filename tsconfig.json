@@ -16,7 +16,9 @@
       "~data/*": ["src/data/*"],
       "~pages/*": ["src/pages/*"],
       "~router/*": ["src/router/*"],
-      "~styles/*": ["src/styles/*"]
+      "~styles/*": ["src/styles/*"],
+
+      "~public/*": ["public/*"]
     }
   }
 }
