@@ -17,13 +17,14 @@ export default class ChartsComponent extends Component {
 
 	public view = (state) => {
 		return <>
-			<h1>Ministry Complexity Chart</h1>
+			<h1>Ministry Complexity Chart - NOT FINAL</h1>
 			<svg id={ministryChartId}></svg>
 			</>;
 	}
 
 	public rendered = (features) => {
-		const ministeryChart = buildZoomablePackedCircleChart(ministryChartId);
+		const svgEle = document.getElementById(ministryChartId);
+		const ministeryChart = buildZoomablePackedCircleChart((svgEle as unknown) as SVGElement); // Yes, this really is an SVG element
 
 		console.log(ministeryChart);
 	}

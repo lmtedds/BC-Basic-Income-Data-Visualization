@@ -176,7 +176,7 @@ function generateHierarchicalData(rawData: IMinistry[]): ID3Hierarchy {
 }
 
 // Adapted from https://observablehq.com/@d3/zoomable-circle-packing
-export function buildZoomablePackedCircleChart(svgId?: string) {
+export function buildZoomablePackedCircleChart(svgEle?: SVGElement) {
 	const height: number = 932;
 	const width: number = 932;
 
@@ -195,11 +195,17 @@ export function buildZoomablePackedCircleChart(svgId?: string) {
 	let view;
 
 	const colour = d3.scaleLinear()
-	.domain([0, 5])
-	.range(["hsl(152,80%,80%)", "hsl(228,30%,40%)"])
-	.interpolate(d3.interpolateHcl);
+		.domain([0, 5])
+		.range(["hsl(152,80%,80%)" as any, "hsl(228,30%,40%)" as any]) // FIXME: cast works around typescript def'n bug
+		.interpolate(d3.interpolateHcl as any); // FIXME: cast works around typescript def'n bug
 
-	const svg = svgId ? d3.select(document.getElementById(svgId)) : d3.create("svg");
+	// Mouse events
+	const mouseover = function() { d3.select(this).attr("stroke", "#000"); };
+	const mouseout = function() { d3.select(this).attr("stroke", null); };
+	const mouseclick = function(d) { return focus !== d && (zoom(d), d3.event.stopPropagation()); };
+
+	// Create a new svg node or use an existing one.
+	const svg = svgEle ? d3.select(svgEle) : d3.create("svg");
 
 	svg
 		.attr("viewBox", `-${width / 2} -${height / 2} ${width} ${height}`)
@@ -215,9 +221,9 @@ export function buildZoomablePackedCircleChart(svgId?: string) {
 		.join("circle")
 		.attr("fill", (d) => d.children ? colour(d.depth) : "white")
 		.attr("pointer-events", (d) => !d.children ? "none" : null)
-		.on("mouseover", function() { d3.select(this).attr("stroke", "#000"); })
-		.on("mouseout", function() { d3.select(this).attr("stroke", null); })
-		.on("click", (d) => focus !== d && (zoom(d), d3.event.stopPropagation()));
+		.on("mouseover", mouseover)
+		.on("mouseout", mouseout)
+		.on("click", mouseclick);
 
 	const label = svg.append("g")
 		.style("font", "10px sans-serif")
@@ -228,9 +234,8 @@ export function buildZoomablePackedCircleChart(svgId?: string) {
 		.join("text")
 		.style("fill-opacity", (d) => d.parent === root ? 1 : 0)
 		.style("display", (d) => d.parent === root ? "inline" : "none")
-		.text((d) => d.data.ministry /*d.data.showName ? d.data.ministry : null*/);
+		.text((d: any) => d.data.ministry /*d.data.showName ? d.data.ministry : null*/);
 
-	console.log(`root is ${root}`);
 	zoomTo([root.x, root.y, root.r * 2]);
 
 	function zoomTo(v) {
@@ -256,11 +261,11 @@ export function buildZoomablePackedCircleChart(svgId?: string) {
 			});
 
 		label
-			.filter(function(d) { return d.parent === focus || this.style.display === "inline"; })
+			.filter(function(d) { return d.parent === focus || (this as HTMLElement).style.display === "inline"; })
 			.transition(transition)
 				.style("fill-opacity", (d) => d.parent === focus ? 1 : 0)
-				.on("start", function(d) { if (d.parent === focus) this.style.display = "inline"; })
-				.on("end", function(d) { if (d.parent !== focus) this.style.display = "none"; });
+				.on("start", function(d) { if (d.parent === focus) (this as HTMLElement).style.display = "inline"; })
+				.on("end", function(d) { if (d.parent !== focus) (this as HTMLElement).style.display = "none"; });
 	}
 
 	return svg.node();
