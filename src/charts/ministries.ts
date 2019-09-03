@@ -85,11 +85,11 @@ function generateHierarchicalData(rawData: IMinistry[]): ID3Hierarchy {
 			let entry: ID3Hierarchy;
 			if(ele["Ministry - point of contact/administration:"]) {
 				entry = {
-					ministry: ele["Ministry - point of contact/administration:"],
+					ministry: ele["Managed by (Ministry):"],
 					showName: true, // FIXME: What's the decision to show here?
 					value: 1,
 					children: [{
-						ministry: ele["Managed by (Ministry):"],
+						ministry: ele["Ministry - point of contact/administration:"],
 						showName: ele["Importance Ranking"] === "2" ? true : false,
 						value: 1,
 						program: ele.Program,
