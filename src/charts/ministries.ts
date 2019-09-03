@@ -176,7 +176,7 @@ function generateHierarchicalData(rawData: IMinistry[]): ID3Hierarchy {
 }
 
 // Adapted from https://observablehq.com/@d3/zoomable-circle-packing
-export function buildZoomablePackedCircleChart() {
+export function buildZoomablePackedCircleChart(svgId?: string) {
 	const height: number = 932;
 	const width: number = 932;
 
@@ -199,7 +199,9 @@ export function buildZoomablePackedCircleChart() {
 	.range(["hsl(152,80%,80%)", "hsl(228,30%,40%)"])
 	.interpolate(d3.interpolateHcl);
 
-	const svg = d3.create("svg")
+	const svg = svgId ? d3.select(document.getElementById(svgId)) : d3.create("svg");
+
+	svg
 		.attr("viewBox", `-${width / 2} -${height / 2} ${width} ${height}`)
 		.style("display", "block")
 		.style("margin", "0 -14px")
