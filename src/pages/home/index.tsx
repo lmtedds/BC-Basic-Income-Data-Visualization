@@ -15,13 +15,13 @@ export default class HomeComponent extends Component {
 	};
 
 	public view = (state) => {
-		return <>
+		return <div className="container">
 			<h1 className="d-flex justify-content-center">Lindsay M. Tedds</h1>
 			<h2 className="d-flex justify-content-center">Associate Professor</h2>
 			<h2 className="d-flex justify-content-center">School of Public Policy, University of Calgary</h2>
 			<div className="d-flex justify-content-center">
 				<img className="img-fluid" src={LindsayPic} alt={LindsayPicAlt} />
 			</div>
-			</>;
+		</div>;
 	}
 }

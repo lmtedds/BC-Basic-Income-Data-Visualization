@@ -16,7 +16,13 @@ export default class ResearchComponent extends Component {
 
 	public view = (state) => {
 		return <>
-			<a className="nav-link" href={CHARTS_PAGE_URL} onclick={(e) => (app.route as IPrettyRoute).linkClick(e)}>Charts</a>
+			<div className="container">
+				<ul>
+					<li>
+						<a className="nav-link" href={CHARTS_PAGE_URL} onclick={(e) => (app.route as IPrettyRoute).linkClick(e)}>Charts</a>
+					</li>
+				</ul>
+			</div>
 			</>;
 	}
 }

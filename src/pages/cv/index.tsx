@@ -14,8 +14,8 @@ export default class CvComponent extends Component {
 
 	public view = (state) => {
 		return <>
-			<div>
-				A copy of my CV can be found <a className="nav-link" href={CV_EXTERNAL_LINK}>here</a>
+			<div className="container">
+				<p>A copy of my CV can be found <a className="stretched-link" href={CV_EXTERNAL_LINK}>here</a></p>
 			</div>
 			</>;
 	}
