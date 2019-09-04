@@ -18,7 +18,9 @@ export default class ChartsComponent extends Component {
 	public view = (state) => {
 		return <>
 			<h1>Ministry Complexity Chart - NOT FINAL</h1>
-			<svg id={ministryChartId}></svg>
+			<div>
+				<svg className="img-fluid" id={ministryChartId}></svg>
+			</div>
 			</>;
 	}
 

@@ -71,11 +71,7 @@ function generateHierarchicalData(rawData: IMinistry[]): ID3Hierarchy {
 		// FIXME: The ministries names are incorrect... pushing down the wrong value it seems.
 		const programDictionary = {};
 
-		console.log(`Length of the data is ${rawData.length}`);
-
 		for(const ele of rawData) {
-			console.log(`${JSON.stringify(ele)}`);
-
 			// Ignore programs not for this level of government.
 			if(ele["Level of Government"] !== level) {
 				continue;
@@ -106,7 +102,7 @@ function generateHierarchicalData(rawData: IMinistry[]): ID3Hierarchy {
 				};
 			}
 
-			console.log(`created entry is ${JSON.stringify(entry)}`);
+			// console.log(`created entry is ${JSON.stringify(entry)}`);
 
 			// Add or merge it into the dictionary. FIXME: Should be generic.
 			if(!programDictionary[entry.ministry]) {
@@ -152,7 +148,7 @@ function generateHierarchicalData(rawData: IMinistry[]): ID3Hierarchy {
 		const programArray = [];
 		Object.keys(programDictionary).forEach((key) => { programArray.push(programDictionary[key]); });
 
-		console.log(`For level ${level} => ${JSON.stringify(programArray,  null, 4)}`);
+		// console.log(`For level ${level} => ${JSON.stringify(programArray,  null, 4)}`);
 
 		return programArray;
 	};
@@ -176,9 +172,14 @@ function generateHierarchicalData(rawData: IMinistry[]): ID3Hierarchy {
 }
 
 // Adapted from https://observablehq.com/@d3/zoomable-circle-packing
+// NOTE: Requires the svg to have a unique id
 export function buildZoomablePackedCircleChart(svgEle?: SVGElement) {
-	const height: number = 932;
-	const width: number = 932;
+	// Create a new svg node or use an existing one.
+	const svg = svgEle ? d3.select(svgEle) : d3.create("svg");
+
+	const height: number = 1000;
+	const width: number = 1000;
+	const aspect: number = width / height;
 
 	const pack = (dataToPack) => {
 		return d3.pack()
@@ -190,7 +191,6 @@ export function buildZoomablePackedCircleChart(svgEle?: SVGElement) {
 	};
 
 	const root = pack(generateHierarchicalData(data));
-	// const root = pack(data);
 	let focus = root;
 	let view;
 
@@ -204,11 +204,9 @@ export function buildZoomablePackedCircleChart(svgEle?: SVGElement) {
 	const mouseout = function() { d3.select(this).attr("stroke", null); };
 	const mouseclick = function(d) { return focus !== d && (zoom(d), d3.event.stopPropagation()); };
 
-	// Create a new svg node or use an existing one.
-	const svg = svgEle ? d3.select(svgEle) : d3.create("svg");
-
 	svg
 		.attr("viewBox", `-${width / 2} -${height / 2} ${width} ${height}`)
+		.attr("perserveAspectRatio", "xMinYMin meet")
 		.style("display", "block")
 		.style("margin", "0 -14px")
 		.style("background", colour(0))
@@ -234,7 +232,7 @@ export function buildZoomablePackedCircleChart(svgEle?: SVGElement) {
 		.join("text")
 		.style("fill-opacity", (d) => d.parent === root ? 1 : 0)
 		.style("display", (d) => d.parent === root ? "inline" : "none")
-		.text((d: any) => d.data.ministry /*d.data.showName ? d.data.ministry : null*/);
+		.text((d: any) => d.data.showName ? d.data.ministry : null);
 
 	zoomTo([root.x, root.y, root.r * 2]);
 
