@@ -172,7 +172,6 @@ function generateHierarchicalData(rawData: IMinistry[]): ID3Hierarchy {
 }
 
 // Adapted from https://observablehq.com/@d3/zoomable-circle-packing
-// NOTE: Requires the svg to have a unique id
 export function buildZoomablePackedCircleChart(svgEle?: SVGElement) {
 	// Create a new svg node or use an existing one.
 	const svg = svgEle ? d3.select(svgEle) : d3.create("svg");
