@@ -1,5 +1,4 @@
 import { app, Component } from "apprun";
-import { IPrettyRoute } from "apprun-router/pretty";
 
 import { CHARTS_PAGE_URL } from "~pages/research/charts";
 
@@ -19,7 +18,7 @@ export default class ResearchComponent extends Component {
 			<div className="container">
 				<ul>
 					<li>
-						<a className="nav-link" href={CHARTS_PAGE_URL} onclick={(e) => (app.route as IPrettyRoute).linkClick(e)}>Charts</a>
+						<a className="nav-link" href={CHARTS_PAGE_URL} $prettylink>Charts</a>
 					</li>
 				</ul>
 			</div>
