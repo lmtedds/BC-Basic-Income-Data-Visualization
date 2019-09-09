@@ -15,14 +15,17 @@ import Header from "~components/header";
 
 import "~styles/main.scss";
 
-const App = () => <>
+const contentElement = document.getElementById("content");
+const appState = {};
+const appUpdate = {};
+const appView = (state) => {
+	return <>
 		<Header />
 		<div id="app-pages"></div>
 		<Footer />
 	</>;
-
-const contentElement = document.getElementById("content");
-app.render(contentElement, <App />);
+};
+app.start(contentElement, appState, appView, appUpdate);
 
 // Main pages
 const appPagesElement = document.getElementById("app-pages");
