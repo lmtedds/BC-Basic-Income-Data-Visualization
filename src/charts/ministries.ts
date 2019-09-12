@@ -1,6 +1,5 @@
 // This is where typescript/javascript starts from. A reference to it is automatically added to index.html (via webpack).
 import * as d3 from "d3";
-import clonedeep from "lodash.clonedeep";
 
 import { data } from "~data/20190824_ministries";
 
@@ -29,14 +28,14 @@ function genData(rawData: IMinistry[]): ID3Hierarchy {
 		showName: false,
 		value: 0,
 
-		children: []
+		children: [],
 	};
 }
 
 function listToSortedTree(array, sortKeys: string[]) {
 	// USEFUL?
 	// Add an id to each element
-	array.forEach((ele, index) => {ele._id = index;});
+	array.forEach((ele, index) => {ele._id = index; });
 
 	// Stuff into a object (used as a map) based on key
 	const obj = {};
@@ -66,7 +65,7 @@ function listToSortedTree(array, sortKeys: string[]) {
 	return obj;
 }
 
-function treeToHier(tree, obj:any = {ministry: "root", showName: false, value: 0}): any {
+function treeToHier(tree, obj: any = {ministry: "root", showName: false, value: 0}): any {
 	if(Array.isArray(tree)) {
 		return tree.map((ele: IMinistry) => {
 			return {
@@ -75,7 +74,7 @@ function treeToHier(tree, obj:any = {ministry: "root", showName: false, value: 0
 				ministry: ele["Managed by (Ministry):"],
 				admin: ele["Ministry - point of contact/administration - government:"],
 				value: 1, // FIXME: Value
-				showName: true
+				showName: true,
 			};
 		});
 	}
