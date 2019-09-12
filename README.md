@@ -39,19 +39,25 @@ We need to setup the repository with the packages for building and the libraries
 npm is the package manager for the javascript environment. The npm install command will download all the packages that are required for building the website.
 
 ```
-cd tedds_visualization/
+cd <directory containing this repository>
 npm install
 ```
 
 #### git
 
-This is a brief overview. For more detail see [something like this](https://git-scm.com/book/eo/v1/Ekkomenci-First-Time-Git-Setup).
+This is a very brief overview. For more detail see [something like this](https://git-scm.com/book/eo/v1/Ekkomenci-First-Time-Git-Setup).
 
-In order to commit code, you will likely have to setup your identity. You can do it with the follow 2 commands (note: omit --global if you only want to set the identity for this repository):
+In order to commit code, you will have to setup your identity. You can do it with the following 2 commands:
 
 ```
 git config --global user.email "you@example.com"
 git config --global user.name "Your Name"
+```
+
+If you would prefer to have a user configuration unique to this repository, then you can omit the --global flag:
+```
+git config user.email "you@example.com"
+git config user.name "Your Name"
 ```
 
 ##### git commit hooks
@@ -99,13 +105,16 @@ exit $?
 
 ### Development
 
-To run a development server that will display the website at http://localhost:8080/. In fact if it is successful, it will open a new window/tab in your active browser.
+#### To run a development server that will display the website at http://localhost:8080/.
 
 
-This command will watch the directories and files for changes and automatically update the website. Your browser should refresh automatically to reflect the changes as well. NOTE: The command can be confused by deleting and adding new files. If this happens, just terminate (^C or the like), and run the command again.
 ```
+# This will start a local development server and open a web page pointing to the website.
+# The website should update automatically whenever you change a file.
 npm run start
 ```
+
+This command will watch the directories and files for changes and automatically update the website. Your browser should refresh automatically to reflect the changes as well. NOTE: The command can be confused by deleting and adding new files. If this happens, just terminate (^C or the like), and run `npm run start` again.
 
 ### package.json
 
