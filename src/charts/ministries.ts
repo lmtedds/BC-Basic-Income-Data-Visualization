@@ -23,152 +23,77 @@ interface ID3Hierarchy {
 	children?: this[];
 }
 
-// Rearrange the data into the format that d3 is expecting
-function generateHierarchicalData(rawData: IMinistry[]): ID3Hierarchy {
+function genData(rawData: IMinistry[]): ID3Hierarchy {
+	return {
+		ministry: "root",
+		showName: false,
+		value: 0,
 
-	// Pull out all the programs for this level from the data.
-	const getProgramsForLevelAsChildren = (level: string): ID3Hierarchy[] => {
-	// 	const leveledPrograms = rawData.reduce((accum: ID3Hierarchy[], ele: IMinistry, index: number) => {
-	// 		// Ignore programs not for this level of government.
-	// 		if(ele["Level of Government"] !== level) {
-	// 			return accum;
-	// 		}
+		children: []
+	};
+}
 
-	// 		// Provide an inner circle in the case where the program is
-	// 		// administered by another
-	// 		if(ele["Ministry - point of contact/administration:"]) {
-	// 			return accum.concat([{
-	// 				ministry: ele["Ministry - point of contact/administration:"],
-	// 				showName: true, // FIXME: What's the decision to show here?
-	// 				value: 1,
-	// 				children: [{
-	// 					ministry: ele["Managed by (Ministry):"],
-	// 					showName: ele["Importance Ranking"] === "2" ? true : false,
-	// 					value: 1,
-	// 					program: ele.Program,
-	// 					// children: undefined as does not have administrator
-	// 				}],
-	// 			}]);
-	// 		} else {
-	// 			return accum.concat([{
-	// 				ministry: ele["Managed by (Ministry):"],
-	// 				showName: ele["Importance Ranking"] === "2" ? true : false,
-	// 				value: 1,
-	// 				program: ele.Program,
-	// 				// children: undefined as a program may not have children
-	// 			}]);
-	// 		}
-	// 	}, []);
+function listToSortedTree(array, sortKeys: string[]) {
+	// USEFUL?
+	// Add an id to each element
+	array.forEach((ele, index) => {ele._id = index;});
 
-	// 	console.log(`For level ${level} => ${JSON.stringify(leveledPrograms,  null, 4)}`);
+	// Stuff into a object (used as a map) based on key
+	const obj = {};
 
-	// 	// Now go through all this list of programs to join all programs under the same ministry
-	// 	// so that we don't have millions of bubbles.
-
-	// return leveledPrograms;
-
-		// Alternative implementation using a dictionary:
-		// FIXME: The ministries names are incorrect... pushing down the wrong value it seems.
-		const programDictionary = {};
-
-		for(const ele of rawData) {
-			// Ignore programs not for this level of government.
-			if(ele["Level of Government"] !== level) {
-				continue;
-			}
-
-			// Create the entry
-			let entry: ID3Hierarchy;
-			if(ele["Ministry - point of contact/administration:"]) {
-				entry = {
-					ministry: ele["Managed by (Ministry):"],
-					showName: true, // FIXME: What's the decision to show here?
-					value: 1,
-					children: [{
-						ministry: ele["Ministry - point of contact/administration:"],
-						showName: ele["Importance Ranking"] === "2" ? true : false,
-						value: 1,
-						program: ele.Program,
-						// children: undefined as does not have administrator
-					}],
-				};
-			} else {
-				entry = {
-					ministry: ele["Managed by (Ministry):"],
-					showName: ele["Importance Ranking"] === "2" ? true : false,
-					value: 1,
-					program: ele.Program,
-					// children: undefined as a program may not have children
-				};
-			}
-
-			// console.log(`created entry is ${JSON.stringify(entry)}`);
-
-			// Add or merge it into the dictionary. FIXME: Should be generic.
-			if(!programDictionary[entry.ministry]) {
-				// Add
-				programDictionary[entry.ministry] = entry;
-			} else {
-				if(!entry.children) {
-					// Merge with no child
-					if(!programDictionary[entry.ministry].children) {
-						// Merge with both no children (so just programs)
-						programDictionary[entry.ministry].children = [
-							{
-								showName: programDictionary[entry.ministry].showName,
-								program: programDictionary[entry.ministry].program,
-								value: programDictionary[entry.ministry].value,
-							},
-							entry, // delete below will remove ministry entry.
-						];
-						delete programDictionary[entry.ministry].program;
-						delete entry.ministry;
-					} else {
-						// Merge with existing having children (programs or ministry w/ or w/o programs) but entry not (program)
-						if(entry.program) {
-							programDictionary[entry.ministry].children.push(entry);
-							delete entry.ministry;
-						} else {
-							// debugger;
-							console.error("Unimplemented");
-						}
-
-					}
+	array.forEach((ele) => {
+		let subObj = obj;
+		sortKeys.forEach((key, index) => {
+			const value = ele[key];
+			if(index === sortKeys.length - 1) {
+				// Last level of hierarchy/search. Insert our new element.
+				if(subObj[value]) {
+					subObj[value].push(ele);
 				} else {
-					// Merge with child
-					programDictionary[entry.ministry].children.push(clonedeep(entry.children[0])); // FIXME: Doesn't handle a 1st or 2nd level rejig
+					subObj[value] = [ele];
+				}
+			} else {
+				// Not last level of hierarchy. Just create the new level (if required).
+				if(!subObj[value]) {
+					subObj[value] = {};
 				}
 
+				subObj = subObj[value];
 			}
+		});
+	});
+
+	return obj;
+}
+
+function treeToHier(tree, obj:any = {ministry: "root", showName: false, value: 0}): any {
+	if(Array.isArray(tree)) {
+		return tree.map((ele: IMinistry) => {
+			return {
+				program: ele.Program,
+				level: ele["Level of Government"],
+				ministry: ele["Managed by (Ministry):"],
+				admin: ele["Ministry - point of contact/administration - government:"],
+				value: 1, // FIXME: Value
+				showName: true
+			};
+		});
+	}
+
+	Object.keys(tree).forEach((key) => {
+		if(!obj.children) {
+			obj.children = [];
 		}
 
-		// console.log(`For level ${level} => ${JSON.stringify(programDictionary,  null, 4)}`);
+		const sub = treeToHier(tree[key], {ministry: key, value: 1, showName: true});
+		if(Array.isArray(sub)) {
+			obj.children = obj.children.concat(sub);
+		} else {
+			obj.children.push(sub);
+		}
+	});
 
-		// each key should be an array entry.
-		const programArray = [];
-		Object.keys(programDictionary).forEach((key) => { programArray.push(programDictionary[key]); });
-
-		// console.log(`For level ${level} => ${JSON.stringify(programArray,  null, 4)}`);
-
-		return programArray;
-	};
-
-	return {
-		ministry: "Ministries",
-		showName: true,
-		value: 0,
-		children: [{
-			ministry: "Federal",
-			showName: true,
-			value: 1,
-			children: getProgramsForLevelAsChildren("Federal").concat([{
-				ministry: "Province",
-				showName: true,
-				value: 0,
-				children: getProgramsForLevelAsChildren("Provincial"),
-			}]),
-		}],
-	};
+	return obj;
 }
 
 // Adapted from https://observablehq.com/@d3/zoomable-circle-packing
@@ -189,7 +114,12 @@ export function buildZoomablePackedCircleChart(svgEle?: SVGElement) {
 				.sort((a, b) => b.value - a.value));
 	};
 
-	const root = pack(generateHierarchicalData(data));
+	const sortKeys = ["Level of Government", "Managed by (Ministry):", "Ministry - point of contact/administration:"];
+	const sortData = listToSortedTree(data, sortKeys);
+	const hierData = treeToHier(sortData);
+	// console.log(`hier: ${JSON.stringify(hierData, null, 4)}`);
+
+	const root = pack(hierData);
 	let focus = root;
 	let view;
 
