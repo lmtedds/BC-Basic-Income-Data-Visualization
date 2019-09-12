@@ -26,7 +26,7 @@ export default class ChartsComponent extends Component {
 
 	public rendered = (features) => {
 		const svgEle = document.getElementById(ministryChartId);
-		const ministeryChart = buildZoomablePackedCircleChart((svgEle as unknown) as SVGElement); // Yes, this really is an SVG element
+		const ministeryChart = buildMinistryComplexityChart((svgEle as unknown) as SVGElement); // Yes, this really is an SVG element
 
 		console.log(ministeryChart);
 	}
