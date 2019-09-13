@@ -1,12 +1,15 @@
 import * as d3 from "d3";
 
 // Based on https://observablehq.com/@d3/zoomable-sunburst
-export function buildZoomableSunburstChart(hierarchicalData, svgEle?: SVGElement) {
+export function buildZoomableSunburstChart(hierarchicalData, showDepth: number, svgEle?: SVGElement) {
+	const showDepthMin = 1;
+	const showDepthMax = showDepthMin + showDepth;
+
 	// Create a new svg node or use an existing one.
 	const svg = svgEle ? d3.select(svgEle) : d3.create("svg");
 
 	const width = 1000;
-	const radius = width / 6;
+	const radius = width / (showDepthMax * 2);
 
 	const arc = d3.arc()
 		.startAngle((d: any) => d.x0) // FIXME: type
@@ -46,12 +49,13 @@ export function buildZoomableSunburstChart(hierarchicalData, svgEle?: SVGElement
 
 	const path = g.append("g")
 		.selectAll("path")
-		.data(root.descendants().slice(1))
+		.data(root.descendants().slice(1)) // first entry is root (keep everything else)
 		.join("path")
 			.attr("fill", (d: any) => { while (d.depth > 1) d = d.parent; return colour(d.data.name); }) // FIXME: Type
 			.attr("fill-opacity", (d: any) => arcVisible(d.current) ? (d.children ? 0.6 : 0.4) : 0) // FIXME: Type
 			.attr("d", (d: any) => arc(d.current)); // FIXME: Type
 
+	// Add a click handler to anything with children (i.e. not outermost ring)
 	path.filter((d: any) => d.children) // FIXME: Type
 		.style("cursor", "pointer")
 		.on("click", clicked);
@@ -65,7 +69,7 @@ export function buildZoomableSunburstChart(hierarchicalData, svgEle?: SVGElement
 		.attr("text-anchor", "middle")
 		.style("user-select", "none")
 		.selectAll("text")
-		.data(root.descendants().slice(1))
+		.data(root.descendants().slice(1)) // first entry is root (keep everything else)
 		.join("text")
 			.attr("dy", "0.35em")
 			.attr("fill-opacity", (d: any) => +labelVisible(d.current)) // FIXME: Type
@@ -110,11 +114,11 @@ export function buildZoomableSunburstChart(hierarchicalData, svgEle?: SVGElement
 	}
 
 	function arcVisible(d) {
-		return d.y1 <= 3 && d.y0 >= 1 && d.x1 > d.x0;
+		return d.y1 <= showDepthMax && d.y0 >= showDepthMin && d.x1 > d.x0;
 	}
 
 	function labelVisible(d) {
-		return d.y1 <= 3 && d.y0 >= 1 && (d.y1 - d.y0) * (d.x1 - d.x0) > 0.03;
+		return d.y1 <= showDepthMax && d.y0 >= showDepthMin && (d.y1 - d.y0) * (d.x1 - d.x0) > 0.03;
 	}
 
 	function labelTransform(d) {
