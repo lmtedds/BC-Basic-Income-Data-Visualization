@@ -67,7 +67,7 @@ export function buildZoomableSunburstChart(hierarchicalData, showDepth: number, 
 		.data(root.descendants().slice(1)) // first entry is root (keep everything else)
 		.join("path")
 			.attr("fill", selectFillColour)
-			.attr("fill-opacity", selectFillOpacity) // FIXME: Type
+			.attr("fill-opacity", selectFillOpacity)
 			.attr("d", (d: any) => arc(d.current)); // FIXME: Type
 
 	// Add a click handler to anything with children (i.e. not outermost ring)

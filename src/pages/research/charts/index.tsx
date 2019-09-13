@@ -1,12 +1,13 @@
 import { app, Component } from "apprun";
 
-import { buildMinistryComplexityChart } from "~charts/ministries";
+import { buildMinistryComplexityCircleChart, buildMinistryComplexitySunburstChart } from "~charts/ministries";
 
 import "./style.scss";
 
 export const CHARTS_PAGE_URL: string = "/research-charts";
 
-const ministryChartId: string = "ministryChart";
+const ministryCircleChartId: string = "ministryCircleChart";
+const ministrySunburstChartId: string = "ministrySunburstChart";
 
 export default class ChartsComponent extends Component {
 	public state = {};
@@ -18,16 +19,20 @@ export default class ChartsComponent extends Component {
 	public view = (state) => {
 		return <>
 			<h1>Ministry Complexity Chart - NOT FINAL</h1>
-			<div>
-				<svg className="img-fluid" id={ministryChartId}></svg>
+			<div class="row">
+				<svg className="img-fluid col-6" id={ministryCircleChartId}></svg>
+				<svg className="img-fluid col-6" id={ministrySunburstChartId}></svg>
 			</div>
 			</>;
 	}
 
 	public rendered = (features) => {
-		const svgEle = document.getElementById(ministryChartId);
-		const ministeryChart = buildMinistryComplexityChart((svgEle as unknown) as SVGElement); // Yes, this really is an SVG element
+		const circleSvgEle = document.getElementById(ministryCircleChartId);
+		const ministeryCircleChart = buildMinistryComplexityCircleChart((circleSvgEle as unknown) as SVGElement); // Yes, this really is an SVG element
+		console.log(ministeryCircleChart);
 
-		console.log(ministeryChart);
+		const sunburstSvgEle = document.getElementById(ministrySunburstChartId);
+		const ministerySunburstChart = buildMinistryComplexitySunburstChart((sunburstSvgEle as unknown) as SVGElement); // Yes, this really is an SVG element
+		console.log(ministerySunburstChart);
 	}
 }

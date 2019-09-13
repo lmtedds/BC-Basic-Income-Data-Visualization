@@ -2,6 +2,7 @@
 import { data as ministryData } from "~data/20190824_ministries";
 
 import { buildZoomablePackedCircleChart } from "~charts/d3/circle";
+import { buildZoomableSunburstChart } from "~charts/d3/sunburst";
 
 interface IMinistry {
 	"Program": string;
@@ -51,6 +52,7 @@ function listToSortedTree(array, sortKeys: string[]) {
 	return obj;
 }
 
+// FIXME: value should be pulled out and moved to a chart type specific function
 function treeToHierarchy(tree, obj: any = {ministry: "root", showName: false, value: 0}): any {
 	if(Array.isArray(tree)) {
 		return tree.map((ele: IMinistry) => {
@@ -81,11 +83,20 @@ function treeToHierarchy(tree, obj: any = {ministry: "root", showName: false, va
 	return obj;
 }
 
-export function buildMinistryComplexityChart(svgEle?: SVGElement) {
+export function buildMinistryComplexityCircleChart(svgEle?: SVGElement) {
 	const sortKeys = ["Level of Government", "Managed by (Ministry):", "Ministry - point of contact/administration:"];
 	const sortData = listToSortedTree(ministryData, sortKeys);
 	const hierData = treeToHierarchy(sortData);
 	// console.log(`hier: ${JSON.stringify(hierData, null, 4)}`);
 
 	return buildZoomablePackedCircleChart(hierData, svgEle);
+}
+
+export function buildMinistryComplexitySunburstChart(svgEle?: SVGElement) {
+	const sortKeys = ["Level of Government", "Managed by (Ministry):", "Ministry - point of contact/administration:"];
+	const sortData = listToSortedTree(ministryData, sortKeys);
+	const hierData = treeToHierarchy(sortData);
+	// console.log(`hier: ${JSON.stringify(hierData, null, 4)}`);
+
+	return buildZoomableSunburstChart(hierData, 3, svgEle);
 }
