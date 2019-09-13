@@ -4,6 +4,8 @@ import * as d3 from "d3";
 export function buildZoomableSunburstChart(hierarchicalData, showDepth: number, svgEle?: SVGElement) {
 	const showDepthMin = 1;
 	const showDepthMax = showDepthMin + showDepth;
+	const maxOpacity = 0.8;
+	const minOpacity = 0.4;
 
 	// Create a new svg node or use an existing one.
 	const svg = svgEle ? d3.select(svgEle) : d3.create("svg");
@@ -19,7 +21,20 @@ export function buildZoomableSunburstChart(hierarchicalData, showDepth: number, 
 		.innerRadius((d: any) => d.y0 * radius) // FIXME: type
 		.outerRadius((d: any) => Math.max(d.y0 * radius, d.y1 * radius - 1)); // FIXME: type
 
+	// Colours for the sunburst will be either chosen automatically or can be provided in the colour property
+	// of the data. The colour is based on the parent and then the opacity is varied based on the depth.
 	const colour = d3.scaleOrdinal(d3.quantize(d3.interpolateRainbow, hierarchicalData.children.length + 1));
+	const selectFillColour = (d: any) => { // FIXME: Type
+		while (d.depth > 1) d = d.parent;
+		return d.data.colour || colour(d.data.name);
+	};
+	const opacityInterpolate = (d: any) => {
+		const computed = (showDepthMax - 1 - d.y0) / (showDepthMax - 1 - showDepthMin) * (maxOpacity - minOpacity) + minOpacity;
+		return computed > minOpacity ? computed : minOpacity;
+	};
+	const selectFillOpacity = (d: any) => {
+		return arcVisible(d.current) ? opacityInterpolate(d) : 0;
+	};
 
 	const partition = (data) => {
 		const rooted = d3.hierarchy(data)
@@ -51,8 +66,8 @@ export function buildZoomableSunburstChart(hierarchicalData, showDepth: number, 
 		.selectAll("path")
 		.data(root.descendants().slice(1)) // first entry is root (keep everything else)
 		.join("path")
-			.attr("fill", (d: any) => { while (d.depth > 1) d = d.parent; return colour(d.data.name); }) // FIXME: Type
-			.attr("fill-opacity", (d: any) => arcVisible(d.current) ? (d.children ? 0.6 : 0.4) : 0) // FIXME: Type
+			.attr("fill", selectFillColour)
+			.attr("fill-opacity", selectFillOpacity) // FIXME: Type
 			.attr("d", (d: any) => arc(d.current)); // FIXME: Type
 
 	// Add a click handler to anything with children (i.e. not outermost ring)
@@ -104,7 +119,7 @@ export function buildZoomableSunburstChart(hierarchicalData, showDepth: number, 
 				return (t2) => d.current = i(t2);
 			})
 			.filter(function(d: any) { return +this.getAttribute("fill-opacity") || arcVisible(d.target); } as any) // FIXME: Type
-			.attr("fill-opacity", (d: any) => arcVisible(d.target) ? (d.children ? 0.6 : 0.4) : 0) // FIXME: Type
+			.attr("fill-opacity", (d: any) => arcVisible(d.target) ? opacityInterpolate(d) : 0) // FIXME: Type
 			.attrTween("d", (d: any) => () => arc(d.current)); // FIXME: Type
 
 		label.filter(function(d: any) { return +this.getAttribute("fill-opacity") || labelVisible(d.target); } as any) // FIXME: Type
