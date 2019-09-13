@@ -1,10 +1,10 @@
 import { app, Component } from "apprun";
 
-import { buildZoomablePackedCircleChart } from "~charts/ministries";
+import { buildMinistryComplexityChart } from "~charts/ministries";
 
 import "./style.scss";
 
-export const CHARTS_PAGE_URL: string = "/charts";
+export const CHARTS_PAGE_URL: string = "/research-charts";
 
 const ministryChartId: string = "ministryChart";
 
