@@ -1,5 +1,7 @@
 import * as d3 from "d3";
 
+import { wrapText } from "~charts/d3/text_wrap";
+
 // Based on https://observablehq.com/@d3/zoomable-sunburst
 export function buildZoomableSunburstChart(hierarchicalData, showDepth: number, svgEle?: SVGElement) {
 	const showDepthMin = 1;
@@ -86,10 +88,10 @@ export function buildZoomableSunburstChart(hierarchicalData, showDepth: number, 
 		.selectAll("text")
 		.data(root.descendants().slice(1)) // first entry is root (keep everything else)
 		.join("text")
-			.attr("dy", "0.35em")
 			.attr("fill-opacity", (d: any) => +labelVisible(d.current)) // FIXME: Type
 			.attr("transform", (d: any) => labelTransform(d.current)) // FIXME: Type
-			.text((d: any) => d.data.name); // FIXME: Type
+			.text((d: any) => d.data.name) // FIXME: Type
+			.call(wrapText, radius, (d: any) => d.x1 - d.x0);
 
 	const parent = g.append("circle")
 			.datum(root)
