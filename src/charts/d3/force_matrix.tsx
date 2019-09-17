@@ -154,7 +154,9 @@ export function buildMatrixForceChart(chartData: IMatrixChart, svgEle?: SVGEleme
 				.ticks(xAxisNames.length)
 				.tickSize(0),
 			)
-			.call((g) => g.select(".domain").remove()); // Get rid of the domain path for the axis
+			.call((g) => g.select(".domain").remove()) // Get rid of the domain path for the axis
+			.selectAll("text")
+				.style("font-size", "25px");
 		}
 
 	if(dimensions.yAxis) {
@@ -172,7 +174,9 @@ export function buildMatrixForceChart(chartData: IMatrixChart, svgEle?: SVGEleme
 				.ticks(yAxisNames.length)
 				.tickSize(0),
 			)
-			.call((g) => g.select(".domain").remove()); // Get rid of the domain path for the axis
+			.call((g) => g.select(".domain").remove()) // Get rid of the domain path for the axis
+			.selectAll("text")
+				.style("font-size", "25px");
 	}
 
 	// function edgeFoo(start, end, num) {
