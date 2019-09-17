@@ -1,17 +1,35 @@
 // This is where typescript/javascript starts from. A reference to it is automatically added to index.html (via webpack).
-import { data as ministryData } from "~data/20190824_ministries";
+import { data as ministryData } from "~data/20190913_ministries";
 
 import { buildZoomablePackedCircleChart } from "~charts/d3/circle";
 import { buildZoomableSunburstChart } from "~charts/d3/sunburst";
 
-interface IMinistry {
+const levelOfGovernment = "Level of Government";
+const responsibleMinistry = "Responsible Ministry:";
+const administeredBy = "Administered By:";
+const showName = "Show Name";
+const programName = "Program";
+const programSize = "$ amount of benefits (BC only)";
+
+// Older version of data looks like this
+interface IMinistry20190824Version {
 	"Program": string;
 	"Program Type/Target": string;
-	"Level of Government": string;
+	[levelOfGovernment]: string;
 	"Managed by (Ministry):": string;
 	"Ministry - point of contact/administration:": string;
 	"Ministry - point of contact/administration - government:": string;
 	"Importance Ranking": string;
+}
+
+interface IMinistry {
+	[programSize]: string; // string represention a number
+	[programName]: string;
+	[showName]: string; // string representation of a boolean
+	[levelOfGovernment]: string;
+	[administeredBy]: string;
+	[responsibleMinistry]: string;
+	"Number of Recipients (BC only)": string; // string representation of a number
 }
 
 interface ID3Hierarchy {
@@ -57,12 +75,13 @@ function treeToHierarchy(tree, obj: any = {ministry: "root", showName: false, va
 	if(Array.isArray(tree)) {
 		return tree.map((ele: IMinistry) => {
 			return {
-				program: ele.Program,
-				level: ele["Level of Government"],
-				ministry: ele["Managed by (Ministry):"],
-				admin: ele["Ministry - point of contact/administration - government:"],
-				value: 1, // FIXME: Value
-				showName: true,
+				program: ele[programName],
+				level: ele[levelOfGovernment],
+				ministry: ele[responsibleMinistry],
+				admin: ele[administeredBy],
+				// value: ele[programSize] ? Number(ele[programSize]) : 1,
+				value: ele[programSize] ? Math.log2(Number(ele[programSize])) : 1,
+				showName: ele[showName] ? (ele[showName].toLowerCase() === "true") : false,
 			};
 		});
 	}
@@ -84,7 +103,7 @@ function treeToHierarchy(tree, obj: any = {ministry: "root", showName: false, va
 }
 
 export function buildMinistryComplexityCircleChart(svgEle?: SVGElement) {
-	const sortKeys = ["Level of Government", "Managed by (Ministry):", "Ministry - point of contact/administration:"];
+	const sortKeys = [levelOfGovernment, responsibleMinistry, administeredBy];
 	const sortData = listToSortedTree(ministryData, sortKeys);
 	const hierData = treeToHierarchy(sortData);
 	// console.log(`hier: ${JSON.stringify(hierData, null, 4)}`);
@@ -93,7 +112,7 @@ export function buildMinistryComplexityCircleChart(svgEle?: SVGElement) {
 }
 
 export function buildMinistryComplexitySunburstChart(svgEle?: SVGElement) {
-	const sortKeys = ["Level of Government", "Managed by (Ministry):", "Ministry - point of contact/administration:"];
+	const sortKeys = [levelOfGovernment, responsibleMinistry, administeredBy];
 	const sortData = listToSortedTree(ministryData, sortKeys);
 	const hierData = treeToHierarchy(sortData);
 	// console.log(`hier: ${JSON.stringify(hierData, null, 4)}`);

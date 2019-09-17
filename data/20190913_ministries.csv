@@ -1,0 +1,113 @@
+Level of Government,Responsible Ministry:,Administered By:,Program,Show Name,Number of Recipients (BC only),$ amount of benefits (BC only)
+Federal,Department of Finance,Canada Revenue Agency,Canada Child Benefit,TRUE,442610,2689324000
+Federal,Department of Finance,Canada Revenue Agency,Child Disability Benefit,FALSE,,
+Federal,Department of Finance,Canada Revenue Agency,Canada Training Credit,FALSE,,
+Federal,Department of Finance,Canada Revenue Agency,Disability Tax Credit,TRUE,,68175500.8
+Federal,Department of Finance,Canada Revenue Agency,Excise Gasoline Tax Refund,FALSE,,
+Federal,Department of Finance,Canada Revenue Agency,GST/HST Credit,TRUE,1401770,572979000
+Federal,Department of Finance,Canada Revenue Agency,Canada Worker's Benefit ,TRUE,,306097874.9
+Federal,Department of Finance,Canada Revenue Agency,Medical Expenses Tax Credit,FALSE,,84607160.56
+Federal,Employment and Social Development Canada,Service Canada,Apprenticeship Grants,FALSE,,
+Federal,Employment and Social Development Canada,Employment and Social Development Canada,Canada Education Savings,FALSE,,
+Federal,Employment and Social Development Canada,StudentAid BC,Canada Student Grants,FALSE,,
+Federal,Employment and Social Development Canada,StudentAid BC,Canada Student Loans,FALSE,,
+Federal,Employment and Social Development Canada,Employment and Social Development Canada,Skills Link,FALSE,,
+Federal,Employment and Social Development Canada,Employment and Social Development Canada,Work Integrated Learning Opportunities/work placements,FALSE,,
+Federal,Employment and Social Development Canada,Service Canada,Allowance ,FALSE,"7,642","66,350,946"
+Federal,Employment and Social Development Canada,Employment and Social Development Canada,Disability Savings,FALSE,,
+Federal,Employment and Social Development Canada,Service Canada,Guaranteed Income Supplement,TRUE,"268,909","1,729,564,672"
+Federal,Employment and Social Development Canada,Service Canada,Old Age Security Pension,TRUE,"866,474","5,645,859,428"
+Federal,Employment and Social Development Canada,Service Canada,Canadian Benefit for Parents of Young Victims of Crime,FALSE,,
+Federal,Employment and Social Development Canada,Service Canada,Canada Pension Plan,TRUE,"1,069,133","8,173,081.00"
+Federal,Employment and Social Development Canada,Service Canada,Employment Insurance,TRUE,70780,
+Federal,Employment and Social Development Canada,WorkSafeBC,Workers Comp. (federal employees),FALSE,,
+Federal,Employment and Social Development Canada,Canada Revenue Agency,GST/HST New Housing Rebate,FALSE,,
+Federal,Employment and Social Development Canada,Canada Revenue Agency,Home Buyer's Plan,FALSE,,
+Federal,"Families, Children, and Social Development",Canada Mortgage and Housing Corporation,Housing Internship for First Nation and Inuit Youth,FALSE,,
+Federal,"Families, Children, and Social Development",Canada Mortgage and Housing Corporation,First Time Home Buyer Incentive,FALSE,,
+Federal,"Families, Children, and Social Development",Canada Mortgage and Housing Corporation,Housing Supply Challenge,FALSE,,
+Federal,Health Canada,First Nations Health Authority,Indian Residential Schools Resolution Health Support Program,FALSE,,
+Federal,Health Canada,First Nations Health Authority,Non-Insured Health Benefits Program,FALSE,,
+Federal,"Immigration, Refugees, and Citizenship Canada","Immigration, Refugees, and Citizenship Canada",Federal Internship for Newcomers Program,FALSE,,
+Federal,"Immigration, Refugees, and Citizenship Canada","Immigration, Refugees, and Citizenship Canada",Language Instruction for Newcomers to Canada,FALSE,,
+Federal,"Immigration, Refugees, and Citizenship Canada","Immigration, Refugees, and Citizenship Canada",Immigration Loans Program ,FALSE,,
+Federal,"Immigration, Refugees, and Citizenship Canada","Immigration, Refugees, and Citizenship Canada",Resettlement Assistance Program,FALSE,,
+Federal,Indigenous Services Canada,Indigenous Services Canada,First Nation & Inuit post-secondary student support program,FALSE,,
+Federal,Royal Military College of Canada,Royal Military College of Canada,Aboriginal Leadership Opportunities Year,FALSE,,
+Federal,Veterans Affairs Canada,Veterans Affairs Canada,Education and Training Benefit,FALSE,,
+Federal,Veterans Affairs Canada,Veterans Affairs Canada,Canadian Forces Disability Benefits,FALSE,,
+Federal,Veterans Affairs Canada,Veterans Affairs Canada,Canadian Forces Income Support,FALSE,,
+Federal,Veterans Affairs Canada,Veterans Affairs Canada,Veteran Exceptional Incapacity Allowance,FALSE,,
+Federal,Veterans Affairs Canada,Veterans Affairs Canada,Veteran's Attendance Allowance,FALSE,,
+Federal,Veterans Affairs Canada,Veterans Affairs Canada,Veterans Clothing Allowance,FALSE,,
+Federal,Veterans Affairs Canada,Veterans Affairs Canada,Veteran's Detention Benefit,FALSE,,
+Federal,Veterans Affairs Canada,Veterans Affairs Canada,Veteran's Independence Program,FALSE,,
+Federal,Veterans Affairs Canada,Veterans Affairs Canada,Veteran's Independence Program for Survivors,FALSE,,
+Federal,Veterans Affairs Canada,Veterans Affairs Canada,War Veterans Allowance,FALSE,,
+Federal,Veterans Affairs Canada,Veterans Affairs Canada,War Veterans Death Benefit,FALSE,,
+Federal,Veterans Affairs Canada,Veterans Affairs Canada,War Veteran's Funeral and Burial Assistance,FALSE,,
+Federal,Veterans Affairs Canada,Veterans Affairs Canada,War Veteran's Prisoner of War Compensation,FALSE,,
+Federal,Veterans Affairs Canada,Veterans Affairs Canada,Canadian Forces Income Replacement Benefit,FALSE,,
+Federal,Western Economic Diversification Canada,Western Economic Diversification Canada,Western Canada Business Services Network,FALSE,,
+Municipal ,Municipal ,Municipality,Recreation Financial Assistance Programs,FALSE,,
+NGO,NGO,NGO,Vancouver Rent Bank,FALSE,,
+Provincial,Ministry of Finance,Canada Revenue Agency,BC Tax Reduction Credit,TRUE,,152381620.1
+Provincial,Ministry of Finance,Canada Revenue Agency,BC Climate Action Tax Credit,TRUE,,195000000
+Provincial,Ministry of Finance,Ministry of Finance,Fuel Tax Refund for Persons with Disabilities,FALSE,,
+Provincial,Ministry of Finance,Canada Revenue Agency,BC Sales Tax Credit,TRUE,,45219976.78
+Provincial,Ministry of Finance,Municipality,Home Owner Grant,TRUE,,
+Provincial,Ministry of Finance,Canada Revenue Agency,BC Home Renovation Tax Credit,FALSE,,212861.244
+Provincial,Ministry of Finance,Ministry of Finance,Property Tax Deferral,FALSE,54431,218824963
+Provincial,Ministry of Finance,Canada Revenue Agency,BC Child Opportunity Benefit,TRUE,,
+Provincial,Health,Farmer's Market,BC Farmer's Market Nutrition Program,FALSE,,
+Provincial,Health,BC Pharmacare,Fair Pharmacare,TRUE,,
+Provincial,Health,Health Insurance BC,Medical Services Plan,TRUE,,
+Provincial,"Ministry of Advanced Education, Skills & Training","Ministry of Advanced Education, Skills & Training",Aboriginal Community-Based Training Partnerships Program,FALSE,,
+Provincial,"Ministry of Advanced Education, Skills & Training",Post-secondary,Aboriginal Emergency Assistance Fund (post-secondary),FALSE,,
+Provincial,"Ministry of Advanced Education, Skills & Training",StudentAid BC,BC access grant for students with permanent disabilities,FALSE,,
+Provincial,"Ministry of Advanced Education, Skills & Training",WorkBC,Workforce Development Agreement Programs,TRUE,,
+Provincial,"Ministry of Advanced Education, Skills & Training",Service provider,Community Adult Literacy Program,FALSE,4151,2400000
+Provincial,"Ministry of Advanced Education, Skills & Training",WorkBC,Indigenous Skills Training Development Fund,FALSE,,
+Provincial,"Ministry of Advanced Education, Skills & Training",WorkBC,Sector Labour Market Partnership Program,FALSE,,
+Provincial,"Ministry of Advanced Education, Skills & Training",StudentAid BC,StudentAid BC,TRUE,,
+Provincial,"Ministry of Advanced Education, Skills & Training",StudentAid BC,Provincial Tuition Waiver Program,FALSE,,
+Provincial,"Ministry of Advanced Education, Skills & Training",StudentAid BC,Youth Educational Assistance Fund for Former Youth in Care,FALSE,,
+Provincial,"Ministry of Advanced Education, Skills & Training",Douglas College,Career Paths for Skilled Immigrants,FALSE,,
+Provincial,Ministry of Attorney General,Service provider,Legal Aid,FALSE,,
+Provincial,Ministry of Children and Family Development,Ministry of Children and Family Development,Affordable Child Care Benefit,TRUE,33566,234400000
+Provincial,Ministry of Children and Family Development,Ministry of Children and Family Development,Child Care Operating Funding ,FALSE,115918,118800000
+Provincial,Ministry of Children and Family Development,Ministry of Children and Family Development,Childcare Fee Reduction Initiative,FALSE,56210,97100000
+Provincial,Ministry of Children and Family Development,Ministry of Children and Family Development,Agreements with Young Adults,FALSE,301,3458058
+Provincial,Ministry of Education,Ministry of Education,BC Education and Training Savings Grant ,FALSE,,
+Provincial,Ministry of Education,Service provider,CommunityLink Funding and Vulnerable Student Supplement,FALSE,,
+Provincial,"Ministry of Energy, Mines, and Petroleum Resources",BC Hydro,BC Hydro Customer Crisis Fund,TRUE,2282,847518
+Provincial,"Ministry of Energy, Mines, and Petroleum Resources",BC Hydro,Energy Conservation Assistance Program,FALSE,,
+Provincial,Ministry of Labour,WorkSafeBC,WorkSafe BC: Health Care Benefits,FALSE,52422,55366907
+Provincial,Ministry of Labour,WorkSafeBC,WorkSafe BC: Permanent Disability Benefit ,TRUE,5461,616664347
+Provincial,Ministry of Labour,WorkSafeBC,WorkSafe BC: Wage loss benefits,TRUE,48771,447039069
+Provincial,Ministry of Public Safety & Solicitor General,VictimLinkBC,Crime Victim Assistance Program,FALSE,,
+Provincial,Ministry of Public Safety & Solicitor General,VictimLinkBC,Victim Travel Fund,FALSE,,
+Provincial,Ministry of Social Development and Poverty Reduction ,Ministry of Social Development and Poverty Reduction ,General Supplements,TRUE,,
+Provincial,Ministry of Social Development and Poverty Reduction ,Ministry of Social Development and Poverty Reduction ,Health Supplements,TRUE,,
+Provincial,Ministry of Social Development and Poverty Reduction ,WorkBC,Labour Market Development Agreement Programs,TRUE,,
+Provincial,Ministry of Social Development and Poverty Reduction ,Ministry of Social Development and Poverty Reduction ,Disability Assistance,TRUE,104912,991501820.1
+Provincial,Ministry of Social Development and Poverty Reduction ,Ministry of Social Development and Poverty Reduction ,Hardship Assistance,TRUE,,
+Provincial,Ministry of Social Development and Poverty Reduction ,Ministry of Social Development and Poverty Reduction ,Income Assistance,TRUE,42734,347346697.8
+Provincial,Ministry of Social Development and Poverty Reduction ,Canada Revenue Agency,Seniors Supplement,FALSE,56021,26000000
+Provincial,Ministry of Social Development and Poverty Reduction ,Pacific Blue Cross,Healthy Kids Program,TRUE,,13700000
+Provincial,Municipal Affairs and Housing,BC Housing,Affordable Rental Housing,TRUE,1435,1900000000
+Provincial,Municipal Affairs and Housing,BC Housing,Home Adaptations for Independence,FALSE,650,10000000
+Provincial,Municipal Affairs and Housing,BC Housing,Homeless Shelters and Services,TRUE,20595,316425000
+Provincial,Municipal Affairs and Housing,BC Housing,Independent Living BC Program,FALSE,,
+Provincial,Municipal Affairs and Housing,BC Housing,Rental Assistance Program,TRUE,9276,50400000
+Provincial,Municipal Affairs and Housing,BC Housing,Seniors' Supportive Housing,FALSE,10411,39700000
+Provincial,Municipal Affairs and Housing,BC Housing,Supportive Housing (for low income adults),FALSE,6101,39600000
+Provincial,Municipal Affairs and Housing,BC Housing,Shelter Aid for Elderly Renters,TRUE,24218,59700000
+Provincial,Municipal Affairs and Housing,BC Housing,Subsidized Rental Housing,TRUE,,
+Provincial,Municipal Affairs and Housing,BC Housing,Transition Houses,FALSE,863,84700000
+Provincial,Transportation and Infastructure,BC Buss Pass Program,BC Bus Pass for Seniors,TRUE,,
+Regulation,Regulation,Regulation,Minimum Wage Regulation,FALSE,,
+Voluntary Savings,Voluntary Savings,Service provider,RESP,FALSE,,
+Voluntary Savings,Voluntary Savings,Service provider,RDSP ,FALSE,,
+Voluntary Savings,Voluntary Savings,Service provider,RRSP,FALSE,,
+Voluntary Savings,Voluntary Savings,Service provider,TFSA,FALSE,,
