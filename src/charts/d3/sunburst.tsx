@@ -91,7 +91,7 @@ export function buildZoomableSunburstChart(hierarchicalData, showDepth: number, 
 			.attr("fill-opacity", (d: any) => +labelVisible(d.current)) // FIXME: Type
 			.attr("transform", (d: any) => labelTransform(d.current)) // FIXME: Type
 			.text((d: any) => d.data.name) // FIXME: Type
-			.call(wrapText, radius, (d: any) => d.x1 - d.x0);
+			.call(wrapText, radius);
 
 	const parent = g.append("circle")
 			.datum(root)
