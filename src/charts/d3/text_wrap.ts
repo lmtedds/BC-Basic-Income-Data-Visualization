@@ -23,6 +23,7 @@ export function wrapText(text, maxTextWidth) {
 		// FIXME: This isn't a good way to do things. Need to compute first then once everything is computed
 		//        output the elements so that dy is correct. Basically we're not vertically centered.
 		// FIXME: What to do if the words don't fit in the space (including the height?) Probably just want 1 line stretched.
+		// FIXME: Probably also want each line to have some kind of specified justification.
 		while (words.length) {
 			word = words.pop();
 			line.push(word);
@@ -32,7 +33,11 @@ export function wrapText(text, maxTextWidth) {
 				tspan.text(line.join(" "));
 				line = [word];
 				++lineNumber;
-				tspan = textEle.append("tspan").attr("x", 0).attr("y", y).attr("dy", lineHeight + dy + "em").text(word);
+				tspan = textEle.append("tspan")
+					.attr("x", 0)
+					.attr("y", y)
+					.attr("dy", (y ? (lineNumber * lineHeight + dy) : lineHeight + dy) + "em")
+					.text(word);
 			}
 		}
 	});
