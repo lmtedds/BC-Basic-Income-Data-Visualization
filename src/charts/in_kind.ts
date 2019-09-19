@@ -33,8 +33,9 @@ function dataToIntermediate(data: IInKind[]): IInKindIntermediateData {
 
 	const missing = [];
 
-	data.forEach((ele, index) => {
+	data.forEach((ele) => {
 		if(!ele[spectrum] || !ele[programType]) {
+			// NOTE: We're tossing these entries.
 			missing.push(ele[program]);
 		} else {
 			// Build Sets for axes
@@ -58,11 +59,10 @@ function dataToIntermediate(data: IInKind[]): IInKindIntermediateData {
 			}
 
 			typeMap.set(ele[programType], progs.concat(ele));
-			console.log(`index: ${index}`);
 		}
 	});
 
-	console.error(`program missing spectrum or type: ${missing}`);
+	console.log(`program missing spectrum or type: ${missing}`);
 
 	return {
 		xTitles: xTitlesSet,
