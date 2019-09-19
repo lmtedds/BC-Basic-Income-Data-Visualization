@@ -1,5 +1,7 @@
 import * as d3 from "d3";
 
+import { wrapText } from "~charts/d3/text_wrap";
+
 interface IMatrixDimensionalInfo {
 	xAxis: boolean;
 	yAxis: boolean;
@@ -14,16 +16,25 @@ export interface IMatrixAxes {
 }
 
 export interface IMatrixDatum {
-	quad?: number; // If this field exists then data must be IMatrixDatum[]
+	quad?: number; // If this field exists then data must be IMatrixDatum[] not IMatrixDatum[][]
 	colour?: string;
 	radius: number;
 	x?: number;
 	y?: number;
 }
 
+export interface IMatrixSetup {
+	yAxisWidth?: number; // Out of 1000
+	xAxisHeight?: number; // Out of 1000
+
+	xAxisFontSize: string;
+	yAxisFontSize: string;
+}
+
 export interface IMatrixChart {
 	axes?: IMatrixAxes;
 	data: IMatrixDatum[] | IMatrixDatum[][];
+	setup?: IMatrixSetup;
 }
 
 // Add quadrant and flatten arrays to depth 1
@@ -99,8 +110,8 @@ export function buildMatrixForceChart(chartData: IMatrixChart, svgEle?: SVGEleme
 	// Figure out how to divide up the space
 	const width = 1000;
 	const height = 1000;
-	const yAxisWidth = dimensions.yAxis ? 100 : 0;
-	const xAxisHeight = dimensions.xAxis ? 100 : 0;
+	const yAxisWidth = dimensions.yAxis ? (chartData.setup.yAxisWidth || 100) : 0;
+	const xAxisHeight = dimensions.xAxis ? (chartData.setup.xAxisHeight || 100) : 0;
 	const colSpace = (width - yAxisWidth) / dimensions.cols;
 	const rowSpace = (height - xAxisHeight) / dimensions.rows;
 
@@ -110,7 +121,7 @@ export function buildMatrixForceChart(chartData: IMatrixChart, svgEle?: SVGEleme
 		.style("font", "10px sans-serif");
 
 	const simulation = d3.forceSimulation(chartData.data as any)
-		.force("charge", d3.forceManyBody().strength(10))
+		.force("charge", d3.forceManyBody().strength(0.5))
 		.force("x", d3.forceX().x(function(d: IMatrixDatum) {
 			// Find the middle of the appropriate column of the matrix to centre this datum.
 			return (Math.ceil(d.quad % dimensions.cols) + 0.5) * colSpace + yAxisWidth;
@@ -125,7 +136,7 @@ export function buildMatrixForceChart(chartData: IMatrixChart, svgEle?: SVGEleme
 		.on("tick", ticked);    // FIXME: Verify the tick is unregistered when finished
 
 	// Generate locations for the ticks with names and the start and end ticks.
-	function middleFoo(start, end, num) {
+	function generateMiddleTickPosition(start, end, num) {
 		const ticks = [start];
 		const stride = (end - start) / num;
 
@@ -145,7 +156,7 @@ export function buildMatrixForceChart(chartData: IMatrixChart, svgEle?: SVGEleme
 		const xAxisNames = dimensions.xAxis ? [""].concat(chartData.axes.xTitles).concat("") : ["", ""];
 		const xOrdinalAxis = d3.scaleOrdinal()
 			.domain(xAxisNames)
-			.range(middleFoo(yAxisWidth, width, chartData.axes.xTitles.length));
+			.range(generateMiddleTickPosition(yAxisWidth, width, chartData.axes.xTitles.length));
 
 		svg.append("g")
 			.attr("class", "x-axis")
@@ -156,8 +167,9 @@ export function buildMatrixForceChart(chartData: IMatrixChart, svgEle?: SVGEleme
 			)
 			.call((g) => g.select(".domain").remove()) // Get rid of the domain path for the axis
 			.selectAll("text")
-				.style("font-size", "25px");
-		}
+				.style("font-size", chartData.setup.xAxisFontSize || "25px")
+				.call(wrapText, colSpace);
+			}
 
 	if(dimensions.yAxis) {
 		// Add empty first and last tick names that will be located at start and end of grids then
@@ -165,7 +177,7 @@ export function buildMatrixForceChart(chartData: IMatrixChart, svgEle?: SVGEleme
 		const yAxisNames = dimensions.yAxis ? [""].concat(chartData.axes.yTitles).concat("") : ["", ""];
 		const yOrdinalAxis = d3.scaleOrdinal()
 			.domain(yAxisNames)
-			.range(middleFoo(xAxisHeight, height, chartData.axes.yTitles.length));
+			.range(generateMiddleTickPosition(xAxisHeight, height, chartData.axes.yTitles.length));
 
 		svg.append("g")
 			.attr("class", "y-axis")
@@ -176,7 +188,8 @@ export function buildMatrixForceChart(chartData: IMatrixChart, svgEle?: SVGEleme
 			)
 			.call((g) => g.select(".domain").remove()) // Get rid of the domain path for the axis
 			.selectAll("text")
-				.style("font-size", "25px");
+				.style("font-size", chartData.setup.yAxisFontSize || "25px")
+				.call(wrapText, rowSpace);
 	}
 
 	// function edgeFoo(start, end, num) {
