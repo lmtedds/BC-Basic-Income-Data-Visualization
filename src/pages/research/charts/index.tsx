@@ -1,6 +1,6 @@
 import { app, Component } from "apprun";
 
-import { buildMatrixForceChart } from "~charts/d3/force_matrix";
+import { buildInKindChart } from "~charts/in_kind";
 import { buildMinistryComplexityCircleChart, buildMinistryComplexitySunburstChart } from "~charts/ministries";
 import { buildProgramInteractionChart } from "~charts/programs";
 
@@ -36,21 +36,7 @@ export default class ChartsComponent extends Component {
 
 	public rendered = (features) => {
 		const matrixSvgEle = document.getElementById(matrixChartId);
-		const fakeData = {
-			axes: {
-				xTitles: ["x1", "x2", "x3"],
-				yTitles: ["y1", "y2"],
-			},
-			data: [
-				[{radius: 10}, {radius: 5}, {radius: 20}, {radius: 60}, {radius: 10}],
-				[{radius: 10}, {radius: 5}, {radius: 20}, {radius: 60}, {radius: 10}],
-				[{radius: 10}, {radius: 5}, {radius: 20}, {radius: 60}, {radius: 10}],
-				[{radius: 10}, {radius: 5}, {radius: 20}, {radius: 60}, {radius: 10}],
-				[{radius: 10}, {radius: 5}, {radius: 20}, {radius: 60}, {radius: 10}],
-			],
-		}; // FIXME: fake data
-
-		const matrixChart = buildMatrixForceChart(fakeData, (matrixSvgEle as unknown) as SVGElement); // Yes, this really is an SVG element
+		const matrixChart = buildInKindChart((matrixSvgEle as unknown) as SVGElement); // Yes, this really is an SVG element
 		console.log(matrixChart);
 
 		const linkSvgEle = document.getElementById(linkChartId);
