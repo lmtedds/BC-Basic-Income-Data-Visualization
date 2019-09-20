@@ -41,11 +41,9 @@ export function buildLinkedForceChart(chartData, svgEle?: SVGElement) {
 	// Figure out how to divide up the space
 	const width = 1000;
 	const height = 1000;
-	const yAxisWidth = 100;
-	const xAxisHeight = 100;
 
 	svg
-		.attr("viewBox", `0 0 ${width} ${width}`)
+		.attr("viewBox", `0 0 ${width} ${height}`)
 		.attr("perserveAspectRatio", "xMinYMin meet")
 		.style("font", "10px sans-serif");
 
