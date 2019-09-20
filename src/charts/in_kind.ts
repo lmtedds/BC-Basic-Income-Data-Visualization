@@ -34,31 +34,34 @@ function dataToIntermediate(data: IInKind[]): IInKindIntermediateData {
 	const missing = [];
 
 	data.forEach((ele) => {
-		if(!ele[spectrum] || !ele[programType]) {
+		const spect = ele[spectrum];
+		const progType = ele[programType];
+
+		if(!spect || !progType) {
 			// NOTE: We're tossing these entries.
 			missing.push(ele[program]);
 		} else {
 			// Build Sets for axes
-			xTitlesSet.add(ele[programType]);
-			yTitlesSet.add(ele[spectrum]);
+			xTitlesSet.add(progType);
+			yTitlesSet.add(spect);
 
 			// Put the data in the right "quadrant"
-			let typeMap = positionedData.get(ele[spectrum]);
+			let typeMap = positionedData.get(spect);
 
 			// Initialize 2nd level Map if required
 			if(!typeMap) {
 				typeMap = new Map<string, IInKind[]>();
-				positionedData.set(ele[spectrum], typeMap);
+				positionedData.set(spect, typeMap);
 			}
 
 			// Initialize the array if required
-			let progs = typeMap.get(ele[programType]);
+			let progs = typeMap.get(progType);
 			if(!progs) {
 				progs = [];
-				typeMap.set(ele[programType], progs);
+				typeMap.set(progType, progs);
 			}
 
-			typeMap.set(ele[programType], progs.concat(ele));
+			typeMap.set(progType, progs.concat(ele));
 		}
 	});
 
@@ -89,7 +92,9 @@ function convertData(data): IMatrixChart {
 				if(quadEntry) {
 					quadEntry.forEach((entry) => {
 						quadArray.push({
-							data: {spectrum: spectrumKey, type: programTypeKey, program: entry[program]},
+							xKey: programTypeKey,
+							yKey: spectrumKey,
+							data: {program: entry[program]},
 							radius: 5, // FIXME: placeholder
 						});
 					});
@@ -114,27 +119,15 @@ function convertData(data): IMatrixChart {
 }
 
 export function buildInKindChart(svgEle?: SVGElement) {
-	const fakeData: IMatrixChart = { // FIXME: fake data
-		axes: {
-			xTitles: ["x1", "x2", "x3"],
-			yTitles: ["y1", "y2"],
-		},
-		data: [
-			[{radius: 10}, {radius: 5}, {radius: 20}, {radius: 60}, {radius: 10}],
-			[{radius: 10}, {radius: 5}, {radius: 20}, {radius: 60}, {radius: 10}],
-			[{radius: 10}, {radius: 5}, {radius: 20}, {radius: 60}, {radius: 10}],
-			[{radius: 10}, {radius: 5}, {radius: 20}, {radius: 60}, {radius: 10}],
-			[{radius: 10}, {radius: 5}, {radius: 20}, {radius: 60}, {radius: 10}],
-		],
-	};
-
 	const convertedData = convertData(inKindData);
 	convertedData.setup = {
-		yAxisWidth: 200,
-		xAxisHeight: 200,
+		height: 1000,
+		width: 1000,
 
-		xAxisFontSize: "20px",
-		yAxisFontSize: "20px",
+		margins: {top: 20, right: 20, bottom: 80, left: 120},
+
+		xAxisFontSize: "10px",
+		yAxisFontSize: "10px",
 	};
 
 	return buildMatrixForceChart(convertedData, svgEle);

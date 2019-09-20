@@ -21,11 +21,20 @@ export interface IMatrixDatum {
 	radius: number;
 	x?: number;
 	y?: number;
+	xKey: string;
+	yKey: string;
 }
 
 export interface IMatrixSetup {
-	yAxisWidth?: number; // Out of 1000
-	xAxisHeight?: number; // Out of 1000
+	height: number;
+	width: number;
+
+	margins: {
+		top: number;
+		bottom: number;
+		right: number;
+		left: number;
+	};
 
 	xAxisFontSize: string;
 	yAxisFontSize: string;
@@ -108,131 +117,66 @@ export function buildMatrixForceChart(chartData: IMatrixChart, svgEle?: SVGEleme
 	}
 
 	// Figure out how to divide up the space
-	const width = 1000;
-	const height = 1000;
-	const yAxisWidth = dimensions.yAxis ? (chartData.setup.yAxisWidth || 100) : 0;
-	const xAxisHeight = dimensions.xAxis ? (chartData.setup.xAxisHeight || 100) : 0;
-	const colSpace = (width - yAxisWidth) / dimensions.cols;
-	const rowSpace = (height - xAxisHeight) / dimensions.rows;
+	const sizeHeight = chartData.setup ? chartData.setup.height : 1000;
+	const sizeWidth = chartData.setup ? chartData.setup.width : 1000;
+	const margin = chartData.setup ? chartData.setup.margins : {top: 20, right: 160, bottom: 35, left: 40};
+	const width = sizeWidth - margin.left - margin.right;
+	const height = sizeHeight - margin.top - margin.bottom;
 
-	svg
-		.attr("viewBox", `0 0 ${width} ${width}`)
+	const xSpacing = d3.scaleBand().rangeRound([0, width]).padding(0.1).domain(chartData.axes.xTitles);
+	const ySpacing = d3.scaleBand().rangeRound([height, 0]).padding(0.1).domain(chartData.axes.yTitles);
+
+	const group = svg
+		.attr("viewBox", `0 0 ${sizeWidth} ${sizeHeight}`)
 		.attr("perserveAspectRatio", "xMinYMin meet")
-		.style("font", "10px sans-serif");
+		.append("g")
+			.attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+			.style("font", "10px sans-serif");
 
 	const simulation = d3.forceSimulation(chartData.data as any)
 		.force("charge", d3.forceManyBody().strength(0.5))
-		.force("x", d3.forceX().x(function(d: IMatrixDatum) {
+		.force("x", d3.forceX().x(function(d: any) {
 			// Find the middle of the appropriate column of the matrix to centre this datum.
-			return (Math.ceil(d.quad % dimensions.cols) + 0.5) * colSpace + yAxisWidth;
+			return xSpacing(d.xKey) + xSpacing.bandwidth() / 2;
 		}))
 		.force("y", d3.forceY().y(function(d: IMatrixDatum) {
 			// Find the middle of the appropriate row of the matrix to centre this datum.
-			return (Math.ceil((d.quad + 1) / dimensions.cols) - 0.5) * rowSpace;
+			return ySpacing(d.yKey) + ySpacing.bandwidth() / 2;
 		}))
 		.force("collision", d3.forceCollide().radius(function(d: IMatrixDatum) {
 			return d.radius;
 		}))
 		.on("tick", ticked);    // FIXME: Verify the tick is unregistered when finished
 
-	// Generate locations for the ticks with names and the start and end ticks.
-	function generateMiddleTickPosition(start, end, num) {
-		const ticks = [start];
-		const stride = (end - start) / num;
-
-		for(let i = 0, at = start + stride * 0.5; i < num; ++i, at += stride) {
-			ticks.push(at);
-		}
-
-		ticks.push(end);
-
-		return ticks;
-	}
-
 	// Optionally add axes.
 	if(dimensions.xAxis) {
-		// Add empty first and last tick names that will be located at start and end of grids then
-		// setup a mapping to each tick name to it's location along the axis.
-		const xAxisNames = dimensions.xAxis ? [""].concat(chartData.axes.xTitles).concat("") : ["", ""];
-		const xOrdinalAxis = d3.scaleOrdinal()
-			.domain(xAxisNames)
-			.range(generateMiddleTickPosition(yAxisWidth, width, chartData.axes.xTitles.length));
-
-		svg.append("g")
+		group.append("g")
 			.attr("class", "x-axis")
-			.attr("transform", `translate(0, ${height - xAxisHeight})`)
-			.call(d3.axisBottom(xOrdinalAxis as any)
-				.ticks(xAxisNames.length)
-				.tickSize(0),
-			)
+			.attr("transform", "translate(0," + height + ")")
+			.call(d3.axisBottom(xSpacing))
 			.call((g) => g.select(".domain").remove()) // Get rid of the domain path for the axis
 			.selectAll("text")
 				.style("font-size", chartData.setup.xAxisFontSize || "25px")
-				.call(wrapText, colSpace);
-			}
+				.call(wrapText, xSpacing.bandwidth());
+	}
 
+	// FIXME: For axes, should be using scaleBand rather than strange extra adding of stuff
 	if(dimensions.yAxis) {
-		// Add empty first and last tick names that will be located at start and end of grids then
-		// setup a mapping to each tick name to it's location along the axis.
-		const yAxisNames = dimensions.yAxis ? [""].concat(chartData.axes.yTitles).concat("") : ["", ""];
-		const yOrdinalAxis = d3.scaleOrdinal()
-			.domain(yAxisNames)
-			.range(generateMiddleTickPosition(xAxisHeight, height, chartData.axes.yTitles.length));
-
-		svg.append("g")
+		group.append("g")
 			.attr("class", "y-axis")
-			.attr("transform", `translate(${yAxisWidth}, ${-xAxisHeight})`)
-			.call(d3.axisLeft(yOrdinalAxis as any)
-				.ticks(yAxisNames.length)
-				.tickSize(0),
-			)
+			.call(d3.axisLeft(ySpacing))
 			.call((g) => g.select(".domain").remove()) // Get rid of the domain path for the axis
 			.selectAll("text")
 				.style("font-size", chartData.setup.yAxisFontSize || "25px")
-				.call(wrapText, rowSpace);
+				.call(wrapText, ySpacing.bandwidth());
 	}
 
-	// function edgeFoo(start, end, num) {
-	// 	let ticks = [start];
-	// 	const stride = (end - start) / num;
-
-	// 	for(let i = 0, at = start + stride; i < num; ++i, at += stride) {
-	// 		ticks.push(at);
-	// 	}
-
-	// 	return ticks;
-	// }
-
-	// const vertGridLines = [...Array(dimensions.cols + 1).keys()];
-	// const vertGridScale = d3.scaleOrdinal()
-	// 	.domain(vertGridLines as any)
-	// 	.range(edgeFoo(yAxisWidth, width, dimensions.cols));
-	// const vertGridlines = d3.axisTop(vertGridScale as any)
-	// 	.tickFormat("" as any) // FIXME: typing
-	// 	.tickSize(-height);
-
-	// const horGridLines = [...Array(dimensions.rows + 1).keys()];
-	// const horGridScale = d3.scaleOrdinal()
-	// 	.domain(horGridLines as any)
-	// 	.range(edgeFoo(0, height - xAxisHeight, dimensions.rows));
-	// const horGridlines = d3.axisLeft(horGridScale as any)
-	// 	.tickFormat("" as any) // FIXME: typing
-	// 	.tickSize(-width);
-
-	// svg.append("g")
-	// 	.attr("class", "vertgridlines")
-	// 	.style("stroke-dasharray", ("3,3"))
-	// 	.call(vertGridlines);
-
-	// svg.append("g")
-	// 	.attr("class", "horgridlines")
-	// 	.style("stroke-dasharray", ("3,3"))
-	// 	.call(horGridlines as any);
+	const circleGroup = group.append("g");
 
 	function ticked() {
-		const u = svg
-			.selectAll("circle")
-			.data(chartData.data as IMatrixDatum[]);
+		const u = circleGroup
+				.selectAll("circle")
+				.data(chartData.data as IMatrixDatum[]);
 
 		u.enter()
 			.append("circle")
