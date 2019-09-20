@@ -124,7 +124,7 @@ export function buildInKindChart(svgEle?: SVGElement) {
 		height: 1000,
 		width: 1000,
 
-		margins: {top: 20, right: 20, bottom: 80, left: 120},
+		margins: {top: 20, right: 20, bottom: 40, left: 120},
 
 		xAxisFontSize: "10px",
 		yAxisFontSize: "10px",

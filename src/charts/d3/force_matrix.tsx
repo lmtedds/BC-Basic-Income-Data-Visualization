@@ -120,17 +120,14 @@ export function buildMatrixForceChart(chartData: IMatrixChart, svgEle?: SVGEleme
 	const sizeHeight = chartData.setup ? chartData.setup.height : 1000;
 	const sizeWidth = chartData.setup ? chartData.setup.width : 1000;
 	const margin = chartData.setup ? chartData.setup.margins : {top: 20, right: 160, bottom: 35, left: 40};
-	const width = sizeWidth - margin.left - margin.right;
-	const height = sizeHeight - margin.top - margin.bottom;
 
-	const xSpacing = d3.scaleBand().rangeRound([0, width]).padding(0.1).domain(chartData.axes.xTitles);
-	const ySpacing = d3.scaleBand().rangeRound([height, 0]).padding(0.1).domain(chartData.axes.yTitles);
+	const xSpacing = d3.scaleBand().rangeRound([margin.left, sizeWidth  - margin.right]).padding(0.1).domain(chartData.axes.xTitles);
+	const ySpacing = d3.scaleBand().rangeRound([sizeHeight - margin.bottom, margin.top]).padding(0.1).domain(chartData.axes.yTitles);
 
 	const group = svg
 		.attr("viewBox", `0 0 ${sizeWidth} ${sizeHeight}`)
 		.attr("perserveAspectRatio", "xMinYMin meet")
 		.append("g")
-			.attr("transform", "translate(" + margin.left + "," + margin.top + ")")
 			.style("font", "10px sans-serif");
 
 	const simulation = d3.forceSimulation(chartData.data as any)
@@ -152,7 +149,7 @@ export function buildMatrixForceChart(chartData: IMatrixChart, svgEle?: SVGEleme
 	if(dimensions.xAxis) {
 		group.append("g")
 			.attr("class", "x-axis")
-			.attr("transform", "translate(0," + height + ")")
+			.attr("transform", `translate(0, ${sizeHeight - margin.top - margin.bottom})`)
 			.call(d3.axisBottom(xSpacing))
 			.call((g) => g.select(".domain").remove()) // Get rid of the domain path for the axis
 			.selectAll("text")
@@ -164,6 +161,7 @@ export function buildMatrixForceChart(chartData: IMatrixChart, svgEle?: SVGEleme
 	if(dimensions.yAxis) {
 		group.append("g")
 			.attr("class", "y-axis")
+			.attr("transform", `translate(${margin.left}, 0)`)
 			.call(d3.axisLeft(ySpacing))
 			.call((g) => g.select(".domain").remove()) // Get rid of the domain path for the axis
 			.selectAll("text")
@@ -171,7 +169,8 @@ export function buildMatrixForceChart(chartData: IMatrixChart, svgEle?: SVGEleme
 				.call(wrapText, ySpacing.bandwidth());
 	}
 
-	const circleGroup = group.append("g");
+	const circleGroup = group
+		.append("g");
 
 	function ticked() {
 		const u = circleGroup
