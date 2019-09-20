@@ -69,33 +69,7 @@ function interactionsToLinkForceData(data): ILinkForceChart {
 }
 
 export function buildProgramInteractionChart(svgEle?: SVGElement) {
-	// FIXME: Remove
-	const fakeInteractionData2: ILinkForceChart = {
-		nodes: [
-			{
-				id: 0,
-				name: "0",
-				links: [{target: 1}],
-			},
-			{
-				id: 1,
-				name: "1",
-				links: [{target: 2}],
-			},
-			{
-				id: 2,
-				name: "2",
-				links: [{target: 3}, {target: 0}],
-			},
-			{
-				id: 3,
-				name: "3",
-				links: [{target: 0}],
-			},
-		],
-	};
+	const programInteractionData = interactionsToLinkForceData(programInteractions);
 
-	const fakeInteractionData = interactionsToLinkForceData(programInteractions);
-
-	return buildLinkedForceChart(fakeInteractionData, svgEle);
+	return buildLinkedForceChart(programInteractionData, svgEle);
 }
