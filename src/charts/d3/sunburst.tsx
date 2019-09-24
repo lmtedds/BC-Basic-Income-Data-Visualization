@@ -1,6 +1,7 @@
 import * as d3 from "d3";
 
 import { wrapText } from "~charts/d3/text_wrap";
+import { chooseBestContrastColour } from "~utils/colour";
 
 // Based on https://observablehq.com/@d3/zoomable-sunburst
 export function buildZoomableSunburstChart(hierarchicalData, showDepth: number, svgEle?: SVGElement) {
@@ -89,6 +90,7 @@ export function buildZoomableSunburstChart(hierarchicalData, showDepth: number, 
 		.data(root.descendants().slice(1)) // first entry is root (keep everything else)
 		.join("text")
 			.attr("fill-opacity", (d: any) => +labelVisible(d.current)) // FIXME: Type
+			.attr("fill", (d) => chooseBestContrastColour(selectFillColour(d), selectFillOpacity(d)))
 			.attr("transform", (d: any) => labelTransform(d.current)) // FIXME: Type
 			.text((d: any) => d.data.name) // FIXME: Type
 			.call(wrapText, radius);
