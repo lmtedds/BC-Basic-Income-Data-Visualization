@@ -1,4 +1,10 @@
-import * as d3 from "d3";
+import { format as d3format } from "d3-format";
+import { hierarchy, partition as d3partition } from "d3-hierarchy";
+import { interpolate, quantize } from "d3-interpolate";
+import { scaleOrdinal } from "d3-scale";
+import { interpolateRainbow } from "d3-scale-chromatic";
+import { create, select } from "d3-selection";
+import { arc } from "d3-shape";
 
 import { wrapText } from "~charts/d3/text_wrap";
 import { chooseBestContrastColour } from "~utils/colour";
@@ -11,12 +17,12 @@ export function buildZoomableSunburstChart(hierarchicalData, showDepth: number, 
 	const minOpacity = 0.4;
 
 	// Create a new svg node or use an existing one.
-	const svg = svgEle ? d3.select(svgEle) : d3.create("svg");
+	const svg = svgEle ? select(svgEle) : create("svg");
 
 	const width = 1000;
 	const radius = width / (showDepthMax * 2);
 
-	const arc = d3.arc()
+	const arcs = arc()
 		.startAngle((d: any) => d.x0) // FIXME: type
 		.endAngle((d: any) => d.x1) // FIXME: type
 		.padAngle((d: any) => Math.min((d.x1 - d.x0) / 2, 0.005)) // FIXME: type
@@ -26,7 +32,7 @@ export function buildZoomableSunburstChart(hierarchicalData, showDepth: number, 
 
 	// Colours for the sunburst will be either chosen automatically or can be provided in the colour property
 	// of the data. The colour is based on the parent and then the opacity is varied based on the depth.
-	const colour = d3.scaleOrdinal(d3.quantize(d3.interpolateRainbow, hierarchicalData.children.length + 1));
+	const colour = scaleOrdinal(quantize(interpolateRainbow, hierarchicalData.children.length + 1));
 	const selectFillColour = (d: any) => { // FIXME: Type
 		while (d.depth > 1) d = d.parent;
 		return d.data.colour || colour(d.data.name);
@@ -40,11 +46,11 @@ export function buildZoomableSunburstChart(hierarchicalData, showDepth: number, 
 	};
 
 	const partition = (data) => {
-		const rooted = d3.hierarchy(data)
+		const rooted = hierarchy(data)
 			.sum((d) => d.value)
 			.sort((a, b) => b.value - a.value);
 
-		return d3.partition()
+		return d3partition()
 			.size([2 * Math.PI, rooted.height + 1])
 			(rooted);
 	};
@@ -71,14 +77,14 @@ export function buildZoomableSunburstChart(hierarchicalData, showDepth: number, 
 		.join("path")
 			.attr("fill", selectFillColour)
 			.attr("fill-opacity", selectFillOpacity)
-			.attr("d", (d: any) => arc(d.current)); // FIXME: Type
+			.attr("d", (d: any) => arcs(d.current)); // FIXME: Type
 
 	// Add a click handler to anything with children (i.e. not outermost ring)
 	path.filter((d: any) => d.children) // FIXME: Type
 		.style("cursor", "pointer")
 		.on("click", clicked);
 
-	const format = d3.format(",d");
+	const format = d3format(",d");
 	path.append("title")
 		.text((d: any) => `${d.ancestors().map((d2) => d2.data.name).reverse().join("/")}\n${format(d.value)}`); // FIXME: Type
 
@@ -119,12 +125,12 @@ export function buildZoomableSunburstChart(hierarchicalData, showDepth: number, 
 		// the next transition from the desired position.
 		path.transition(t)
 			.tween("data", (d: any) => {
-				const i = d3.interpolate(d.current, d.target);
+				const i = interpolate(d.current, d.target);
 				return (t2) => d.current = i(t2);
 			})
 			.filter(function(d: any) { return +this.getAttribute("fill-opacity") || arcVisible(d.target); } as any) // FIXME: Type
 			.attr("fill-opacity", (d: any) => arcVisible(d.target) ? opacityInterpolate(d) : 0) // FIXME: Type
-			.attrTween("d", (d: any) => () => arc(d.current)); // FIXME: Type
+			.attrTween("d", (d: any) => () => arcs(d.current)); // FIXME: Type
 
 		label.filter(function(d: any) { return +this.getAttribute("fill-opacity") || labelVisible(d.target); } as any) // FIXME: Type
 			.transition(t)

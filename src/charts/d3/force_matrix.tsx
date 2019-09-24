@@ -1,4 +1,9 @@
-import * as d3 from "d3";
+import { axisBottom, axisLeft } from "d3-axis";
+import { forceCollide, forceManyBody, forceSimulation, forceX, forceY } from "d3-force";
+import { quantize } from "d3-interpolate";
+import { scaleBand, scaleOrdinal } from "d3-scale";
+import { interpolateRainbow } from "d3-scale-chromatic";
+import { create, select } from "d3-selection";
 
 import { wrapText } from "~charts/d3/text_wrap";
 
@@ -97,7 +102,7 @@ function chartToDimensions(data: IMatrixChart): IMatrixDimensionalInfo {
 	};
 }
 
-const colour = d3.scaleOrdinal(d3.quantize(d3.interpolateRainbow, 10));
+const colour = scaleOrdinal(quantize(interpolateRainbow, 10));
 const selectFillColour = (d: IMatrixDatum): string => { // FIXME: Type
 	return d.colour || colour(d.radius as any); // FIXME: reasonable colour is based on what?
 };
@@ -105,7 +110,7 @@ const selectFillColour = (d: IMatrixDatum): string => { // FIXME: Type
 // See https://www.d3indepth.com/force-layout/ for some hint
 export function buildMatrixForceChart(chartData: IMatrixChart, svgEle?: SVGElement) {
 	// Create a new svg node or use an existing one.
-	const svg = svgEle ? d3.select(svgEle) : d3.create("svg");
+	const svg = svgEle ? select(svgEle) : create("svg");
 
 	// Set the array into the desired format by adding "quad" properties to each data element.
 	const dimensions = chartToDimensions(chartData);
@@ -124,8 +129,8 @@ export function buildMatrixForceChart(chartData: IMatrixChart, svgEle?: SVGEleme
 	const xAxisFontSize = chartData.setup.xAxisFontSize || "25px";
 	const yAxisFontSize = chartData.setup.yAxisFontSize || "25px";
 
-	const xSpacing = d3.scaleBand().rangeRound([margin.left, sizeWidth  - margin.right]).padding(0.1).domain(chartData.axes.xTitles);
-	const ySpacing = d3.scaleBand().rangeRound([sizeHeight - margin.bottom, margin.top]).padding(0.1).domain(chartData.axes.yTitles);
+	const xSpacing = scaleBand().rangeRound([margin.left, sizeWidth  - margin.right]).padding(0.1).domain(chartData.axes.xTitles);
+	const ySpacing = scaleBand().rangeRound([sizeHeight - margin.bottom, margin.top]).padding(0.1).domain(chartData.axes.yTitles);
 
 	const group = svg
 		.attr("viewBox", `0 0 ${sizeWidth} ${sizeHeight}`)
@@ -133,17 +138,17 @@ export function buildMatrixForceChart(chartData: IMatrixChart, svgEle?: SVGEleme
 		.append("g")
 			.style("font", "10px sans-serif");
 
-	const simulation = d3.forceSimulation(chartData.data as any)
-		.force("charge", d3.forceManyBody().strength(0.5))
-		.force("x", d3.forceX().x(function(d: any) {
+	const simulation = forceSimulation(chartData.data as any)
+		.force("charge", forceManyBody().strength(0.5))
+		.force("x", forceX().x(function(d: any) {
 			// Find the middle of the appropriate column of the matrix to centre this datum.
 			return xSpacing(d.xKey) + xSpacing.bandwidth() / 2;
 		}))
-		.force("y", d3.forceY().y(function(d: IMatrixDatum) {
+		.force("y", forceY().y(function(d: IMatrixDatum) {
 			// Find the middle of the appropriate row of the matrix to centre this datum.
 			return ySpacing(d.yKey) + ySpacing.bandwidth() / 2;
 		}))
-		.force("collision", d3.forceCollide().radius(function(d: IMatrixDatum) {
+		.force("collision", forceCollide().radius(function(d: IMatrixDatum) {
 			return d.radius;
 		}))
 		.on("tick", ticked);    // FIXME: Verify the tick is unregistered when finished
@@ -153,7 +158,7 @@ export function buildMatrixForceChart(chartData: IMatrixChart, svgEle?: SVGEleme
 		group.append("g")
 			.attr("class", "x-axis")
 			.attr("transform", `translate(0, ${sizeHeight - margin.top - margin.bottom})`)
-			.call(d3.axisBottom(xSpacing).tickSize(0))
+			.call(axisBottom(xSpacing).tickSize(0))
 			.call((g) => g.select(".domain").remove()) // Get rid of the domain path for the axis
 			.selectAll("text")
 				.style("font-size", xAxisFontSize)
@@ -164,7 +169,7 @@ export function buildMatrixForceChart(chartData: IMatrixChart, svgEle?: SVGEleme
 		group.append("g")
 			.attr("class", "y-axis")
 			.attr("transform", `translate(${margin.left}, 0)`)
-			.call(d3.axisLeft(ySpacing).tickSize(0))
+			.call(axisLeft(ySpacing).tickSize(0))
 			.call((g) => g.select(".domain").remove()) // Get rid of the domain path for the axis
 			.selectAll("text")
 				.style("font-size", yAxisFontSize)
