@@ -157,7 +157,7 @@ export function buildMatrixForceChart(chartData: IMatrixChart, svgEle?: SVGEleme
 			.call((g) => g.select(".domain").remove()) // Get rid of the domain path for the axis
 			.selectAll("text")
 				.style("font-size", xAxisFontSize)
-				.call(wrapText, xSpacing.bandwidth());
+				.call(wrapText, {width: xSpacing.bandwidth(), height: margin.bottom}, 10, true, false);
 	}
 
 	if(dimensions.yAxis) {
@@ -168,7 +168,7 @@ export function buildMatrixForceChart(chartData: IMatrixChart, svgEle?: SVGEleme
 			.call((g) => g.select(".domain").remove()) // Get rid of the domain path for the axis
 			.selectAll("text")
 				.style("font-size", yAxisFontSize)
-				.call(wrapText, ySpacing.bandwidth()); // FIXME: This isn't right...
+				.call(wrapText, {width: margin.left, height: ySpacing.bandwidth()}, 10, true, true);
 	}
 
 	const circleGroup = group

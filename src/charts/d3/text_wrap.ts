@@ -1,4 +1,4 @@
-import * as d3 from "d3";
+import { select } from "d3-selection";
 
 // Wrap the words so that they fit inside the width provided.
 // FIXME: This works for width but doesn't check height. Very primitive.
@@ -6,9 +6,9 @@ import * as d3 from "d3";
 // FIXME: Doesn't handle cases where can't wrap into bounding space with some kind of fallback.
 // FIXME: Would be better to compute onto an existing canvas before creating all the elements.
 // FIXME: May offset from center height.
-export function wrapText(text, maxTextWidth) {
+function wrapTextTspan(text, maxTextWidth) {
 	text.each(function() {
-		const textEle = d3.select(this);
+		const textEle = select(this);
 		const words = textEle.text().split(/\s+/).reverse();
 		const lineHeight = 1.1; // ems
 		const y = textEle.attr("y");
@@ -42,3 +42,48 @@ export function wrapText(text, maxTextWidth) {
 		}
 	});
 }
+
+// https://github.com/vijithassar/d3-textwrap/blob/master/src/textwrap.js
+function wrapTextForeignObject(texts, dimensions, padding: number = 0, hCenter: boolean = true, vCenter: boolean = true): void {
+	texts.each(function() {
+		const text = select(this);
+		const content = text.text(); // can be only 1 text element that we will replace
+		const y = text.attr("y");
+		const width = dimensions.width - 2 * padding;
+		const height = dimensions.height - 2 * padding;
+
+		// remove the text node and replace with a foreign object
+		const parent = select(text.node().parentNode);
+		const foreignobject = parent.append("foreignObject");
+		foreignobject
+			.attr("requiredFeatures", "http://www.w3.org/TR/SVG11/feature#Extensibility")
+			.attr("width", width)
+			.attr("height", height)
+
+			.attr("transform", text.attr("transform")) // FIXME: need a generic solution
+
+			.attr("x", hCenter ? (-width / 2) : 0) // FIXME: Non center case
+			.attr("y", vCenter ? (-height / 2) : 0); // FIXME: Non center case
+			// .attr('x', 0) // FIXME: Non center case
+			// .attr('y', y); // FIXME: Non center case
+		text.remove();
+
+		// insert an HTML div
+		const div = foreignobject
+			.append("xhtml:div");
+
+		// set div to same dimensions as foreign object
+		div
+			.attr("style", `height: ${height}px; width: ${width}px;`)
+			.attr("class", "wrap-outer");
+
+		const p = div
+			.append("xhtml:p")
+				.attr("class", "wrap-inner")
+				.html(content);
+	});
+}
+
+// export const wrapText = typeof SVGForeignObjectElement === 'undefined' ? wrapTextTspan : wrapTextForeignObject;
+// export const wrapText = wrapTextTspan;
+export const wrapText = wrapTextForeignObject;

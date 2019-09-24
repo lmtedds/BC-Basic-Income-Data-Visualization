@@ -1,1 +1,11 @@
+.wrap-outer {
+    width: 5em;
+    height: 15em;
+    display: table; 
+}
 
+.wrap-inner {
+    display: table-cell; 
+    vertical-align: middle; 
+    text-align: center; 
+}

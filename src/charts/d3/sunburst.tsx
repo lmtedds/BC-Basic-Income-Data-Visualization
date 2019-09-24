@@ -93,7 +93,7 @@ export function buildZoomableSunburstChart(hierarchicalData, showDepth: number, 
 			.attr("fill", (d) => chooseBestContrastColour(selectFillColour(d), selectFillOpacity(d)))
 			.attr("transform", (d: any) => labelTransform(d.current)) // FIXME: Type
 			.text((d: any) => d.data.name) // FIXME: Type
-			.call(wrapText, radius);
+			.call(wrapText, {width: radius, height: 100}, 10, true, true); // FIXME: height is wrong
 
 	const parent = g.append("circle")
 			.datum(root)
