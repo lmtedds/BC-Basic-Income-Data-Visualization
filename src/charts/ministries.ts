@@ -10,6 +10,7 @@ const administeredBy = "Administered By:";
 const showName = "Show Name";
 const programName = "Program";
 const programSize = "$ amount of benefits (BC only)";
+const numReceipientsBcOnly = "Number of Recipients (BC only)";
 
 // Older version of data looks like this
 interface IMinistry20190824Version {
@@ -29,7 +30,7 @@ interface IMinistry {
 	[levelOfGovernment]: string;
 	[administeredBy]: string;
 	[responsibleMinistry]: string;
-	"Number of Recipients (BC only)": string; // string representation of a number
+	[numReceipientsBcOnly]: string; // string representation of a number
 }
 
 interface ID3Hierarchy {
