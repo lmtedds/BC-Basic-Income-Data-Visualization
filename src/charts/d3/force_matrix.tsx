@@ -121,6 +121,9 @@ export function buildMatrixForceChart(chartData: IMatrixChart, svgEle?: SVGEleme
 	const sizeWidth = chartData.setup ? chartData.setup.width : 1000;
 	const margin = chartData.setup ? chartData.setup.margins : {top: 20, right: 160, bottom: 35, left: 40};
 
+	const xAxisFontSize = chartData.setup.xAxisFontSize || "25px";
+	const yAxisFontSize = chartData.setup.yAxisFontSize || "25px";
+
 	const xSpacing = d3.scaleBand().rangeRound([margin.left, sizeWidth  - margin.right]).padding(0.1).domain(chartData.axes.xTitles);
 	const ySpacing = d3.scaleBand().rangeRound([sizeHeight - margin.bottom, margin.top]).padding(0.1).domain(chartData.axes.yTitles);
 
@@ -150,23 +153,22 @@ export function buildMatrixForceChart(chartData: IMatrixChart, svgEle?: SVGEleme
 		group.append("g")
 			.attr("class", "x-axis")
 			.attr("transform", `translate(0, ${sizeHeight - margin.top - margin.bottom})`)
-			.call(d3.axisBottom(xSpacing))
+			.call(d3.axisBottom(xSpacing).tickSize(0))
 			.call((g) => g.select(".domain").remove()) // Get rid of the domain path for the axis
 			.selectAll("text")
-				.style("font-size", chartData.setup.xAxisFontSize || "25px")
+				.style("font-size", xAxisFontSize)
 				.call(wrapText, xSpacing.bandwidth());
 	}
 
-	// FIXME: For axes, should be using scaleBand rather than strange extra adding of stuff
 	if(dimensions.yAxis) {
 		group.append("g")
 			.attr("class", "y-axis")
 			.attr("transform", `translate(${margin.left}, 0)`)
-			.call(d3.axisLeft(ySpacing))
+			.call(d3.axisLeft(ySpacing).tickSize(0))
 			.call((g) => g.select(".domain").remove()) // Get rid of the domain path for the axis
 			.selectAll("text")
-				.style("font-size", chartData.setup.yAxisFontSize || "25px")
-				.call(wrapText, ySpacing.bandwidth());
+				.style("font-size", yAxisFontSize)
+				.call(wrapText, ySpacing.bandwidth()); // FIXME: This isn't right...
 	}
 
 	const circleGroup = group
