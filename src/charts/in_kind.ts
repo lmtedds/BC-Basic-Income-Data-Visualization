@@ -1,6 +1,6 @@
 import { data as inKindData } from "~data/20190824_cashInKind";
 
-import { buildMatrixForceChart, IMatrixAxes, IMatrixChart } from "~charts/d3/force_matrix";
+import { buildMatrixForceChart, IMatrixChart } from "~charts/d3/force_matrix";
 
 const program = "Program";
 const programType = "Program Type/Target";
