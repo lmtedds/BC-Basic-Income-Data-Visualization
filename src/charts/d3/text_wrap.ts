@@ -81,7 +81,7 @@ function wrapTextForeignObject(texts: any, dimensions: IWrapTextDimenions): void
 		const width = dimensions.width - 2 * padding;
 		const height = dimensions.height - 2 * padding;
 
-		// remove the text node and replace with a foreign object
+		// Create a foreign object
 		const parent = select(text.node().parentNode);
 		const foreignobject = parent.append("foreignObject");
 		foreignobject
@@ -93,7 +93,6 @@ function wrapTextForeignObject(texts: any, dimensions: IWrapTextDimenions): void
 
 			.attr("x", hCenter ? (-width / 2) : 0)
 			.attr("y", vCenter ? (-height / 2) : 0);
-		text.remove();
 
 		// insert an HTML div
 		const div = foreignobject
@@ -101,13 +100,17 @@ function wrapTextForeignObject(texts: any, dimensions: IWrapTextDimenions): void
 
 		// set div to same dimensions as foreign object
 		div
-			.attr("style", `height: ${height}px; width: ${width}px;`)
+			// FIXME: need a generic solution to bring across style/attrs
+			.attr("style", `height: ${height}px; width: ${width}px; ${text.node().style.cssText}`)
 			.attr("class", "text-wrap-outer");
 
 		const p = div
 			.append("xhtml:p")
 				.attr("class", `text-wrap-inner ${JustEnumToCss[hJust]}${vJust ? " text-wrap-jvert" : ""}`)
 				.html(content);
+
+		// Remove the text element
+		text.remove();
 	});
 }
 
