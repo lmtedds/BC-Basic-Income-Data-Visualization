@@ -1,0 +1,23 @@
+.text-wrap-outer {
+    display: table; 
+}
+
+.text-wrap-inner {
+    display: table-cell; 
+}
+
+.text-wrap-jvert {
+    vertical-align: middle;
+}
+
+.text-wrap-jcenter {
+    text-align: center; 
+}
+
+.text-wrap-jleft {
+    text-align: left; 
+}
+
+.text-wrap-jright {
+    text-align: right; 
+}

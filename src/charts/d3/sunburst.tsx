@@ -6,7 +6,7 @@ import { interpolateRainbow } from "d3-scale-chromatic";
 import { create, select } from "d3-selection";
 import { arc } from "d3-shape";
 
-import { wrapText } from "~charts/d3/text_wrap";
+import { IWrapTextDimensionsJustification, wrapText } from "~charts/d3/text_wrap";
 import { chooseBestContrastColour } from "~utils/colour";
 
 // Based on https://observablehq.com/@d3/zoomable-sunburst
@@ -99,7 +99,15 @@ export function buildZoomableSunburstChart(hierarchicalData, showDepth: number, 
 			.attr("fill", (d) => chooseBestContrastColour(selectFillColour(d), selectFillOpacity(d)))
 			.attr("transform", (d: any) => labelTransform(d.current)) // FIXME: Type
 			.text((d: any) => d.data.name) // FIXME: Type
-			.call(wrapText, {width: radius, height: 100}, 10, true, true); // FIXME: height is wrong
+			.call(wrapText, {
+				width: radius,
+				height: 50, // FIXME: height is wrong
+				padding: 0,
+				vCenter: false,
+				hCenter: true,
+				vJust: false,
+				hJust: IWrapTextDimensionsJustification.CENTER,
+			});
 
 	const parent = g.append("circle")
 			.datum(root)

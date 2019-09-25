@@ -1,11 +1,11 @@
-import { axisBottom, axisLeft } from "d3-axis";
+import { axisBottom, axisLeft, axisTop } from "d3-axis";
 import { forceCollide, forceManyBody, forceSimulation, forceX, forceY } from "d3-force";
 import { quantize } from "d3-interpolate";
 import { scaleBand, scaleOrdinal } from "d3-scale";
 import { interpolateRainbow } from "d3-scale-chromatic";
 import { create, select } from "d3-selection";
 
-import { wrapText } from "~charts/d3/text_wrap";
+import { IWrapTextDimensionsJustification, wrapText } from "~charts/d3/text_wrap";
 
 interface IMatrixDimensionalInfo {
 	xAxis: boolean;
@@ -153,27 +153,48 @@ export function buildMatrixForceChart(chartData: IMatrixChart, svgEle?: SVGEleme
 		}))
 		.on("tick", ticked);    // FIXME: Verify the tick is unregistered when finished
 
+	const xAxisOnTop = true;
+	const axisFn = xAxisOnTop ? axisTop : axisBottom;
+
 	// Optionally add axes.
 	if(dimensions.xAxis) {
+		console.log(`inner tick ${axisFn(xSpacing).tickSizeInner()} outer: ${axisFn(xSpacing).tickSizeOuter()}`);
 		group.append("g")
 			.attr("class", "x-axis")
-			.attr("transform", `translate(0, ${sizeHeight - margin.top - margin.bottom})`)
-			.call(axisBottom(xSpacing).tickSize(0))
+			.attr("transform", `translate(0, ${xAxisOnTop ? margin.top : (sizeHeight - margin.top - margin.bottom)})`)
+			.call(axisFn(xSpacing)) // Top or bottom axis with no tick marks
 			.call((g) => g.select(".domain").remove()) // Get rid of the domain path for the axis
+			.call((g) => g.selectAll("line").remove()) // Get rid of the ticks lines for the axis
 			.selectAll("text")
 				.style("font-size", xAxisFontSize)
-				.call(wrapText, {width: xSpacing.bandwidth(), height: margin.bottom}, 10, true, false);
+				.call(wrapText, {
+					width: xSpacing.bandwidth(),
+					height: xAxisOnTop ? margin.top : margin.bottom,
+					padding: 5,
+					vCenter: false,
+					hCenter: true,
+					vJust: false,
+					hJust: IWrapTextDimensionsJustification.CENTER,
+				});
 	}
 
 	if(dimensions.yAxis) {
 		group.append("g")
 			.attr("class", "y-axis")
-			.attr("transform", `translate(${margin.left}, 0)`)
-			.call(axisLeft(ySpacing).tickSize(0))
+			.call(axisLeft(ySpacing)) // Left axis with no tick marks
 			.call((g) => g.select(".domain").remove()) // Get rid of the domain path for the axis
+			.call((g) => g.selectAll("line").remove()) // Get rid of the ticks for the axis
 			.selectAll("text")
 				.style("font-size", yAxisFontSize)
-				.call(wrapText, {width: margin.left, height: ySpacing.bandwidth()}, 10, true, true);
+				.call(wrapText, {
+					width: margin.left,
+					height: ySpacing.bandwidth(),
+					padding: 0,
+					vCenter: true,
+					hCenter: false,
+					vJust: true,
+					hJust: IWrapTextDimensionsJustification.RIGHT,
+				});
 	}
 
 	const circleGroup = group

@@ -1,5 +1,7 @@
 import { select } from "d3-selection";
 
+import "./text_wrap.scss";
+
 // Wrap the words so that they fit inside the width provided.
 // FIXME: This works for width but doesn't check height. Very primitive.
 // FIXME: Doesn't work with shapes (i.e. varying widths depending on height).
@@ -43,12 +45,39 @@ function wrapTextTspan(text, maxTextWidth) {
 	});
 }
 
-// https://github.com/vijithassar/d3-textwrap/blob/master/src/textwrap.js
-function wrapTextForeignObject(texts, dimensions, padding: number = 0, hCenter: boolean = true, vCenter: boolean = true): void {
+// See https://github.com/vijithassar/d3-textwrap/blob/master/src/textwrap.js for inspiration
+export const enum IWrapTextDimensionsJustification {
+	LEFT = 0,
+	CENTER = 1,
+	RIGHT = 2,
+}
+
+const JustEnumToCss = {
+	[IWrapTextDimensionsJustification.LEFT]: "text-wrap-jleft",
+	[IWrapTextDimensionsJustification.CENTER]: "text-wrap-jcenter",
+	[IWrapTextDimensionsJustification.RIGHT]: "text-wrap-jright",
+};
+
+export interface IWrapTextDimenions {
+	width: number;
+	height: number;
+	padding?: number;
+	hCenter?: boolean; // rect positioning
+	vCenter?: boolean; // rect positioning
+	hJust?: IWrapTextDimensionsJustification;
+	vJust?: boolean;
+}
+
+function wrapTextForeignObject(texts: any, dimensions: IWrapTextDimenions): void {
 	texts.each(function() {
 		const text = select(this);
 		const content = text.text(); // can be only 1 text element that we will replace
 		const y = text.attr("y");
+		const padding = dimensions.padding || 0;
+		const hCenter = dimensions.hCenter !== undefined ? dimensions.hCenter : false;
+		const vCenter = dimensions.vCenter !== undefined ? dimensions.vCenter : false;
+		const hJust = dimensions.hJust !== undefined ? dimensions.hJust : IWrapTextDimensionsJustification.LEFT;
+		const vJust = dimensions.vJust !== undefined ? dimensions.vJust : false;
 		const width = dimensions.width - 2 * padding;
 		const height = dimensions.height - 2 * padding;
 
@@ -60,12 +89,10 @@ function wrapTextForeignObject(texts, dimensions, padding: number = 0, hCenter: 
 			.attr("width", width)
 			.attr("height", height)
 
-			.attr("transform", text.attr("transform")) // FIXME: need a generic solution
+			.attr("transform", text.attr("transform")) // FIXME: need a generic solution to bring across attrs
 
-			.attr("x", hCenter ? (-width / 2) : 0) // FIXME: Non center case
-			.attr("y", vCenter ? (-height / 2) : 0); // FIXME: Non center case
-			// .attr('x', 0) // FIXME: Non center case
-			// .attr('y', y); // FIXME: Non center case
+			.attr("x", hCenter ? (-width / 2) : 0)
+			.attr("y", vCenter ? (-height / 2) : 0);
 		text.remove();
 
 		// insert an HTML div
@@ -75,11 +102,11 @@ function wrapTextForeignObject(texts, dimensions, padding: number = 0, hCenter: 
 		// set div to same dimensions as foreign object
 		div
 			.attr("style", `height: ${height}px; width: ${width}px;`)
-			.attr("class", "wrap-outer");
+			.attr("class", "text-wrap-outer");
 
 		const p = div
 			.append("xhtml:p")
-				.attr("class", "wrap-inner")
+				.attr("class", `text-wrap-inner ${JustEnumToCss[hJust]}${vJust ? " text-wrap-jvert" : ""}`)
 				.html(content);
 	});
 }
