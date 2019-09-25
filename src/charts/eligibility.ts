@@ -92,7 +92,7 @@ function dataToIntermediate(data: IEligibility[]): IEligibilityIntermediateData 
 // x axis (on top) is “Program Type/Target” Subdivide by “Category”.
 // y axis is “Eligibility Category”
 // Size of circle could be “Importance Ranking” or they could all be the same size.
-function convertData(data): IMatrixChart {
+function convertData(data: IEligibility[]): IMatrixChart {
 	const intermediate = dataToIntermediate(eligibilityData);
 
 	const xTitles = Array.from(intermediate.xTitles);
@@ -111,7 +111,7 @@ function convertData(data): IMatrixChart {
 								xKey: xKey,
 								yKey: yKey,
 								data: {program: entry[program]},
-								radius: 2, // FIXME: placeholder
+								radius: Number(entry[importance]) * 2,
 							};
 						}),
 					);
