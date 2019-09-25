@@ -1,5 +1,6 @@
 import { app, Component } from "apprun";
 
+import { buildApplicationChart } from "~charts/application";
 import { buildEligibilityChart } from "~charts/eligibility";
 import { buildInKindChart } from "~charts/in_kind";
 import { buildMinistryComplexityCircleChart, buildMinistryComplexitySunburstChart } from "~charts/ministries";
@@ -16,6 +17,7 @@ export default class ChartsComponent extends Component {
 		[CHARTS_PAGE_URL]: (state) => state,
 	};
 
+	private readonly applicationSvgEle: SVGElement;
 	private readonly eligibilitySvgEle: SVGElement;
 	private readonly inKindSvgEle: SVGElement;
 	private readonly interactionLinkSvgEle: SVGElement;
@@ -25,6 +27,7 @@ export default class ChartsComponent extends Component {
 	constructor() {
 		super();
 
+		this.applicationSvgEle = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 		this.eligibilitySvgEle = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 		this.inKindSvgEle = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 		this.interactionLinkSvgEle = document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -33,6 +36,8 @@ export default class ChartsComponent extends Component {
 	}
 
 	public view = (state) => {
+		const applicationChart = buildApplicationChart(this.applicationSvgEle);
+
 		const eligibilityChart = buildEligibilityChart(this.eligibilitySvgEle);
 
 		const matrixChart = buildInKindChart(this.inKindSvgEle); // Yes, this really is an SVG element
@@ -52,6 +57,10 @@ export default class ChartsComponent extends Component {
 				<div className="img-fluid col-xl">
 					<h2 class="text-center">Eligibility</h2>
 					{this.eligibilitySvgEle}
+				</div>
+				<div className="img-fluid col-xl">
+					<h2 class="text-center">Application</h2>
+					{this.applicationSvgEle}
 				</div>
 			</div>
 			<div class="row">
