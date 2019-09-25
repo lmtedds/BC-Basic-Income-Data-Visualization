@@ -45,12 +45,12 @@ export default class ChartsComponent extends Component {
 		return <>
 			<h1>Ministry Complexity Chart - NOT FINAL</h1>
 			<div class="row">
-				<div className="img-fluid col-6">{this.matrixSvgEle}</div>
-				<div className="img-fluid col-6">{this.linkSvgEle}</div>
+				<div className="img-fluid col-xl">{this.matrixSvgEle}</div>
+				<div className="img-fluid col-xl">{this.linkSvgEle}</div>
 			</div>
 			<div class="row">
-				<div className="img-fluid col-6">{this.circleSvgEle}</div>
-				<div className="img-fluid col-6">{this.sunburstSvgEle}</div>
+				<div className="img-fluid col-xl">{this.circleSvgEle}</div>
+				<div className="img-fluid col-xl">{this.sunburstSvgEle}</div>
 			</div>
 		</>;
 	}
