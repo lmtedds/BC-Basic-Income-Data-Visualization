@@ -75,7 +75,7 @@ function dataToIntermediate(data: IInKind[]): IInKindIntermediateData {
 	};
 }
 
-function convertData(data): IMatrixChart {
+function convertData(data: IInKind[]): IMatrixChart {
 	const intermediate = dataToIntermediate(data);
 
 	const xTitles = Array.from(intermediate.xTitles);
