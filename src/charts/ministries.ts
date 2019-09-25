@@ -1,7 +1,7 @@
 // This is where typescript/javascript starts from. A reference to it is automatically added to index.html (via webpack).
 import { data as ministryData } from "~data/20190913_ministries";
 
-import { buildZoomablePackedCircleChart } from "~charts/d3/circle";
+import { buildZoomablePackedCircleChart, ID3Hierarchy } from "~charts/d3/circle";
 import { buildZoomableSunburstChart } from "~charts/d3/sunburst";
 
 const levelOfGovernment = "Level of Government";
@@ -31,15 +31,6 @@ interface IMinistry {
 	[administeredBy]: string;
 	[responsibleMinistry]: string;
 	[numReceipientsBcOnly]: string; // string representation of a number
-}
-
-interface ID3Hierarchy {
-	ministry: string;
-	showName: boolean;
-	value: number;
-
-	program?: string;
-	children?: this[];
 }
 
 function listToSortedTree(array, sortKeys: string[]) {
@@ -72,7 +63,7 @@ function listToSortedTree(array, sortKeys: string[]) {
 }
 
 // FIXME: value should be pulled out and moved to a chart type specific function
-function treeToHierarchy(tree, obj: any = {ministry: "root", showName: false, value: 0}): any {
+function treeToHierarchy(tree, obj: any = {ministry: "root", showName: false, value: 0, name: "root"}): any {
 	if(Array.isArray(tree)) {
 		return tree.map((ele: IMinistry) => {
 			return {
@@ -83,6 +74,7 @@ function treeToHierarchy(tree, obj: any = {ministry: "root", showName: false, va
 				// value: ele[programSize] ? Number(ele[programSize]) : 1,
 				value: ele[programSize] ? Math.log2(Number(ele[programSize])) : 1,
 				showName: ele[showName] ? (ele[showName].toLowerCase() === "true") : false,
+				name: ele[programName] || ele[administeredBy] || ele[responsibleMinistry],
 			};
 		});
 	}
@@ -92,7 +84,7 @@ function treeToHierarchy(tree, obj: any = {ministry: "root", showName: false, va
 			obj.children = [];
 		}
 
-		const sub = treeToHierarchy(tree[key], {ministry: key, value: 1, showName: true});
+		const sub = treeToHierarchy(tree[key], {ministry: key, value: 1, showName: true, name: key});
 		if(Array.isArray(sub)) {
 			obj.children = obj.children.concat(sub);
 		} else {
@@ -106,7 +98,7 @@ function treeToHierarchy(tree, obj: any = {ministry: "root", showName: false, va
 export function buildMinistryComplexityCircleChart(svgEle?: SVGElement) {
 	const sortKeys = [levelOfGovernment, responsibleMinistry, administeredBy];
 	const sortData = listToSortedTree(ministryData, sortKeys);
-	const hierData = treeToHierarchy(sortData);
+	const hierData: ID3Hierarchy = treeToHierarchy(sortData);
 	// console.log(`hier: ${JSON.stringify(hierData, null, 4)}`);
 
 	return buildZoomablePackedCircleChart(hierData, svgEle);
@@ -115,7 +107,7 @@ export function buildMinistryComplexityCircleChart(svgEle?: SVGElement) {
 export function buildMinistryComplexitySunburstChart(svgEle?: SVGElement) {
 	const sortKeys = [levelOfGovernment, responsibleMinistry, administeredBy];
 	const sortData = listToSortedTree(ministryData, sortKeys);
-	const hierData = treeToHierarchy(sortData);
+	const hierData: ID3Hierarchy = treeToHierarchy(sortData);
 	// console.log(`hier: ${JSON.stringify(hierData, null, 4)}`);
 
 	return buildZoomableSunburstChart(hierData, 3, svgEle);

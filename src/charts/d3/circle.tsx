@@ -1,7 +1,18 @@
 import * as d3 from "d3";
 
+export interface ID3Hierarchy {
+	name: string;
+	showName: boolean;
+	value: number;
+
+	ministry: string;
+	program?: string;
+
+	children?: this[];
+}
+
 // Adapted from https://observablehq.com/@d3/zoomable-circle-packing
-export function buildZoomablePackedCircleChart(hierarchicalData, svgEle?: SVGElement) {
+export function buildZoomablePackedCircleChart(hierarchicalData: ID3Hierarchy, svgEle?: SVGElement) {
 	// Create a new svg node or use an existing one.
 	const svg = svgEle ? d3.select(svgEle) : d3.create("svg");
 
@@ -60,7 +71,9 @@ export function buildZoomablePackedCircleChart(hierarchicalData, svgEle?: SVGEle
 		.join("text")
 		.style("fill-opacity", (d) => d.parent === root ? 1 : 0)
 		.style("display", (d) => d.parent === root ? "inline" : "none")
-		.text((d: any) => d.data.showName ? d.data.ministry : null);
+		.text((d: any) => {
+			return d.data.showName ? d.data.name : null;
+		});
 
 	zoomTo([root.x, root.y, root.r * 2]);
 

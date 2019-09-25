@@ -9,8 +9,19 @@ import { arc } from "d3-shape";
 import { IWrapTextDimensionsJustification, wrapText } from "~charts/d3/text_wrap";
 import { chooseBestContrastColour } from "~utils/colour";
 
+export interface ID3Hierarchy {
+	name: string;
+	showName: boolean;
+	value: number;
+
+	ministry: string;
+	program?: string;
+
+	children?: this[];
+}
+
 // Based on https://observablehq.com/@d3/zoomable-sunburst
-export function buildZoomableSunburstChart(hierarchicalData, showDepth: number, svgEle?: SVGElement) {
+export function buildZoomableSunburstChart(hierarchicalData: ID3Hierarchy, showDepth: number, svgEle?: SVGElement) {
 	const showDepthMin = 1;
 	const showDepthMax = showDepthMin + showDepth;
 	const maxOpacity = 0.8;
@@ -58,10 +69,9 @@ export function buildZoomableSunburstChart(hierarchicalData, showDepth: number, 
 	const root = partition(hierarchicalData);
 
 	// Setup properties required for sunburst
-	root.each((d: any) => {
+	root.each((d: any) => {  // FIXME: Type
 		d.current = d;
-		d.data.name = d.data.program || d.data.admin || d.data.ministry; // FIXME: This should be in calling function
-	}); // FIXME: Type
+	});
 
 	svg
 		.attr("viewBox", `0 0 ${width} ${width}`)
