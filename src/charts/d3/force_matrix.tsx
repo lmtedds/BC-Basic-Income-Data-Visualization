@@ -170,7 +170,7 @@ export function buildMatrixForceChart(chartData: IMatrixChart, svgEle?: SVGEleme
 				.call(wrapText, {
 					width: xSpacing.bandwidth(),
 					height: xAxisOnTop ? margin.top : margin.bottom,
-					padding: 5,
+					padding: 0,
 					vCenter: false,
 					hCenter: true,
 					vJust: false,
