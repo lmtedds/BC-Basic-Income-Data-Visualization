@@ -79,7 +79,7 @@ function dataToIntermediate(data: IEligibility[]): IEligibilityIntermediateData 
 		}
 	});
 
-	console.log(`program missing type, eligibility, or category: ${missing}`);
+	console.log(`eligibility program missing type, eligibility, or category: ${missing}`);
 
 	return {
 		xTitles: xTitlesSet,

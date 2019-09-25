@@ -65,7 +65,7 @@ function dataToIntermediate(data: IInKind[]): IInKindIntermediateData {
 		}
 	});
 
-	console.log(`program missing spectrum or type: ${missing}`);
+	console.log(`in kind program missing spectrum or type: ${missing}`);
 
 	return {
 		xTitles: xTitlesSet,
