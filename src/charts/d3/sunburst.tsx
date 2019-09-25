@@ -21,7 +21,12 @@ export interface ID3Hierarchy {
 }
 
 // Based on https://observablehq.com/@d3/zoomable-sunburst
-export function buildZoomableSunburstChart(hierarchicalData: ID3Hierarchy, showDepth: number, svgEle?: SVGElement) {
+export function buildZoomableSunburstChart(
+	hierarchicalData: ID3Hierarchy,
+	showDepth: number,
+	honourShowName: boolean,
+	svgEle?: SVGElement) {
+
 	const showDepthMin = 1;
 	const showDepthMax = showDepthMin + showDepth;
 	const maxOpacity = 0.8;
@@ -108,7 +113,9 @@ export function buildZoomableSunburstChart(hierarchicalData: ID3Hierarchy, showD
 			.attr("fill-opacity", (d: any) => +labelVisible(d.current)) // FIXME: Type
 			.attr("fill", (d) => chooseBestContrastColour(selectFillColour(d), selectFillOpacity(d)))
 			.attr("transform", (d: any) => labelTransform(d.current)) // FIXME: Type
-			.text((d: any) => d.data.name) // FIXME: Type
+			.text((d: any) => { // FIXME: Type
+				return honourShowName ? (d.data.showName ? d.data.name : null) : d.data.name;
+			})
 			.call(wrapText, {
 				width: radius,
 				height: 50, // FIXME: height is wrong

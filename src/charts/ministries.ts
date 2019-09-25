@@ -110,5 +110,5 @@ export function buildMinistryComplexitySunburstChart(svgEle?: SVGElement) {
 	const hierData: ID3Hierarchy = treeToHierarchy(sortData);
 	// console.log(`hier: ${JSON.stringify(hierData, null, 4)}`);
 
-	return buildZoomableSunburstChart(hierData, 3, svgEle);
+	return buildZoomableSunburstChart(hierData, 3, false, svgEle);
 }
