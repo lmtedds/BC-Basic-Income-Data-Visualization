@@ -114,7 +114,7 @@ export function buildMatrixForceChart(chartData: IMatrixChart, svgEle?: SVGEleme
 
 	// Set the array into the desired format by adding "quad" properties to each data element.
 	const dimensions = chartToDimensions(chartData);
-	console.log(`${JSON.stringify(dimensions)}`);
+	// console.log(`${JSON.stringify(dimensions)}`);
 
 	// Flatten datum array if required.
 	if(Array.isArray(chartData.data) && Array.isArray(chartData.data[0])) {
@@ -158,7 +158,6 @@ export function buildMatrixForceChart(chartData: IMatrixChart, svgEle?: SVGEleme
 
 	// Optionally add axes.
 	if(dimensions.xAxis) {
-		console.log(`inner tick ${axisFn(xSpacing).tickSizeInner()} outer: ${axisFn(xSpacing).tickSizeOuter()}`);
 		group.append("g")
 			.attr("class", "x-axis")
 			.attr("transform", `translate(0, ${xAxisOnTop ? margin.top : (sizeHeight - margin.top - margin.bottom)})`)
