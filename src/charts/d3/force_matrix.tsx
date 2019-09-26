@@ -47,6 +47,8 @@ export interface IMatrixSetup {
 	yAxisFontSize: string;
 
 	renderMethod: (chartData: IMatrixChart, quadrantGroup: Selection<SVGGElement, unknown, null, undefined>) => void;
+
+	simulateIterationsAtStart?: number;
 }
 
 export interface IMatrixChart {
@@ -206,8 +208,21 @@ export function buildMatrixForceChart(chartData: IMatrixChart, svgEle?: SVGEleme
 		}))
 		.force("collision", forceCollide().radius(function(d: IMatrixDatum) {
 			return d.radius;
-		}))
-		.on("tick", simulationUpdate);    // FIXME: Verify the tick is unregistered when finished
+		}));    // FIXME: Verify the tick is unregistered when finished
+
+	// Run a fixed number simulation steps (potentially prior to rendering) or until
+	// d3 simulation's alpha < alphaMin is reached?
+	if(chartData.setup && chartData.setup.simulateIterationsAtStart ) {
+		simulation
+			.stop()
+			.tick(chartData.setup.simulateIterationsAtStart);
+
+		simulationUpdate();
+	} else {
+		simulation
+			.on("tick", simulationUpdate)
+			.on("end", () => { simulation.stop(); }); // Done based on alpha decay.
+	}
 
 	return svg.node();
 }

@@ -11,8 +11,13 @@ export interface ILinkForceChartNode {
 	links: ILinkForceChartLink[];
 }
 
+export interface ILinkForceSetup {
+	simulateIterationsAtStart?: number;
+}
+
 export interface ILinkForceChart {
 	nodes: ILinkForceChartNode[];
+	setup?: ILinkForceSetup;
 }
 
 function getLinks(data: ILinkForceChart) {
@@ -56,8 +61,21 @@ export function buildLinkedForceChart(chartData, svgEle?: SVGElement) {
 	const simulation = d3.forceSimulation(nodes as any)
 		.force("charge", d3.forceManyBody().strength(-10))
 		.force("center", d3.forceCenter(width / 2, height / 2))
-		.force("link", d3.forceLink(links))
-		.on("tick", ticked);
+		.force("link", d3.forceLink(links));
+
+	// Run a fixed number simulation steps (potentially prior to rendering) or until
+	// d3 simulation's alpha < alphaMin is reached?
+	if(chartData.setup && chartData.setup.simulateIterationsAtStart ) {
+		simulation
+			.stop()
+			.tick(chartData.setup.simulateIterationsAtStart);
+
+		ticked();
+	} else {
+		simulation
+			.on("tick", ticked)
+			.on("end", () => { simulation.stop(); }); // Done based on alpha decay.
+	}
 
 	function updateLinks() {
 		const u = d3.select(".links")
