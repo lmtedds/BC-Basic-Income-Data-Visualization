@@ -5,7 +5,7 @@ import { scaleBand, scaleOrdinal } from "d3-scale";
 import { interpolateRainbow } from "d3-scale-chromatic";
 import { create, select } from "d3-selection";
 
-import { IWrapTextDimensionsJustification, wrapText } from "~charts/d3/text_wrap";
+import { IWrapTextDimensionsJustification, wrapTextForeignObject } from "~charts/d3/text_wrap";
 
 interface IMatrixDimensionalInfo {
 	xAxis: boolean;
@@ -129,6 +129,9 @@ export function buildMatrixForceChart(chartData: IMatrixChart, svgEle?: SVGEleme
 	const xAxisFontSize = chartData.setup.xAxisFontSize || "25px";
 	const yAxisFontSize = chartData.setup.yAxisFontSize || "25px";
 
+	const fontSize = "10px";
+	const fontFace = "sans-serif";
+
 	const xSpacing = scaleBand().rangeRound([margin.left, sizeWidth  - margin.right]).padding(0.1).domain(chartData.axes.xTitles);
 	const ySpacing = scaleBand().rangeRound([sizeHeight - margin.bottom, margin.top]).padding(0.1).domain(chartData.axes.yTitles);
 
@@ -136,7 +139,7 @@ export function buildMatrixForceChart(chartData: IMatrixChart, svgEle?: SVGEleme
 		.attr("viewBox", `0 0 ${sizeWidth} ${sizeHeight}`)
 		.attr("perserveAspectRatio", "xMinYMin meet")
 		.append("g")
-			.style("font", "10px sans-serif");
+			.style("font", `${fontSize} ${fontFace}`);
 
 	const simulation = forceSimulation(chartData.data as any)
 		.force("charge", forceManyBody().strength(0.5))
@@ -166,7 +169,7 @@ export function buildMatrixForceChart(chartData: IMatrixChart, svgEle?: SVGEleme
 			.call((g) => g.selectAll("line").remove()) // Get rid of the ticks lines for the axis
 			.selectAll("text")
 				.style("font-size", xAxisFontSize)
-				.call(wrapText, {
+				.call(wrapTextForeignObject, {
 					width: xSpacing.bandwidth(),
 					height: xAxisOnTop ? margin.top : margin.bottom,
 					padding: 0,
@@ -174,6 +177,8 @@ export function buildMatrixForceChart(chartData: IMatrixChart, svgEle?: SVGEleme
 					hCenter: true,
 					vJust: false,
 					hJust: IWrapTextDimensionsJustification.CENTER,
+					fontSize: xAxisFontSize,
+					fontFace: fontFace,
 				});
 	}
 
@@ -185,7 +190,7 @@ export function buildMatrixForceChart(chartData: IMatrixChart, svgEle?: SVGEleme
 			.call((g) => g.selectAll("line").remove()) // Get rid of the ticks for the axis
 			.selectAll("text")
 				.style("font-size", yAxisFontSize)
-				.call(wrapText, {
+				.call(wrapTextForeignObject, {
 					width: margin.left,
 					height: ySpacing.bandwidth(),
 					padding: 0,
@@ -193,6 +198,8 @@ export function buildMatrixForceChart(chartData: IMatrixChart, svgEle?: SVGEleme
 					hCenter: false,
 					vJust: true,
 					hJust: IWrapTextDimensionsJustification.RIGHT,
+					fontSize: yAxisFontSize,
+					fontFace: fontFace,
 				});
 	}
 

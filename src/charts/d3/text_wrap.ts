@@ -140,5 +140,3 @@ export function wrapTextForeignObject(texts: any, dimensions: IWrapTextDimenions
 }
 
 export const wrapTextWithTspan = typeof SVGForeignObjectElement === "undefined" ? wrapTextTspan : wrapTextForeignObject;
-// export const wrapText = wrapTextForeignObject;
-export const wrapText = wrapTextWithTspan;

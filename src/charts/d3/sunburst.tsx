@@ -6,7 +6,7 @@ import { interpolateRainbow } from "d3-scale-chromatic";
 import { create, select } from "d3-selection";
 import { arc } from "d3-shape";
 
-import { IWrapTextDimensionsJustification, wrapText } from "~charts/d3/text_wrap";
+import { IWrapTextDimensionsJustification, wrapTextTspan } from "~charts/d3/text_wrap";
 import { chooseBestContrastColour } from "~utils/colour";
 
 export interface ID3Hierarchy {
@@ -31,6 +31,9 @@ export function buildZoomableSunburstChart(
 	const showDepthMax = showDepthMin + showDepth;
 	const maxOpacity = 0.8;
 	const minOpacity = 0.4;
+
+	const fontSize = "10px";
+	const fontFace = "sans-serif";
 
 	// Create a new svg node or use an existing one.
 	const svg = svgEle ? select(svgEle) : create("svg");
@@ -81,7 +84,7 @@ export function buildZoomableSunburstChart(
 	svg
 		.attr("viewBox", `0 0 ${width} ${width}`)
 		.attr("perserveAspectRatio", "xMinYMin meet")
-		.style("font", "10px sans-serif");
+		.style("font", `${fontSize} ${fontFace}`);
 
 	const g = svg.append("g")
 		.attr("transform", `translate(${width / 2},${width / 2})`);
@@ -116,7 +119,7 @@ export function buildZoomableSunburstChart(
 			.text((d: any) => { // FIXME: Type
 				return honourShowName ? (d.data.showName ? d.data.name : null) : d.data.name;
 			})
-			.call(wrapText, {
+			.call(wrapTextTspan, {
 				width: radius,
 				height: 50, // FIXME: height is wrong
 				padding: 0,
@@ -124,6 +127,8 @@ export function buildZoomableSunburstChart(
 				hCenter: true,
 				vJust: false,
 				hJust: IWrapTextDimensionsJustification.CENTER,
+				fontSize: fontSize,
+				fontFace: fontFace,
 			});
 
 	const parent = g.append("circle")
@@ -157,7 +162,9 @@ export function buildZoomableSunburstChart(
 			.attr("fill-opacity", (d: any) => arcVisible(d.target) ? opacityInterpolate(d) : 0) // FIXME: Type
 			.attrTween("d", (d: any) => () => arcs(d.current)); // FIXME: Type
 
-		label.filter(function(d: any) { return +this.getAttribute("fill-opacity") || labelVisible(d.target); } as any) // FIXME: Type
+		label.filter(function(d: any) {
+				return +this.getAttribute("fill-opacity") || labelVisible(d.target);
+			} as any) // FIXME: Type
 			.transition(t)
 			.attr("fill-opacity", (d: any) => +labelVisible(d.target)) // FIXME: Type
 			.attrTween("transform", (d: any) => () => labelTransform(d.current)); // FIXME: Type
