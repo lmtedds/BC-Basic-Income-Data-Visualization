@@ -138,6 +138,8 @@ export function buildApplicationChart(svgEle?: SVGElement) {
 		yAxisFontSize: "5px",
 
 		renderMethod: solidCircleSimulationJoinFn,
+
+		simulateIterationsAtStart: 100,
 	};
 
 	buildMatrixForceChart(matrixData);
