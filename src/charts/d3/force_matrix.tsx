@@ -149,7 +149,7 @@ export function buildMatrixForceChart(chartData: IMatrixChart, svgEle?: SVGEleme
 	if(dimensions.xAxis) {
 		group.append("g")
 			.attr("class", "x-axis")
-			.attr("transform", `translate(0, ${xAxisOnTop ? margin.top : (sizeHeight - margin.top - margin.bottom)})`)
+			.attr("transform", `translate(0, ${xAxisOnTop ? 0 : (sizeHeight - margin.top - margin.bottom)})`)
 			.call(axisFn(xSpacing)) // Top or bottom axis with no tick marks
 			.call((g) => g.select(".domain").remove()) // Get rid of the domain path for the axis
 			.call((g) => g.selectAll("line").remove()) // Get rid of the ticks lines for the axis
