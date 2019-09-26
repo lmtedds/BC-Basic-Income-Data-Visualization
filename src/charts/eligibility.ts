@@ -132,10 +132,9 @@ function convertData(data: IEligibility[]): IMatrixChart {
 
 export function buildEligibilityChart(svgEle?: SVGElement) {
 	const matrixData = convertData(eligibilityData);
-	const fudge = 1;
 	matrixData.setup = {
-		height: 5500 * fudge,
-		width: 2200 * fudge,
+		height: 5500,
+		width: 2200,
 
 		margins: {top: 160, right: 10, bottom: 20, left: 260},
 
