@@ -59,6 +59,7 @@ export function wrapTextTspan(text: any, dimensions: IWrapTextDimenions): any {
 		const fontFace = textStyle.getPropertyValue("font-face") || dimensions.fontFace;
 		const words = textEle.text().split(/\s+/).reverse();
 		const lineHeight = 1.1; // ems
+		const x = textEle.attr("x");
 		const y = textEle.attr("y");
 		const dy = 0;
 
@@ -81,9 +82,10 @@ export function wrapTextTspan(text: any, dimensions: IWrapTextDimenions): any {
 				line = [word];
 				++lineNumber;
 				tspan = textEle.append("tspan")
-					.attr("x", 0)
-					.attr("y", y)
-					.attr("dy", (y ? (lineNumber * lineHeight + dy) : lineHeight + dy) + "em")
+					.attr("x", x || 0) // If x is specified for the text element we need to set x to the absolute position
+					.attr("y", y || 0) // If y is specified for the text element we need to set x to the absolute position
+					.attr("dx", 0) // FIXME: justification
+					.attr("dy", (lineNumber * lineHeight + dy) + "em")
 					.text(word);
 			}
 		}
@@ -139,4 +141,4 @@ export function wrapTextForeignObject(texts: any, dimensions: IWrapTextDimenions
 	});
 }
 
-export const wrapTextWithTspan = typeof SVGForeignObjectElement === "undefined" ? wrapTextTspan : wrapTextForeignObject;
+export const wrapTextWithTspan = typeof SVGForeignObjectElement === "undefined";
