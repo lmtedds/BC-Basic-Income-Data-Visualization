@@ -4,7 +4,6 @@ import { quantize } from "d3-interpolate";
 import { scaleBand, scaleOrdinal } from "d3-scale";
 import { interpolateRainbow } from "d3-scale-chromatic";
 import { create, select, Selection } from "d3-selection";
-import { chooseBestContrastColour } from "~utils/colour";
 
 import { IWrapTextDimensionsJustification, wrapTextForeignObject, wrapTextTspan } from "~charts/d3/text_wrap";
 
@@ -149,12 +148,13 @@ export function buildMatrixForceChart(chartData: IMatrixChart, svgEle?: SVGEleme
 	if(dimensions.xAxis) {
 		group.append("g")
 			.attr("class", "x-axis")
-			.attr("transform", `translate(0, ${xAxisOnTop ? 0 : (sizeHeight - margin.top - margin.bottom)})`)
+			.attr("transform", `translate(0, ${xAxisOnTop ? 0 : (sizeHeight - margin.top - margin.bottom)})`) // FIXME: This top start of 0 is probably wrong
 			.call(axisFn(xSpacing)) // Top or bottom axis with no tick marks
 			.call((g) => g.select(".domain").remove()) // Get rid of the domain path for the axis
 			.call((g) => g.selectAll("line").remove()) // Get rid of the ticks lines for the axis
 			.selectAll("text")
 				.style("font-size", xAxisFontSize)
+				.attr("y", 0)
 				.call(wrapTextForeignObject, {
 					width: xSpacing.bandwidth(),
 					height: xAxisOnTop ? margin.top : margin.bottom,
@@ -323,10 +323,10 @@ export function circleWithNameSimulationJoinFn(chartData: IMatrixChart, quadrant
 					width: 10,
 					height: 10,
 					padding: 0,
-					vCenter: true,
+					vCenter: false,
 					hCenter: false,
 					vJust: true,
-					hJust: IWrapTextDimensionsJustification.RIGHT,
+					hJust: IWrapTextDimensionsJustification.CENTER,
 					fontSize: fontSize,
 					fontFace: fontFace,
 				});
@@ -338,18 +338,6 @@ export function circleWithNameSimulationJoinFn(chartData: IMatrixChart, quadrant
 		})
 		.attr("y", function(d) {
 			return d.y;
-		})
-
-		.call(wrapTextTspan, {
-			width: 10,
-			height: 10,
-			padding: 0,
-			vCenter: true,
-			hCenter: false,
-			vJust: true,
-			hJust: IWrapTextDimensionsJustification.RIGHT,
-			fontSize: fontSize,
-			fontFace: fontFace,
 		});
 
 	circlesText

@@ -122,11 +122,11 @@ export function buildZoomableSunburstChart(
 			.call(wrapTextTspan, {
 				width: radius,
 				height: 50, // FIXME: height is wrong
-				padding: 0,
+				padding: 5,
 				vCenter: false,
-				hCenter: true,
-				vJust: false,
-				hJust: IWrapTextDimensionsJustification.CENTER,
+				hCenter: false,
+				vJust: true,
+				hJust: IWrapTextDimensionsJustification.LEFT,
 				fontSize: fontSize,
 				fontFace: fontFace,
 			});
