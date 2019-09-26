@@ -3,9 +3,10 @@ import { forceCollide, forceManyBody, forceSimulation, forceX, forceY } from "d3
 import { quantize } from "d3-interpolate";
 import { scaleBand, scaleOrdinal } from "d3-scale";
 import { interpolateRainbow } from "d3-scale-chromatic";
-import { create, select } from "d3-selection";
+import { create, select, Selection } from "d3-selection";
+import { chooseBestContrastColour } from "~utils/colour";
 
-import { IWrapTextDimensionsJustification, wrapTextForeignObject } from "~charts/d3/text_wrap";
+import { IWrapTextDimensionsJustification, wrapTextForeignObject, wrapTextTspan } from "~charts/d3/text_wrap";
 
 interface IMatrixDimensionalInfo {
 	xAxis: boolean;
@@ -24,10 +25,11 @@ export interface IMatrixDatum {
 	quad?: number; // If this field exists then data must be IMatrixDatum[] not IMatrixDatum[][]
 	colour?: string;
 	radius: number;
+	name: string;
 	x?: number;
 	y?: number;
-	xKey: string;
-	yKey: string;
+	xKey: string; // What x axis key is this data associate with
+	yKey: string; // What y axis key is this data associate with
 }
 
 export interface IMatrixSetup {
@@ -43,6 +45,8 @@ export interface IMatrixSetup {
 
 	xAxisFontSize: string;
 	yAxisFontSize: string;
+
+	renderMethod: (chartData: IMatrixChart, quadrantGroup: Selection<SVGGElement, unknown, null, undefined>) => void;
 }
 
 export interface IMatrixChart {
@@ -102,11 +106,6 @@ function chartToDimensions(data: IMatrixChart): IMatrixDimensionalInfo {
 	};
 }
 
-const colour = scaleOrdinal(quantize(interpolateRainbow, 10));
-const selectFillColour = (d: IMatrixDatum): string => { // FIXME: Type
-	return d.colour || colour(d.radius as any); // FIXME: reasonable colour is based on what?
-};
-
 // See https://www.d3indepth.com/force-layout/ for some hint
 export function buildMatrixForceChart(chartData: IMatrixChart, svgEle?: SVGElement) {
 	// Create a new svg node or use an existing one.
@@ -140,21 +139,6 @@ export function buildMatrixForceChart(chartData: IMatrixChart, svgEle?: SVGEleme
 		.attr("perserveAspectRatio", "xMinYMin meet")
 		.append("g")
 			.style("font", `${fontSize} ${fontFace}`);
-
-	const simulation = forceSimulation(chartData.data as any)
-		.force("charge", forceManyBody().strength(0.5))
-		.force("x", forceX().x(function(d: any) {
-			// Find the middle of the appropriate column of the matrix to centre this datum.
-			return xSpacing(d.xKey) + xSpacing.bandwidth() / 2;
-		}))
-		.force("y", forceY().y(function(d: IMatrixDatum) {
-			// Find the middle of the appropriate row of the matrix to centre this datum.
-			return ySpacing(d.yKey) + ySpacing.bandwidth() / 2;
-		}))
-		.force("collision", forceCollide().radius(function(d: IMatrixDatum) {
-			return d.radius;
-		}))
-		.on("tick", ticked);    // FIXME: Verify the tick is unregistered when finished
 
 	const xAxisOnTop = true;
 	const axisFn = xAxisOnTop ? axisTop : axisBottom;
@@ -203,30 +187,158 @@ export function buildMatrixForceChart(chartData: IMatrixChart, svgEle?: SVGEleme
 				});
 	}
 
-	const circleGroup = group
-		.append("g");
+	// Group to contain all the quadrant data.
+	const quadrantGroup = group
+		.append("g")
+			.attr("class", "quad-group");
 
-	function ticked() {
-		const u = circleGroup
-				.selectAll("circle")
-				.data(chartData.data as IMatrixDatum[]);
-
-		u.enter()
-			.append("circle")
-			.attr("r", function(d) {
-				return d.radius;
-			})
-			.merge(u as any)
-			.attr("cx", function(d) {
-				return d.x;
-			})
-			.attr("cy", function(d) {
-				return d.y;
-			})
-			.attr("fill", selectFillColour);
-
-		u.exit().remove();
-	}
+	const joinFn = chartData.setup ? chartData.setup.renderMethod : solidCircleSimulationJoinFn;
+	const simulationUpdate = joinFn.bind(this, chartData, quadrantGroup);
+	const simulation = forceSimulation(chartData.data as any)
+		.force("charge", forceManyBody().strength(0.5))
+		.force("x", forceX().x(function(d: any) {
+			// Find the middle of the appropriate column of the matrix to centre this datum.
+			return xSpacing(d.xKey) + xSpacing.bandwidth() / 2;
+		}))
+		.force("y", forceY().y(function(d: IMatrixDatum) {
+			// Find the middle of the appropriate row of the matrix to centre this datum.
+			return ySpacing(d.yKey) + ySpacing.bandwidth() / 2;
+		}))
+		.force("collision", forceCollide().radius(function(d: IMatrixDatum) {
+			return d.radius;
+		}))
+		.on("tick", simulationUpdate);    // FIXME: Verify the tick is unregistered when finished
 
 	return svg.node();
+}
+
+export function solidCircleSimulationJoinFn(chartData: IMatrixChart, quadrantGroup: Selection<SVGGElement, unknown, null, undefined>): void {
+	const colour = scaleOrdinal(quantize(interpolateRainbow, 10));
+	const selectFillColour = (d: IMatrixDatum): string => { // FIXME: Type
+		return d.colour || colour(d.radius as any); // FIXME: reasonable colour is based on what?
+	};
+
+	// data elements are circles
+	const circles = quadrantGroup
+		.selectAll("circle")
+			.data(chartData.data as IMatrixDatum[]);
+
+	circles
+		.enter()
+			.append("circle")
+				.attr("r", function(d) {
+					return d.radius;
+				})
+				.attr("fill", selectFillColour)
+			.merge(circles as any) // enter and update
+				.attr("cx", function(d) {
+					return d.x;
+				})
+				.attr("cy", function(d) {
+					return d.y;
+				});
+
+	circles
+		.exit()
+			.remove();
+}
+
+export function circleWithNameSimulationJoinFn(chartData: IMatrixChart, quadrantGroup: Selection<SVGGElement, unknown, null, undefined>): void {
+	const data = chartData.data as IMatrixDatum[];
+	const colour = scaleOrdinal(quantize(interpolateRainbow, 10));
+	const selectFillColour = (d: IMatrixDatum): string => { // FIXME: Type
+		return d.colour || colour(d.radius as any); // FIXME: reasonable colour is based on what?
+	};
+
+	// FIXME: These shoulnd't be here
+	const fontSize = "10px";
+	const fontFace = "sans-serif";
+
+	// data elements are circles
+	const circles = quadrantGroup
+		.selectAll("circle")
+			.data(data);
+
+	circles
+		.enter()
+			.append("circle")
+				.attr("r", function(d) {
+					return d.radius;
+				})
+				.attr("fill", "none")
+				.attr("stroke", selectFillColour)
+				.attr("cx", function(d) {
+					return d.x;
+				})
+				.attr("cy", function(d) {
+					return d.y;
+				});
+
+	// updates
+	circles
+		.attr("cx", function(d) {
+			return d.x;
+		})
+		.attr("cy", function(d) {
+			return d.y;
+		});
+
+	circles
+		.exit()
+			.remove();
+
+	const circlesText = quadrantGroup
+		.selectAll("text")
+			.data(data);
+
+	circlesText
+		.enter()
+			.append("text")
+				.text(function(d) {
+					return d.name;
+				})
+				.attr("fill", "#000") // FIXME:
+				.attr("x", function(d) {
+					return d.x;
+				})
+				.attr("y", function(d) {
+					return d.y;
+				})
+				.call(wrapTextTspan, {
+					width: 10,
+					height: 10,
+					padding: 0,
+					vCenter: true,
+					hCenter: false,
+					vJust: true,
+					hJust: IWrapTextDimensionsJustification.RIGHT,
+					fontSize: fontSize,
+					fontFace: fontFace,
+				});
+
+	// update
+	circlesText
+		.attr("x", function(d) {
+			return d.x;
+		})
+		.attr("y", function(d) {
+			return d.y;
+		})
+
+		.call(wrapTextTspan, {
+			width: 10,
+			height: 10,
+			padding: 0,
+			vCenter: true,
+			hCenter: false,
+			vJust: true,
+			hJust: IWrapTextDimensionsJustification.RIGHT,
+			fontSize: fontSize,
+			fontFace: fontFace,
+		});
+
+	circlesText
+		.exit()
+			.remove();
+
 }

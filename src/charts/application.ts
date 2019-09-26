@@ -1,6 +1,6 @@
 import { data as applicationData } from "~data/20190824_application";
 
-import { buildMatrixForceChart, IMatrixChart } from "~charts/d3/force_matrix";
+import { buildMatrixForceChart, IMatrixChart, solidCircleSimulationJoinFn } from "~charts/d3/force_matrix";
 
 const appMethod = "Application Method";
 const corrob = "Corroborated";
@@ -136,6 +136,8 @@ export function buildApplicationChart(svgEle?: SVGElement) {
 
 		xAxisFontSize: "5px",
 		yAxisFontSize: "5px",
+
+		renderMethod: solidCircleSimulationJoinFn,
 	};
 
 	buildMatrixForceChart(matrixData);

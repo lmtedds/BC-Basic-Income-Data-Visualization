@@ -1,6 +1,6 @@
 import { data as inKindData } from "~data/20190824_cashInKind";
 
-import { buildMatrixForceChart, IMatrixChart } from "~charts/d3/force_matrix";
+import { buildMatrixForceChart, IMatrixChart, solidCircleSimulationJoinFn } from "~charts/d3/force_matrix";
 
 const program = "Program";
 const programType = "Program Type/Target";
@@ -128,6 +128,8 @@ export function buildInKindChart(svgEle?: SVGElement) {
 
 		xAxisFontSize: "10px",
 		yAxisFontSize: "10px",
+
+		renderMethod: solidCircleSimulationJoinFn,
 	};
 
 	return buildMatrixForceChart(convertedData, svgEle);

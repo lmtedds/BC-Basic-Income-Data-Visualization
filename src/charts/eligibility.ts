@@ -1,6 +1,6 @@
 import { data as eligibilityData } from "~data/20190824_eligibility";
 
-import { buildMatrixForceChart, IMatrixChart } from "~charts/d3/force_matrix";
+import { buildMatrixForceChart, circleWithNameSimulationJoinFn, IMatrixChart } from "~charts/d3/force_matrix";
 
 const program = "Program";
 const programType = "Program Type/Target";
@@ -141,6 +141,8 @@ export function buildEligibilityChart(svgEle?: SVGElement) {
 
 		xAxisFontSize: "5px",
 		yAxisFontSize: "5px",
+
+		renderMethod: circleWithNameSimulationJoinFn,
 	};
 
 	return buildMatrixForceChart(matrixData, svgEle);
