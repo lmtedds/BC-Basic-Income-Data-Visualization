@@ -130,6 +130,8 @@ export function buildInKindChart(svgEle?: SVGElement) {
 		yAxisFontSize: "10px",
 
 		renderMethod: solidCircleSimulationJoinFn,
+
+		simulateIterationsAtStart: 100,
 	};
 
 	return buildMatrixForceChart(convertedData, svgEle);
