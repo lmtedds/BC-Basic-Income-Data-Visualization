@@ -47,39 +47,37 @@ function dataToIntermediate(data: IEligibility[]): IEligibilityIntermediateData 
 
 	data.forEach((ele) => {
 		const progType = ele[programType];
-		const elig = ele[eligibility];
-		const cat = ele[category];
+		const eligCat = ele[eligibility];
 
-		if(!progType || !elig || !cat) {
+		if(!progType || !eligCat) {
 			// NOTE: We're tossing these entries.
 			missing.push(ele[program]);
 		} else {
 			// Build Sets for axes
-			xTitlesSet.add(elig);
-			yTitlesSet.add(progType);
-			catSet.add(cat);
+			xTitlesSet.add(progType);
+			yTitlesSet.add(eligCat);
 
-			// Put the data in the right "quadrant"
-			let typeMap = positionedData.get(progType);
+			// Put the data in the correct "quadrant"
+			let typeMap = positionedData.get(eligCat);
 
 			// Initialize 2nd level Map if required
 			if(!typeMap) {
 				typeMap = new Map<string, IEligibility[]>();
-				positionedData.set(progType, typeMap);
+				positionedData.set(eligCat, typeMap);
 			}
 
 			// Initialize the array if required
-			let progs = typeMap.get(elig);
+			let progs = typeMap.get(progType);
 			if(!progs) {
 				progs = [];
-				typeMap.set(elig, progs);
+				typeMap.set(progType, progs);
 			}
 
-			typeMap.set(elig, progs.concat(ele));
+			typeMap.set(progType, progs.concat(ele));
 		}
 	});
 
-	console.log(`eligibility program missing type, eligibility, or category: ${missing}`);
+	console.log(`eligibility program missing type or eligibility category: ${missing}`);
 
 	return {
 		xTitles: xTitlesSet,
@@ -111,7 +109,8 @@ function convertData(data: IEligibility[]): IMatrixChart {
 								xKey: xKey,
 								yKey: yKey,
 								data: {program: entry[program]},
-								radius: Number(entry[importance]) * 2,
+								radius: 30,
+								name: entry[program],
 							};
 						}),
 					);
@@ -133,16 +132,19 @@ function convertData(data: IEligibility[]): IMatrixChart {
 
 export function buildEligibilityChart(svgEle?: SVGElement) {
 	const matrixData = convertData(eligibilityData);
+	const fudge = 1;
 	matrixData.setup = {
-		height: 1000,
-		width: 1000,
+		height: 5500 * fudge,
+		width: 2200 * fudge,
 
-		margins: {top: 40, right: 20, bottom: 20, left: 60},
+		margins: {top: 160, right: 10, bottom: 20, left: 260},
 
-		xAxisFontSize: "5px",
-		yAxisFontSize: "5px",
+		xAxisFontSize: "40px",
+		yAxisFontSize: "40px",
 
 		renderMethod: circleWithNameSimulationJoinFn,
+
+		simulateIterationsAtStart: 100,
 	};
 
 	return buildMatrixForceChart(matrixData, svgEle);
