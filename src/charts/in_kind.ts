@@ -129,6 +129,9 @@ export function buildInKindChart(svgEle?: SVGElement) {
 		xAxisFontSize: "10px",
 		yAxisFontSize: "10px",
 
+		yAxisQuadLines: true,
+		xAxisQuadLines: true,
+
 		renderMethod: solidCircleSimulationJoinFn,
 
 		simulateIterationsAtStart: 100,

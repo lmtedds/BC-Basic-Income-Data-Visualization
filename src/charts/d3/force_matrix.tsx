@@ -1,7 +1,7 @@
 import { axisBottom, axisLeft, axisTop } from "d3-axis";
 import { forceCollide, forceManyBody, forceSimulation, forceX, forceY } from "d3-force";
 import { quantize } from "d3-interpolate";
-import { scaleBand, scaleOrdinal } from "d3-scale";
+import { scaleBand, scaleLinear, scaleOrdinal } from "d3-scale";
 import { interpolateRainbow } from "d3-scale-chromatic";
 import { create, select, Selection } from "d3-selection";
 
@@ -44,6 +44,9 @@ export interface IMatrixSetup {
 
 	xAxisFontSize: string;
 	yAxisFontSize: string;
+
+	xAxisQuadLines?: boolean;
+	yAxisQuadLines?: boolean;
 
 	renderMethod: (chartData: IMatrixChart, quadrantGroup: Selection<SVGGElement, unknown, null, undefined>) => void;
 
@@ -129,8 +132,13 @@ export function buildMatrixForceChart(chartData: IMatrixChart, svgEle?: SVGEleme
 	const xAxisFontSize = chartData.setup.xAxisFontSize || "25px";
 	const yAxisFontSize = chartData.setup.yAxisFontSize || "25px";
 
+	const xAxisQuadLines = chartData.setup && chartData.setup.xAxisQuadLines;
+	const yAxisQuadLines = chartData.setup && chartData.setup.yAxisQuadLines;
+
 	const fontSize = "10px";
 	const fontFace = "sans-serif";
+
+	const xAxisOnTop = true; // FIXME: Make configurable
 
 	const xSpacing = scaleBand().rangeRound([margin.left, sizeWidth  - margin.right]).padding(0.1).domain(chartData.axes.xTitles);
 	const ySpacing = scaleBand().rangeRound([sizeHeight - margin.bottom, margin.top]).padding(0.1).domain(chartData.axes.yTitles);
@@ -141,15 +149,14 @@ export function buildMatrixForceChart(chartData: IMatrixChart, svgEle?: SVGEleme
 		.append("g")
 			.style("font", `${fontSize} ${fontFace}`);
 
-	const xAxisOnTop = true;
-	const axisFn = xAxisOnTop ? axisTop : axisBottom;
-
 	// Optionally add axes.
 	if(dimensions.xAxis) {
+		const axisFn = xAxisOnTop ? axisTop : axisBottom;
+
 		group.append("g")
 			.attr("class", "x-axis")
 			.attr("transform", `translate(0, ${xAxisOnTop ? 0 : (sizeHeight - margin.top - margin.bottom)})`) // FIXME: This top start of 0 is probably wrong
-			.call(axisFn(xSpacing)) // Top or bottom axis with no tick marks
+			.call(axisFn(xSpacing)) // Top or bottom axis
 			.call((g) => g.select(".domain").remove()) // Get rid of the domain path for the axis
 			.call((g) => g.selectAll("line").remove()) // Get rid of the ticks lines for the axis
 			.selectAll("text")
@@ -166,6 +173,27 @@ export function buildMatrixForceChart(chartData: IMatrixChart, svgEle?: SVGEleme
 					fontSize: xAxisFontSize,
 					fontFace: fontFace,
 				});
+	}
+
+	if(xAxisQuadLines) {
+		const spacing = chartData.axes.xTitles.map((title) => {
+			return xSpacing(title) + xSpacing.bandwidth();
+		}).slice(0, -1);
+		const xGridSpacing = scaleLinear().range([0, sizeWidth]).domain([0, sizeWidth]);
+
+		group
+			.append("g")
+				.attr("class", "x-grid")
+				.attr("transform", `translate(0, ${sizeHeight - margin.bottom})`);
+
+		group
+			.selectAll(".x-grid")
+				.call(axisBottom(xGridSpacing)
+					.tickValues(spacing)
+					.tickSize(-(sizeHeight - margin.bottom - margin.top))
+					.tickFormat("" as any),
+				)
+				.call((g) => g.select(".domain").remove()); // Get rid of the domain path for the axis
 	}
 
 	if(dimensions.yAxis) {
@@ -187,6 +215,27 @@ export function buildMatrixForceChart(chartData: IMatrixChart, svgEle?: SVGEleme
 					fontSize: yAxisFontSize,
 					fontFace: fontFace,
 				});
+	}
+
+	if(yAxisQuadLines) {
+		const spacing = chartData.axes.yTitles.map((title) => {
+			return ySpacing(title) + ySpacing.bandwidth();
+		}).slice(1);
+		const yGridSpacing = scaleLinear().range([sizeHeight - margin.bottom, margin.top]).domain([sizeHeight - margin.bottom, margin.top]);
+
+		group
+			.append("g")
+				.attr("class", "y-grid")
+				.attr("transform", `translate(${margin.left}, 0)`);
+
+		group
+			.selectAll(".y-grid")
+				.call(axisLeft(yGridSpacing)
+					.tickValues(spacing)
+					.tickFormat("" as any)
+					.tickSize(-(sizeWidth - margin.left - margin.right)),
+				)
+				.call((g) => g.select(".domain").remove()); // Get rid of the domain path for the axis
 	}
 
 	// Group to contain all the quadrant data.

@@ -141,6 +141,9 @@ export function buildEligibilityChart(svgEle?: SVGElement) {
 		xAxisFontSize: "40px",
 		yAxisFontSize: "40px",
 
+		yAxisQuadLines: true,
+		xAxisQuadLines: true,
+
 		renderMethod: circleWithNameSimulationJoinFn,
 
 		simulateIterationsAtStart: 100,
