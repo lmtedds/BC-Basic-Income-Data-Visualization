@@ -55,7 +55,6 @@ interface IEligibilityIntermediateData {
 function dataToIntermediate(data: IEligibility[]): IEligibilityIntermediateData {
 	const xTitlesSet = new Set<string>();
 	const yTitlesSet = new Set<string>();
-	const catSet = new Set<string>();
 	const positionedData = new Map<string, Map<string, IEligibility[]>>(); //  spectrum -> Map<program type, IInKind>
 
 	const missing = [];
@@ -124,8 +123,9 @@ function convertData(data: IEligibility[]): IMatrixChart {
 								xKey: xKey,
 								yKey: yKey,
 								data: {program: entry[program]},
-								radius: 30,
+								radius: 35,
 								name: entry[program],
+								colourKey: entry[govLevel],
 							};
 						}),
 					);

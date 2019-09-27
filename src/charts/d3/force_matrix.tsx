@@ -23,6 +23,7 @@ export interface IMatrixAxes {
 export interface IMatrixDatum {
 	quad?: number; // If this field exists then data must be IMatrixDatum[] not IMatrixDatum[][]
 	colour?: string;
+	colourKey?: string;
 	radius: number;
 	name: string;
 	x?: number;
@@ -276,11 +277,12 @@ export function buildMatrixForceChart(chartData: IMatrixChart, svgEle?: SVGEleme
 	return svg.node();
 }
 
+const colour = scaleOrdinal(quantize(interpolateRainbow, 10));
+const selectFillColour = (d: IMatrixDatum): string => {
+	return d.colour || (d.colourKey && colour(d.colourKey as any)) || colour(d.radius as any);
+};
+
 export function solidCircleSimulationJoinFn(chartData: IMatrixChart, quadrantGroup: Selection<SVGGElement, unknown, null, undefined>): void {
-	const colour = scaleOrdinal(quantize(interpolateRainbow, 10));
-	const selectFillColour = (d: IMatrixDatum): string => { // FIXME: Type
-		return d.colour || colour(d.radius as any); // FIXME: reasonable colour is based on what?
-	};
 
 	// data elements are circles
 	const circles = quadrantGroup
@@ -309,10 +311,6 @@ export function solidCircleSimulationJoinFn(chartData: IMatrixChart, quadrantGro
 
 export function circleWithNameSimulationJoinFn(chartData: IMatrixChart, quadrantGroup: Selection<SVGGElement, unknown, null, undefined>): void {
 	const data = chartData.data as IMatrixDatum[];
-	const colour = scaleOrdinal(quantize(interpolateRainbow, 10));
-	const selectFillColour = (d: IMatrixDatum): string => { // FIXME: Type
-		return d.colour || colour(d.radius as any); // FIXME: reasonable colour is based on what?
-	};
 
 	// FIXME: These shoulnd't be here
 	const fontSize = "10px";
@@ -331,6 +329,9 @@ export function circleWithNameSimulationJoinFn(chartData: IMatrixChart, quadrant
 				})
 				.attr("fill", "none")
 				.attr("stroke", selectFillColour)
+				.attr("stroke-width", function(d) {
+					return d.radius / 5;
+				})
 				.attr("cx", function(d) {
 					return d.x;
 				})
