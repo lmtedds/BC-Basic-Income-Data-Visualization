@@ -1,21 +1,29 @@
-import { data as applicationData } from "~data/20190824_application";
+import { data as applicationData } from "~data/20190926_application";
 
 import { buildMatrixForceChart, IMatrixChart, solidCircleSimulationJoinFn } from "~charts/d3/force_matrix";
 
 const appMethod = "Application Method";
-const corrob = "Corroborated";
+const corroborated = "Corroborated";
 const category = "Eligibility Category";
 const level = "Level of Government";
 const otherRequirements = "Other Eligibility Requirements";
 const program = "Program";
 const progType = "Program Type/Target";
 
-interface IApplication {
+interface IApplication20190824Version {
 	[appMethod]: string;
-	[corrob]: string;
+	[corroborated]: string;
 	[category]: string;
 	[level]: string;
 	[otherRequirements]: string;
+	[program]: string;
+	[progType]: string;
+}
+
+interface IApplication {
+	[appMethod]: string;
+	[corroborated]: "Corroborated" | "Not Corroborated";
+	[level]: string;
 	[program]: string;
 	[progType]: string;
 }
@@ -42,38 +50,38 @@ function dataToIntermediate(data: IApplication[]): IInKindIntermediateData {
 	const missing = [];
 
 	data.forEach((ele) => {
-		const corroborated = ele[corrob];
+		const corrob = ele[corroborated];
 		const method = ele[appMethod];
 
-		if(!corroborated || !method) {
+		if(!corrob || !method) {
 			// NOTE: We're tossing these entries.
 			missing.push(ele[program]);
 		} else {
 			// Build Sets for axes
-			xTitlesSet.add(method);
-			yTitlesSet.add(corroborated);
+			xTitlesSet.add(corrob);
+			yTitlesSet.add(method);
 
 			// Put the data in the right "quadrant"
-			let typeMap = positionedData.get(corroborated);
+			let typeMap = positionedData.get(method);
 
 			// Initialize 2nd level Map if required
 			if(!typeMap) {
 				typeMap = new Map<string, IApplication[]>();
-				positionedData.set(corroborated, typeMap);
+				positionedData.set(method, typeMap);
 			}
 
 			// Initialize the array if required
-			let progs = typeMap.get(method);
+			let progs = typeMap.get(corrob);
 			if(!progs) {
 				progs = [];
-				typeMap.set(method, progs);
+				typeMap.set(corrob, progs);
 			}
 
-			typeMap.set(method, progs.concat(ele));
+			typeMap.set(corrob, progs.concat(ele));
 		}
 	});
 
-	console.log(`application program missing corroborated or method: ${missing}`);
+	if(missing.length) console.log(`application program missing corroborated or method: ${missing}`);
 
 	return {
 		xTitles: xTitlesSet,
@@ -90,20 +98,20 @@ function convertData(data): IMatrixChart {
 	const yTitles = Array.from(intermediate.yTitles);
 
 	const quadData = [];
-	yTitles.forEach((spectrumKey) => {
-		const typeMap = intermediate.data.get(spectrumKey);
+	yTitles.forEach((yKey) => {
+		const typeMap = intermediate.data.get(yKey);
 		if(typeMap) {
-			xTitles.forEach((programTypeKey) => {
+			xTitles.forEach((xKey) => {
 				const quadArray = [];
 
-				const quadEntry = typeMap.get(programTypeKey); // FIXME: Should be array!
+				const quadEntry = typeMap.get(xKey); // FIXME: Should be array!
 				if(quadEntry) {
 					quadEntry.forEach((entry) => {
 						quadArray.push({
-							xKey: programTypeKey,
-							yKey: spectrumKey,
+							xKey: xKey,
+							yKey: yKey,
 							data: {program: entry[program]},
-							radius: 5, // FIXME: placeholder
+							radius: 10, // FIXME: placeholder
 						});
 					});
 				}
@@ -129,18 +137,21 @@ function convertData(data): IMatrixChart {
 export function buildApplicationChart(svgEle?: SVGElement) {
 	const matrixData = convertData(applicationData);
 	matrixData.setup = {
-		height: 1000,
-		width: 1000,
+		height: 1200,
+		width: 800,
 
-		margins: {top: 40, right: 20, bottom: 20, left: 60},
+		margins: {top: 40, right: 20, bottom: 20, left: 160},
 
-		xAxisFontSize: "5px",
-		yAxisFontSize: "5px",
+		xAxisFontSize: "25px",
+		yAxisFontSize: "25px",
+
+		// yAxisQuadLines: true,
+		// xAxisQuadLines: true,
 
 		renderMethod: solidCircleSimulationJoinFn,
 
-		simulateIterationsAtStart: 100,
+		// simulateIterationsAtStart: 200,
 	};
 
-	buildMatrixForceChart(matrixData);
+	return buildMatrixForceChart(matrixData, svgEle);
 }
