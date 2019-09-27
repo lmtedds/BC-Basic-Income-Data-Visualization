@@ -5,7 +5,7 @@ import { buildMatrixForceChart, IMatrixChart, solidCircleSimulationJoinFn } from
 const appMethod = "Application Method";
 const corroborated = "Corroborated";
 const category = "Eligibility Category";
-const level = "Level of Government";
+const govLevel = "Level of Government";
 const otherRequirements = "Other Eligibility Requirements";
 const program = "Program";
 const progType = "Program Type/Target";
@@ -14,7 +14,7 @@ interface IApplication20190824Version {
 	[appMethod]: string;
 	[corroborated]: string;
 	[category]: string;
-	[level]: string;
+	[govLevel]: string;
 	[otherRequirements]: string;
 	[program]: string;
 	[progType]: string;
@@ -23,7 +23,7 @@ interface IApplication20190824Version {
 interface IApplication {
 	[appMethod]: string;
 	[corroborated]: "Corroborated" | "Not Corroborated";
-	[level]: string;
+	[govLevel]: string;
 	[program]: string;
 	[progType]: string;
 }
@@ -112,6 +112,7 @@ function convertData(data): IMatrixChart {
 							yKey: yKey,
 							data: {program: entry[program]},
 							radius: 10, // FIXME: placeholder
+							colourKey: entry[govLevel],
 						});
 					});
 				}
