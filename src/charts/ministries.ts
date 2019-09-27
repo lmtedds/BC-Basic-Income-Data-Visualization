@@ -1,9 +1,5 @@
 // This is where typescript/javascript starts from. A reference to it is automatically added to index.html (via webpack).
-<<<<<<< HEAD
-import { data as ministryData } from "~data/20190913_ministries";
-=======
 import { data as ministryData } from "~data/20190927_ministries";
->>>>>>> 	new file:   data/20190927_ministries.csv
 
 import { buildZoomablePackedCircleChart, ID3Hierarchy } from "~charts/d3/circle";
 import { buildZoomableSunburstChart } from "~charts/d3/sunburst";
@@ -25,6 +21,16 @@ interface IMinistry20190824Version {
 	"Ministry - point of contact/administration:": string;
 	"Ministry - point of contact/administration - government:": string;
 	"Importance Ranking": string;
+}
+
+interface IMinistry20190913Version {
+	[programSize]: string; // string represention a number
+	[programName]: string;
+	[showName]: string; // string representation of a boolean
+	[levelOfGovernment]: string;
+	[administeredBy]: string;
+	[responsibleMinistry]: string;
+	[numReceipientsBcOnly]: string; // string representation of a number
 }
 
 interface IMinistry {
@@ -75,12 +81,7 @@ function treeToHierarchy(tree, obj: any = {ministry: "root", showName: false, va
 				level: ele[levelOfGovernment],
 				ministry: ele[responsibleMinistry],
 				admin: ele[administeredBy],
-<<<<<<< HEAD
 				value: 1,
-=======
-				// value: ele[programSize] ? Number(ele[programSize]) : 1,
-				value: ele[programSize] ? Math.log2(Number(ele[programSize])) : 1,
->>>>>>> 	new file:   data/20190927_ministries.csv
 				showName: ele[showName] ? (ele[showName].toLowerCase() === "true") : false,
 				name: ele[programName] || ele[administeredBy] || ele[responsibleMinistry],
 			};
