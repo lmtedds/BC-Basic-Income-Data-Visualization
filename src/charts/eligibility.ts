@@ -1,4 +1,4 @@
-import { data as eligibilityData } from "~data/20190824_eligibility";
+import { data as eligibilityData } from "~data/20190926_eligibility";
 
 import { buildMatrixForceChart, circleWithNameSimulationJoinFn, IMatrixChart } from "~charts/d3/force_matrix";
 
@@ -14,6 +14,21 @@ const overview = "Program Overview";
 const importance = "Importance Ranking";
 const notes = "Notes";
 const website = "Website Link";
+
+interface IEligibility20190824Version {
+	[program]: string;
+	[programType]: string;
+	[govLevel]: string;
+	[category]: string;
+	[condOrCont]: string;
+	[incOrAss]: string;
+	[eligibility]: string;
+	[otherRequirements]: string;
+	[overview]: string;
+	[importance]: string;
+	[notes]: string;
+	[website]: string;
+}
 
 interface IEligibility {
 	[program]: string;
