@@ -71,8 +71,7 @@ function treeToHierarchy(tree, obj: any = {ministry: "root", showName: false, va
 				level: ele[levelOfGovernment],
 				ministry: ele[responsibleMinistry],
 				admin: ele[administeredBy],
-				// value: ele[programSize] ? Number(ele[programSize]) : 1,
-				value: ele[programSize] ? Math.log2(Number(ele[programSize])) : 1,
+				value: 1,
 				showName: ele[showName] ? (ele[showName].toLowerCase() === "true") : false,
 				name: ele[programName] || ele[administeredBy] || ele[responsibleMinistry],
 			};
