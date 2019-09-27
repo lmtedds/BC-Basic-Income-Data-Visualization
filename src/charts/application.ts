@@ -137,11 +137,16 @@ function convertData(data): IMatrixChart {
 
 export function buildApplicationChart(svgEle?: SVGElement) {
 	const matrixData = convertData(applicationData);
-	matrixData.setup = {
-		height: 1200,
-		width: 800,
 
-		margins: {top: 40, right: 20, bottom: 20, left: 160},
+	const width = 800;
+	const height = 1200;
+	const margins = {top: 40, right: 20, bottom: 20, left: 160};
+
+	matrixData.setup = {
+		height: height,
+		width: width,
+
+		margins: margins,
 
 		xAxisFontSize: "25px",
 		yAxisFontSize: "25px",
@@ -152,6 +157,16 @@ export function buildApplicationChart(svgEle?: SVGElement) {
 		renderMethod: solidCircleSimulationJoinFn,
 
 		// simulateIterationsAtStart: 200,
+
+		legend: {
+			x: width - margins.right - 200,
+			y: margins.top,
+
+			size: 20,
+			horSpacing: 20,
+			vertSpacing: 15,
+		},
+
 	};
 
 	return buildMatrixForceChart(matrixData, svgEle);

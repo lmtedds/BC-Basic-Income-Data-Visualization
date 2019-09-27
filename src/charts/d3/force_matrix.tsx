@@ -32,6 +32,15 @@ export interface IMatrixDatum {
 	yKey: string; // What y axis key is this data associate with
 }
 
+export interface ILegend {
+	x: number;
+	y: number;
+
+	size: number; // size x size is space for "dot" and the size of font used
+	horSpacing: number; // horizontal space between dot and text
+	vertSpacing: number; // vertical space between lines
+}
+
 export interface IMatrixSetup {
 	height: number;
 	width: number;
@@ -48,6 +57,8 @@ export interface IMatrixSetup {
 
 	xAxisQuadLines?: boolean;
 	yAxisQuadLines?: boolean;
+
+	legend?: ILegend;
 
 	renderMethod: (chartData: IMatrixChart, quadrantGroup: Selection<SVGGElement, unknown, null, undefined>) => void;
 
@@ -129,6 +140,8 @@ export function buildMatrixForceChart(chartData: IMatrixChart, svgEle?: SVGEleme
 	const sizeHeight = chartData.setup ? chartData.setup.height : 1000;
 	const sizeWidth = chartData.setup ? chartData.setup.width : 1000;
 	const margin = chartData.setup ? chartData.setup.margins : {top: 20, right: 160, bottom: 35, left: 40};
+
+	const legend = chartData.setup && chartData.setup.legend;
 
 	const xAxisFontSize = chartData.setup.xAxisFontSize || "25px";
 	const yAxisFontSize = chartData.setup.yAxisFontSize || "25px";
@@ -272,6 +285,55 @@ export function buildMatrixForceChart(chartData: IMatrixChart, svgEle?: SVGEleme
 		simulation
 			.on("tick", simulationUpdate)
 			.on("end", () => { simulation.stop(); }); // Done based on alpha decay.
+	}
+
+	if(legend) {
+		// FIXME: vert vs horizontal legend?
+		// FIXME: border frame or not
+		// FIXME: colour & colourKey configurable
+
+		const xLegend = chartData.setup.legend.x;
+		const yLegend = chartData.setup.legend.y;
+		const size = chartData.setup.legend.size;
+		const horSpacing = chartData.setup.legend.horSpacing;
+		const vertSpacing = chartData.setup.legend.vertSpacing;
+
+		const colourKeySet = new Set<any>();
+
+		(chartData.data as IMatrixDatum[]).forEach((datum) => {
+			colourKeySet.add(datum.colourKey || datum.radius);
+		});
+
+		const colourKeys = Array.from(colourKeySet.values());
+
+		const legendGroup = group
+			.append("g")
+				.attr("class", "legend")
+				.attr("transform", `translate(${xLegend}, ${yLegend})`)
+				.style("font", `${size}px sans-serif`); // FIXME: Config
+
+		legendGroup
+			.selectAll("rect")
+			.data(colourKeys)
+			.enter()
+				.append("rect")
+					.attr("x", 0)
+					.attr("y", (d, i) => 100 + (i * (size + vertSpacing)))
+					.attr("width", size)
+					.attr("height", size)
+					.attr("fill", (d) => colour(d));
+
+		legendGroup
+			.selectAll("text")
+			.data(colourKeys)
+			.enter()
+				.append("text")
+					.attr("x", 0 + size + horSpacing)
+					.attr("y", (d, i) => 100 + (i * (size + vertSpacing)) + size / 2)
+					.attr("fill", (d) => colour(d))
+					.text((d) => d)
+					.attr("text-anchor", "left")
+					.style("alignment-baseline", "middle");
 	}
 
 	return svg.node();
