@@ -24,7 +24,7 @@ function offscreenGetWidth(text, fontSize?, fontFace?) {
 
 // Wrap the words so that they fit inside the width provided.
 // NOTE: This approach has difficulty when working with transitions and updating or exiting.
-export function wrapTextTspan(text: any, dimensions: IWrapTextDimenions): any {
+export function wrapTextTspanEach(textEle: any, dimensions: IWrapTextDimenions): any {
 	const lineSpacing = 0.3; // 30% extra, so 130% line spacing.
 	const padding = dimensions.padding || 0;
 	const hCenter = dimensions.hCenter !== undefined ? dimensions.hCenter : false;
@@ -32,105 +32,112 @@ export function wrapTextTspan(text: any, dimensions: IWrapTextDimenions): any {
 	const vJust = dimensions.vJust !== undefined ? dimensions.vJust : false;
 	const width = dimensions.width - 2 * padding;
 	const height = dimensions.height - 2 * padding;
+	const textStyle = window.getComputedStyle(textEle.node());
+	const fontSize = textStyle.fontSize || dimensions.fontSize;
+	const fontFace = textStyle.getPropertyValue("font-face") || dimensions.fontFace;
+	const eleText = textEle.text();
+	const words = eleText.split(/\s+/).reverse();
+	const x = textEle.attr("x");
+	const y = textEle.attr("y");
 
+	// Font height in px is font size in pt (which is 0.75 px) => https://www.html5canvastutorials.com/tutorials/html5-canvas-text-metrics/
+	// See https://practicaltypography.com/line-spacing.html for suggestion of 120% to 145% line height
+
+	let fontSizePx = 16; // try to work with a guess of 16px.
+	if(typeof fontSize === "string") {
+		const match = fontSize.match(/^([0-9.]+)px$/);
+		if(match) {
+			fontSizePx = Number(match[1]);
+		} else {
+			console.error(`unable to handle non pixel size: ${fontSize}`);
+		}
+	}
+
+	// const lineHeight = 1.1; // ems
+	// FIXME: There's an assumption that fontSize is in pixels.
+	const lineHeight = fontSizePx * 0.75;
+
+	const lineNumber = 0;
+
+	// Put all the words into lines. Simplistic approach to fit the most possible on each line.
+	// FIXME: What to do if the words don't fit in the space (including the height?) Probably just want 1 line stretched.
+	const lines = [];
+	let line = [];
+	while(words.length) {
+		const word = words.pop();
+		line.push(word);
+
+		const calculatedWidth = offscreenGetWidth(line.join(" "), fontSize, fontFace);
+		if(calculatedWidth > width) {
+			if(line.length === 1) {
+				// FIXME: This word doesn't fit on a line... what do we want to do? Just plow on for now.
+				lines.push(line);
+			} else {
+				line.pop();
+				lines.push(line);
+				words.push(word);
+			}
+			line = [];
+		}
+	}
+
+	// Catch the last line in case it fit.
+	if(line.length) lines.push(line);
+
+	// Calculate some dimensions
+	let longestLine = 0;
+	for(const thisLine of lines) {
+		const lineText = thisLine.join(" ");
+		const lineLength = offscreenGetWidth(lineText, fontSize, fontFace);
+		if(longestLine <= lineLength) longestLine = lineLength;
+	}
+
+	// const tspan = textEle.text(null);
+	const tspan = textEle.text(null);
+
+	for(let i = 0; i < lines.length; ++i) {
+		const lineText = lines[i].join(" ");
+		const lineLength = offscreenGetWidth(lineText, fontSize, fontFace);
+
+		let dx = 0;
+		let dy = (i + 1) * lineHeight + (i * lineHeight * lineSpacing); // line height + spacing between
+
+		// Alter dx as appropriate
+		if(hCenter) {
+			dx -= width / 2; // Wrap the words so that they fit inside the width provided.
+			// NOTE: This approach has difficulty when working with transitions and updating or exiting.
+
+		}
+
+		// Alter dy as appropriate
+		if(vCenter) {
+			dy -= height / 2;
+		}
+
+		if(vJust) {
+			// Approximation for height
+			dy -= (lines.length * lineHeight + (lines.length - 1) * lineHeight * lineSpacing) / 2;
+		}
+
+		textEle
+			.append("tspan")
+				.attr("x", x || 0) // If x is specified for the text element we need to set x to the absolute position otherwise relative
+				.attr("y", y || 0) // If y is specified for the text element we need to set y to the absolute position otherwise relative
+				.attr("dx", dx)
+				.attr("dy", dy)
+				.text(lines[i].join(" "));
+
+	}
+
+	// console.log(`text wrap "${textEle.text()}" => ${JSON.stringify(lines)}`);
+}
+
+// Wrap the words so that they fit inside the width provided.
+// NOTE: This approach has difficulty when working with transitions and updating or exiting.
+export function wrapTextTspan(text: any, dimensions: IWrapTextDimenions): any {
 	text.each(function() {
 		const textEle = select(this);
-		const textStyle = window.getComputedStyle(textEle.node());
-		const fontSize = textStyle.fontSize || dimensions.fontSize;
-		const fontFace = textStyle.getPropertyValue("font-face") || dimensions.fontFace;
-		const eleText = textEle.text();
-		const words = eleText.split(/\s+/).reverse();
-		const x = textEle.attr("x");
-		const y = textEle.attr("y");
-
-		// Font height in px is font size in pt (which is 0.75 px) => https://www.html5canvastutorials.com/tutorials/html5-canvas-text-metrics/
-		// See https://practicaltypography.com/line-spacing.html for suggestion of 120% to 145% line height
-
-		let fontSizePx = 16; // try to work with a guess of 16px.
-		if(typeof fontSize === "string") {
-			const match = fontSize.match(/^([0-9.]+)px$/);
-			if(match) {
-				fontSizePx = Number(match[1]);
-			} else {
-				console.error(`unable to handle non pixel size: ${fontSize}`);
-			}
-		}
-
-		// const lineHeight = 1.1; // ems
-		// FIXME: There's an assumption that fontSize is in pixels.
-		const lineHeight = fontSizePx * 0.75;
-
-		const lineNumber = 0;
-
-		// Put all the words into lines. Simplistic approach to fit the most possible on each line.
-		// FIXME: What to do if the words don't fit in the space (including the height?) Probably just want 1 line stretched.
-		const lines = [];
-		let line = [];
-		while(words.length) {
-			const word = words.pop();
-			line.push(word);
-
-			const calculatedWidth = offscreenGetWidth(line.join(" "), fontSize, fontFace);
-			if(calculatedWidth > width) {
-				if(line.length === 1) {
-					// FIXME: This word doesn't fit on a line... what do we want to do? Just plow on for now.
-					lines.push(line);
-				} else {
-					line.pop();
-					lines.push(line);
-					words.push(word);
-				}
-				line = [];
-			}
-		}
-
-		// Catch the last line in case it fit.
-		if(line.length) lines.push(line);
-
-		// Calculate some dimensions
-		let longestLine = 0;
-		for(const thisLine of lines) {
-			const lineText = thisLine.join(" ");
-			const lineLength = offscreenGetWidth(lineText, fontSize, fontFace);
-			if(longestLine <= lineLength) longestLine = lineLength;
-		}
-
-		// const tspan = textEle.text(null);
-		const tspan = textEle.text(null);
-
-		for(let i = 0; i < lines.length; ++i) {
-			const lineText = lines[i].join(" ");
-			const lineLength = offscreenGetWidth(lineText, fontSize, fontFace);
-
-			let dx = 0;
-			let dy = (i + 1) * lineHeight + (i * lineHeight * lineSpacing); // line height + spacing between
-
-			// Alter dx as appropriate
-			if(hCenter) {
-				dx -= width / 2;
-			}
-
-			// Alter dy as appropriate
-			if(vCenter) {
-				dy -= height / 2;
-			}
-
-			if(vJust) {
-				// Approximation for height
-				dy -= (lines.length * lineHeight + (lines.length - 1) * lineHeight * lineSpacing) / 2;
-			}
-
-			textEle
-				.append("tspan")
-					.attr("x", x || 0) // If x is specified for the text element we need to set x to the absolute position otherwise relative
-					.attr("y", y || 0) // If y is specified for the text element we need to set y to the absolute position otherwise relative
-					.attr("dx", dx)
-					.attr("dy", dy)
-					.text(lines[i].join(" "));
-
-		}
-
-		// console.log(`text wrap "${textEle.text()}" => ${JSON.stringify(lines)}`);
+		return wrapTextTspanEach(textEle, dimensions);
 	});
 }
 
