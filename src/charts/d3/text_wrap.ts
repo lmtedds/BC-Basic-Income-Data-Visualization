@@ -175,6 +175,7 @@ export function wrapTextForeignObject(texts: any, dimensions: IWrapTextDimenions
 
 		const p = div
 			.append("xhtml:p")
+				.attr("class", `text-wrap-inner ${vJust ? " text-wrap-jvert" : ""}`)
 				.html(content);
 
 		// Remove the text element
