@@ -126,6 +126,7 @@ function chartToDimensions(data: IMatrixChart): IMatrixDimensionalInfo {
 export function buildMatrixForceChart(chartData: IMatrixChart, svgEle?: SVGElement) {
 	// Create a new svg node or use an existing one.
 	const svg = svgEle ? select(svgEle) : create("svg");
+	svg.classed("chart-matrix-force", true);
 
 	// Set the array into the desired format by adding "quad" properties to each data element.
 	const dimensions = chartToDimensions(chartData);

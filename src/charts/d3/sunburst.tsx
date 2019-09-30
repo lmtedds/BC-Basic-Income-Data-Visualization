@@ -37,6 +37,7 @@ export function buildZoomableSunburstChart(
 
 	// Create a new svg node or use an existing one.
 	const svg = svgEle ? select(svgEle) : create("svg");
+	svg.classed("chart-sunburst-zoom", true);
 
 	const width = 1000;
 	const radius = width / (showDepthMax * 2);
