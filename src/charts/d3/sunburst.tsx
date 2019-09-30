@@ -1,12 +1,12 @@
 import { format as d3format } from "d3-format";
 import { hierarchy, partition as d3partition } from "d3-hierarchy";
 import { interpolate, quantize } from "d3-interpolate";
-import { scaleOrdinal } from "d3-scale";
+import { scaleLinear, scaleOrdinal } from "d3-scale";
 import { interpolateRainbow } from "d3-scale-chromatic";
 import { create, select } from "d3-selection";
 import { arc } from "d3-shape";
 
-import { wrapTextTspan } from "~charts/d3/text_wrap";
+import { wrapTextTspanEach } from "~charts/d3/text_wrap";
 import { chooseBestContrastColour } from "~utils/colour";
 
 export interface ID3Hierarchy {
@@ -39,16 +39,20 @@ export function buildZoomableSunburstChart(
 	const svg = svgEle ? select(svgEle) : create("svg");
 	svg.classed("chart-sunburst-zoom", true);
 
+	// FIXME: Configurable dimensions ... non square to allow space for other annotations
 	const width = 1000;
 	const radius = width / (showDepthMax * 2);
+
+	const radiusScale = scaleLinear().domain([0, showDepthMax]).range([0, width / 2]);
+	// const radiusScale = scalePow().exponent(2).domain([0, showDepthMax]).range([0, width / 2]);
 
 	const arcs = arc()
 		.startAngle((d: any) => d.x0) // FIXME: type
 		.endAngle((d: any) => d.x1) // FIXME: type
 		.padAngle((d: any) => Math.min((d.x1 - d.x0) / 2, 0.005)) // FIXME: type
 		.padRadius(radius * 1.5)
-		.innerRadius((d: any) => d.y0 * radius) // FIXME: type
-		.outerRadius((d: any) => Math.max(d.y0 * radius, d.y1 * radius - 1)); // FIXME: type
+		.innerRadius((d: any) => radiusScale(d.y0)) // FIXME: type
+		.outerRadius((d: any) => Math.max(radiusScale(d.y0), radiusScale(d.y1) - 1)); // FIXME: type
 
 	// Colours for the sunburst will be either chosen automatically or can be provided in the colour property
 	// of the data. The colour is based on the parent and then the opacity is varied based on the depth.
@@ -107,33 +111,38 @@ export function buildZoomableSunburstChart(
 	path.append("title")
 		.text((d: any) => `${d.ancestors().map((d2) => d2.data.name).reverse().join("/")}\n${format(d.value)}`); // FIXME: Type
 
-	const label = g.append("g")
-		.attr("pointer-events", "none")
-		.attr("text-anchor", "middle")
-		.style("user-select", "none")
-		.selectAll("text")
-		.data(root.descendants().slice(1)) // first entry is root (keep everything else)
-		.join("text")
-			.attr("fill-opacity", (d: any) => +labelVisible(d.current)) // FIXME: Type
-			.attr("fill", (d) => chooseBestContrastColour(selectFillColour(d), selectFillOpacity(d)))
-			.attr("transform", (d: any) => labelTransform(d.current)) // FIXME: Type
-			.text((d: any) => { // FIXME: Type
-				return honourShowName ? (d.data.showName ? d.data.name : null) : d.data.name;
-			})
-			.call(wrapTextTspan, {
-				width: radius,
-				height: 50, // FIXME: height is wrong
-				padding: 5,
-				vCenter: false,
-				hCenter: false,
-				vJust: true,
-				fontSize: fontSize,
-				fontFace: fontFace,
-			});
+	const label = g
+		.append("g")
+			.attr("pointer-events", "none")
+			.attr("text-anchor", "middle")
+			.style("user-select", "none")
+			.selectAll("text")
+			.data(root.descendants().slice(1)) // first entry is root (keep everything else)
+			.join("text")
+				.attr("fill-opacity", (d: any) => +labelVisible(d.current)) // FIXME: Type
+				.attr("fill", (d) => chooseBestContrastColour(selectFillColour(d), selectFillOpacity(d)))
+				.attr("transform", (d: any) => labelTransform(d.current)) // FIXME: Type
+				.text((d: any) => { // FIXME: Type
+					return honourShowName ? (d.data.showName ? d.data.name : null) : d.data.name;
+				})
+				.each(function(d) {
+					const text = select(this);
+					return wrapTextTspanEach(text, {
+						width: radiusScale(d.y1) - radiusScale(d.y0),
+						height: 50, // FIXME: height is wrong
+						padding: 5,
+						vCenter: false,
+						hCenter: false,
+						vJust: true,
+						fontSize: fontSize,
+						fontFace: fontFace,
+					});
+				});
 
-	const parent = g.append("circle")
+	const parent = g
+		.append("circle")
 			.datum(root)
-			.attr("r", radius)
+			.attr("r", (d) => radiusScale(1))
 			.attr("fill", "none")
 			.attr("pointer-events", "all")
 			.on("click", clicked);
@@ -180,7 +189,7 @@ export function buildZoomableSunburstChart(
 
 	function labelTransform(d) {
 		const x = (d.x0 + d.x1) / 2 * 180 / Math.PI;
-		const y = (d.y0 + d.y1) / 2 * radius;
+		const y = (radiusScale(d.y0) + radiusScale(d.y1)) / 2;
 		return `rotate(${x - 90}) translate(${y},0) rotate(${x < 180 ? 0 : 180})`;
 	}
 
