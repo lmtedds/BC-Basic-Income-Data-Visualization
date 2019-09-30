@@ -3,25 +3,12 @@ import { select } from "d3-selection";
 import { LineToLineMappedSource } from "webpack-sources";
 import "./text_wrap.scss";
 
-export const enum IWrapTextDimensionsJustification {
-	LEFT = 0,
-	CENTER = 1,
-	RIGHT = 2,
-}
-
-const JustEnumToCss = {
-	[IWrapTextDimensionsJustification.LEFT]: "text-wrap-jleft",
-	[IWrapTextDimensionsJustification.CENTER]: "text-wrap-jcenter",
-	[IWrapTextDimensionsJustification.RIGHT]: "text-wrap-jright",
-};
-
 export interface IWrapTextDimenions {
 	width: number;
 	height: number;
 	padding?: number;
 	hCenter?: boolean; // rect positioning
 	vCenter?: boolean; // rect positioning
-	hJust?: IWrapTextDimensionsJustification;
 	vJust?: boolean;
 
 	fontSize?: string; // fallback guess for calculations in case can't query actual element
@@ -42,7 +29,6 @@ export function wrapTextTspan(text: any, dimensions: IWrapTextDimenions): any {
 	const padding = dimensions.padding || 0;
 	const hCenter = dimensions.hCenter !== undefined ? dimensions.hCenter : false;
 	const vCenter = dimensions.vCenter !== undefined ? dimensions.vCenter : false;
-	const hJust = dimensions.hJust !== undefined ? dimensions.hJust : IWrapTextDimensionsJustification.LEFT;
 	const vJust = dimensions.vJust !== undefined ? dimensions.vJust : false;
 	const width = dimensions.width - 2 * padding;
 	const height = dimensions.height - 2 * padding;
@@ -124,24 +110,6 @@ export function wrapTextTspan(text: any, dimensions: IWrapTextDimenions): any {
 				dx -= width / 2;
 			}
 
-			// FIXME: Remove hJust and vJust and let CSS/other do it
-			switch(hJust) {
-				case IWrapTextDimensionsJustification.CENTER:
-					dx -= lineLength / 2;
-					break;
-
-				case IWrapTextDimensionsJustification.LEFT:
-					dx -= 0;
-					break;
-
-				case IWrapTextDimensionsJustification.RIGHT:
-					dx += (longestLine / 2) - lineLength;
-					break;
-
-				default:
-					console.error(`unknown horizontal justification ${hJust}`);
-			}
-
 			// Alter dy as appropriate
 			if(vCenter) {
 				dy -= height / 2;
@@ -177,7 +145,6 @@ export function wrapTextForeignObject(texts: any, dimensions: IWrapTextDimenions
 		const padding = dimensions.padding || 0;
 		const hCenter = dimensions.hCenter !== undefined ? dimensions.hCenter : false;
 		const vCenter = dimensions.vCenter !== undefined ? dimensions.vCenter : false;
-		const hJust = dimensions.hJust !== undefined ? dimensions.hJust : IWrapTextDimensionsJustification.LEFT;
 		const vJust = dimensions.vJust !== undefined ? dimensions.vJust : false;
 		const width = dimensions.width - 2 * padding;
 		const height = dimensions.height - 2 * padding;
@@ -208,7 +175,6 @@ export function wrapTextForeignObject(texts: any, dimensions: IWrapTextDimenions
 
 		const p = div
 			.append("xhtml:p")
-				.attr("class", `text-wrap-inner ${JustEnumToCss[hJust]}${vJust ? " text-wrap-jvert" : ""}`)
 				.html(content);
 
 		// Remove the text element

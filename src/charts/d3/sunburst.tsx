@@ -6,7 +6,7 @@ import { interpolateRainbow } from "d3-scale-chromatic";
 import { create, select } from "d3-selection";
 import { arc } from "d3-shape";
 
-import { IWrapTextDimensionsJustification, wrapTextTspan } from "~charts/d3/text_wrap";
+import { wrapTextTspan } from "~charts/d3/text_wrap";
 import { chooseBestContrastColour } from "~utils/colour";
 
 export interface ID3Hierarchy {
@@ -126,7 +126,6 @@ export function buildZoomableSunburstChart(
 				vCenter: false,
 				hCenter: false,
 				vJust: true,
-				hJust: IWrapTextDimensionsJustification.LEFT,
 				fontSize: fontSize,
 				fontFace: fontFace,
 			});
