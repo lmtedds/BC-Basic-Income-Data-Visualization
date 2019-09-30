@@ -191,7 +191,7 @@ export function buildMatrixForceChart(chartData: IMatrixChart, svgEle?: SVGEleme
 
 	if(xAxisQuadLines) {
 		const spacing = chartData.axes.xTitles.map((title) => {
-			return xSpacing(title) + xSpacing.bandwidth();
+			return xSpacing(title) + xSpacing.bandwidth() + (xSpacing.paddingInner() * xSpacing.step() / 2);
 		}).slice(0, -1);
 		const xGridSpacing = scaleLinear().range([0, sizeWidth]).domain([0, sizeWidth]);
 
@@ -243,7 +243,7 @@ export function buildMatrixForceChart(chartData: IMatrixChart, svgEle?: SVGEleme
 
 	if(yAxisQuadLines) {
 		const spacing = chartData.axes.yTitles.map((title) => {
-			return ySpacing(title) + ySpacing.bandwidth();
+			return ySpacing(title) + ySpacing.bandwidth() + (ySpacing.paddingInner() * ySpacing.step() / 2);
 		}).slice(1);
 		const yGridSpacing = scaleLinear().range([sizeHeight - margin.bottom, margin.top]).domain([sizeHeight - margin.bottom, margin.top]);
 
