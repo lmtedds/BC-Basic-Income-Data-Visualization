@@ -40,6 +40,8 @@ export function buildZoomableSunburstChart(
 	sunburstData: ISunburstChart,
 	svgEle?: SVGElement) {
 
+	const getDepth = ({ children }) => 1 + (children ? Math.max(...children.map(getDepth)) : 0);
+	const chartDepth = getDepth(sunburstData as {children: any});
 	const showDepth = sunburstData.setup ? sunburstData.setup.showDepth : 3;
 	const showDepthMin = 1;
 	const showDepthMax = showDepthMin + showDepth;
@@ -188,7 +190,7 @@ export function buildZoomableSunburstChart(
 			.transition(t)
 				.tween("scale", (d: any) => {
 					// Reset the radiusScale's domain so that we can take advantage of the fact we have fewer levels to display
-					const yd = interpolate(radiusScale.domain(), [0, showDepthMax - p.depth]);
+					const yd = interpolate(radiusScale.domain(), [0, Math.min(chartDepth - p.depth, showDepthMax)]);
 					return (t2) => radiusScale.domain(yd(t2));
 				})
 				.tween("data", (d: any) => {
