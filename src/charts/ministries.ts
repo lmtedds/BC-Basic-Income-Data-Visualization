@@ -2,7 +2,7 @@
 import { data as ministryData } from "~data/20190927_ministries";
 
 import { buildZoomablePackedCircleChart, ID3Hierarchy } from "~charts/d3/circle";
-import { buildZoomableSunburstChart } from "~charts/d3/sunburst";
+import { buildZoomableSunburstChart, ISunburstChart } from "~charts/d3/sunburst";
 
 const levelOfGovernment = "Level of Government";
 const responsibleMinistry = "Responsible Ministry:";
@@ -116,8 +116,19 @@ export function buildMinistryComplexityCircleChart(svgEle?: SVGElement) {
 export function buildMinistryComplexitySunburstChart(svgEle?: SVGElement) {
 	const sortKeys = [levelOfGovernment, responsibleMinistry, administeredBy];
 	const sortData = listToSortedTree(ministryData, sortKeys);
-	const hierData: ID3Hierarchy = treeToHierarchy(sortData);
+	const sunburstChartData: ISunburstChart = treeToHierarchy(sortData);
 	// console.log(`hier: ${JSON.stringify(hierData, null, 4)}`);
 
-	return buildZoomableSunburstChart(hierData, 3, false, svgEle);
+	sunburstChartData.setup = {
+		width: 1000,
+
+		showDepth: 3,
+		radiusScaleExponent: 1.4,
+
+		textWrapPadding: 10,
+
+		honourShowName: false,
+	};
+
+	return buildZoomableSunburstChart(sunburstChartData, svgEle);
 }
