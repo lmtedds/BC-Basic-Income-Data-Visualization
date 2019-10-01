@@ -1,10 +1,3 @@
-// This is where typescript/javascript starts from. A reference to it is automatically added to index.html (via webpack).
-<<<<<<< HEAD
-<<<<<<< HEAD
-import { data as ministryData } from "~data/20190927_ministries";
-=======
-=======
->>>>>>> 5e977bb7878284b8116bfdac6e1e8e15bea01772
 import { data as ministryData } from "~data/20190927_ministries";
 
 import { buildZoomablePackedCircleChart, ID3Hierarchy } from "~charts/d3/circle";
