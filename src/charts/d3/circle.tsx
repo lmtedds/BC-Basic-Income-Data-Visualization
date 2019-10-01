@@ -15,6 +15,7 @@ export interface ID3Hierarchy {
 export function buildZoomablePackedCircleChart(hierarchicalData: ID3Hierarchy, svgEle?: SVGElement) {
 	// Create a new svg node or use an existing one.
 	const svg = svgEle ? d3.select(svgEle) : d3.create("svg");
+	svg.classed("chart-packed-circle-zoom", true);
 
 	const height: number = 1000;
 	const width: number = 1000;

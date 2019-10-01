@@ -39,6 +39,7 @@ function getLinks(data: ILinkForceChart) {
 export function buildLinkedForceChart(chartData, svgEle?: SVGElement) {
 	// Create a new svg node or use an existing one.
 	const svg = svgEle ? d3.select(svgEle) : d3.create("svg");
+	svg.classed("chart-linked-force", true);
 
 	const nodes = chartData.nodes;
 	const links = getLinks(chartData);

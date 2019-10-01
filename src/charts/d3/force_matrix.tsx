@@ -5,7 +5,7 @@ import { scaleBand, scaleLinear, scaleOrdinal } from "d3-scale";
 import { interpolateRainbow } from "d3-scale-chromatic";
 import { create, select, Selection } from "d3-selection";
 
-import { IWrapTextDimensionsJustification, wrapTextForeignObject, wrapTextTspan } from "~charts/d3/text_wrap";
+import { wrapTextForeignObject, wrapTextTspan } from "~charts/d3/text_wrap";
 
 interface IMatrixDimensionalInfo {
 	xAxis: boolean;
@@ -126,6 +126,7 @@ function chartToDimensions(data: IMatrixChart): IMatrixDimensionalInfo {
 export function buildMatrixForceChart(chartData: IMatrixChart, svgEle?: SVGElement) {
 	// Create a new svg node or use an existing one.
 	const svg = svgEle ? select(svgEle) : create("svg");
+	svg.classed("chart-matrix-force", true);
 
 	// Set the array into the desired format by adding "quad" properties to each data element.
 	const dimensions = chartToDimensions(chartData);
@@ -173,17 +174,17 @@ export function buildMatrixForceChart(chartData: IMatrixChart, svgEle?: SVGEleme
 			.call(axisFn(xSpacing)) // Top or bottom axis
 			.call((g) => g.select(".domain").remove()) // Get rid of the domain path for the axis
 			.call((g) => g.selectAll("line").remove()) // Get rid of the ticks lines for the axis
+			.attr("text-anchor", "middle")
 			.selectAll("text")
 				.style("font-size", xAxisFontSize)
 				.attr("y", 0)
-				.call(wrapTextForeignObject, {
+				.call(wrapTextTspan, {
 					width: xSpacing.bandwidth(),
 					height: xAxisOnTop ? margin.top : margin.bottom,
 					padding: 0,
 					vCenter: false,
-					hCenter: true,
+					hCenter: false,
 					vJust: false,
-					hJust: IWrapTextDimensionsJustification.CENTER,
 					fontSize: xAxisFontSize,
 					fontFace: fontFace,
 				});
@@ -191,7 +192,7 @@ export function buildMatrixForceChart(chartData: IMatrixChart, svgEle?: SVGEleme
 
 	if(xAxisQuadLines) {
 		const spacing = chartData.axes.xTitles.map((title) => {
-			return xSpacing(title) + xSpacing.bandwidth();
+			return xSpacing(title) + xSpacing.bandwidth() + (xSpacing.paddingInner() * xSpacing.step() / 2);
 		}).slice(0, -1);
 		const xGridSpacing = scaleLinear().range([0, sizeWidth]).domain([0, sizeWidth]);
 
@@ -216,8 +217,19 @@ export function buildMatrixForceChart(chartData: IMatrixChart, svgEle?: SVGEleme
 			.call(axisLeft(ySpacing)) // Left axis with no tick marks
 			.call((g) => g.select(".domain").remove()) // Get rid of the domain path for the axis
 			.call((g) => g.selectAll("line").remove()) // Get rid of the ticks for the axis
+			// .attr("text-anchor", "end")
 			.selectAll("text")
 				.style("font-size", yAxisFontSize)
+				// .call(wrapTextTspan, {
+				// 	width: margin.left,
+				// 	height: ySpacing.bandwidth(),
+				// 	padding: 0,
+				// 	vCenter: true,
+				// 	hCenter: false,
+				// 	vJust: true,
+				// 	fontSize: yAxisFontSize,
+				// 	fontFace: fontFace,
+				// });
 				.call(wrapTextForeignObject, {
 					width: margin.left,
 					height: ySpacing.bandwidth(),
@@ -225,7 +237,6 @@ export function buildMatrixForceChart(chartData: IMatrixChart, svgEle?: SVGEleme
 					vCenter: true,
 					hCenter: false,
 					vJust: true,
-					hJust: IWrapTextDimensionsJustification.RIGHT,
 					fontSize: yAxisFontSize,
 					fontFace: fontFace,
 				});
@@ -233,7 +244,7 @@ export function buildMatrixForceChart(chartData: IMatrixChart, svgEle?: SVGEleme
 
 	if(yAxisQuadLines) {
 		const spacing = chartData.axes.yTitles.map((title) => {
-			return ySpacing(title) + ySpacing.bandwidth();
+			return ySpacing(title) + ySpacing.bandwidth() + (ySpacing.paddingInner() * ySpacing.step() / 2);
 		}).slice(1);
 		const yGridSpacing = scaleLinear().range([sizeHeight - margin.bottom, margin.top]).domain([sizeHeight - margin.bottom, margin.top]);
 
@@ -424,6 +435,7 @@ export function circleWithNameSimulationJoinFn(chartData: IMatrixChart, quadrant
 				.text(function(d) {
 					return d.name;
 				})
+				.attr("text-anchor", "middle")
 				.attr("fill", "#000") // FIXME:
 				.attr("x", function(d) {
 					return d.x;
@@ -432,13 +444,12 @@ export function circleWithNameSimulationJoinFn(chartData: IMatrixChart, quadrant
 					return d.y;
 				})
 				.call(wrapTextTspan, {
-					width: 10,
-					height: 10,
+					width: 10, // FIXME: This should be 2*radius or something of the sort
+					height: 10, // FIXME: This should be 2*radius or something of the sort
 					padding: 0,
 					vCenter: false,
 					hCenter: false,
 					vJust: true,
-					hJust: IWrapTextDimensionsJustification.CENTER,
 					fontSize: fontSize,
 					fontFace: fontFace,
 				});

@@ -3,25 +3,12 @@ import { select } from "d3-selection";
 import { LineToLineMappedSource } from "webpack-sources";
 import "./text_wrap.scss";
 
-export const enum IWrapTextDimensionsJustification {
-	LEFT = 0,
-	CENTER = 1,
-	RIGHT = 2,
-}
-
-const JustEnumToCss = {
-	[IWrapTextDimensionsJustification.LEFT]: "text-wrap-jleft",
-	[IWrapTextDimensionsJustification.CENTER]: "text-wrap-jcenter",
-	[IWrapTextDimensionsJustification.RIGHT]: "text-wrap-jright",
-};
-
 export interface IWrapTextDimenions {
 	width: number;
 	height: number;
 	padding?: number;
 	hCenter?: boolean; // rect positioning
 	vCenter?: boolean; // rect positioning
-	hJust?: IWrapTextDimensionsJustification;
 	vJust?: boolean;
 
 	fontSize?: string; // fallback guess for calculations in case can't query actual element
@@ -31,175 +18,130 @@ export interface IWrapTextDimenions {
 const canvas = document.createElement("canvas");
 const context = canvas.getContext("2d");
 function offscreenGetWidth(text, fontSize?, fontFace?) {
-	if(fontSize && fontFace) context.font = fontSize + "px " + fontFace;
+	if(fontSize && fontFace) context.font = fontSize + " " + fontFace;
 	return context.measureText(text).width;
 }
 
 // Wrap the words so that they fit inside the width provided.
-// NOTE: This approach has difficulting when working with transitions and updating or exiting.
-// NOTE: If you find problems with this not actually wrapping, it might be that the text element
-//       hasn't been rendered yet. You can do some kludging with setting a large padding.
-//
-// FIXME: This works for width but doesn't check height. Very primitive.
-// FIXME: Doesn't work with shapes (i.e. varying widths depending on height).
-// FIXME: Doesn't handle cases where can't wrap into bounding space with some kind of fallback.
-// FIXME: May offset from center height.
-export function wrapTextTspan2(text: any, dimensions: IWrapTextDimenions): any {
+// NOTE: This approach has difficulty when working with transitions and updating or exiting.
+export function wrapTextTspanEach(textEle: any, dimensions: IWrapTextDimenions): any {
+	const lineSpacing = 0.3; // 30% extra, so 130% line spacing.
 	const padding = dimensions.padding || 0;
 	const hCenter = dimensions.hCenter !== undefined ? dimensions.hCenter : false;
 	const vCenter = dimensions.vCenter !== undefined ? dimensions.vCenter : false;
-	const hJust = dimensions.hJust !== undefined ? dimensions.hJust : IWrapTextDimensionsJustification.LEFT;
 	const vJust = dimensions.vJust !== undefined ? dimensions.vJust : false;
 	const width = dimensions.width - 2 * padding;
 	const height = dimensions.height - 2 * padding;
+	const textStyle = window.getComputedStyle(textEle.node());
+	const fontSize = textStyle.fontSize || dimensions.fontSize;
+	const fontFace = textStyle.getPropertyValue("font-face") || dimensions.fontFace;
+	const x = textEle.attr("x");
+	const y = textEle.attr("y");
 
-	text.each(function() {
-		const textEle = select(this);
-		const textStyle = window.getComputedStyle(textEle.node());
-		const fontSize = textStyle.fontSize || dimensions.fontSize;
-		const fontFace = textStyle.getPropertyValue("font-face") || dimensions.fontFace;
-		const words = textEle.text().split(/\s+/).reverse();
-		const lineHeight = 1.1; // ems
-		const x = textEle.attr("x");
-		const y = textEle.attr("y");
-		const dy = 0;
+	// Stash the text in a <desc> block so that it can be used later as the definitive source.
+	const desc = textEle.select("desc");
+	const text = desc.empty() ? textEle.text() : desc.text();
+	const words = text.split(/\s+/).reverse();
 
-		let word;
-		let line = [];
-		let lineNumber = 0;
-		let tspan = textEle.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "em");
+	// Create a desc block and populate it with the cannonical text. We can then retrieve it later
+	// if needed. Setting the text element's text to null will delete all the children (not sure why
+	// but it does on chrome for sure) so use it to get rid of either the text or the tspans that are
+	// there so we can start with a clean slate.
+	textEle.text(null);
+	textEle.append("desc").text(text);
 
-		// FIXME: This isn't a good way to do things. Need to compute first then once everything is computed
-		//        output the elements so that dy is correct. Basically we're not vertically centered.
-		// FIXME: What to do if the words don't fit in the space (including the height?) Probably just want 1 line stretched.
-		// FIXME: Probably also want each line to have some kind of specified justification.
-		while (words.length) {
-			word = words.pop();
-			line.push(word);
-			tspan.text(line.join(" "));
-			if (offscreenGetWidth(line.join(" "), fontSize, fontFace) > width) {
-				line.pop();
-				tspan.text(line.join(" "));
-				line = [word];
-				++lineNumber;
-				tspan = textEle.append("tspan")
-					.attr("x", x || 0) // If x is specified for the text element we need to set x to the absolute position
-					.attr("y", y || 0) // If y is specified for the text element we need to set x to the absolute position
-					.attr("dx", 0) // FIXME: justification
-					.attr("dy", (lineNumber * lineHeight + dy) + "em")
-					.text(word);
-			}
+	// Font height in px is font size in pt (which is 0.75 px) => https://www.html5canvastutorials.com/tutorials/html5-canvas-text-metrics/
+	// See https://practicaltypography.com/line-spacing.html for suggestion of 120% to 145% line height.
+
+	let fontSizePx = 16; // try to work with a guess of 16px.
+	if(typeof fontSize === "string") {
+		const match = fontSize.match(/^([0-9.]+)px$/);
+		if(match) {
+			fontSizePx = Number(match[1]);
+		} else {
+			console.error(`unable to handle non pixel size: ${fontSize}`);
 		}
-	});
+	}
+
+	// FIXME: There's an assumption that fontSize is in pixels.
+	const lineHeight = fontSizePx * 0.75;
+
+	// Put all the words into lines. Simplistic approach to fit the most possible on each line.
+	// FIXME: What to do if the words don't fit in the space (including the height?) Probably just want 1 line stretched.
+	const lines = [];
+	let line = [];
+	while(words.length) {
+		const word = words.pop();
+		line.push(word);
+
+		const calculatedWidth = offscreenGetWidth(line.join(" "), fontSize, fontFace);
+		if(calculatedWidth > width) {
+			if(line.length === 1) {
+				// FIXME: This word doesn't fit on a line... what do we want to do? Just plow on for now.
+				lines.push(line);
+			} else {
+				line.pop();
+				lines.push(line);
+				words.push(word);
+			}
+			line = [];
+		}
+	}
+
+	// Catch the last line in case it fit.
+	if(line.length) lines.push(line);
+
+	// Calculate some dimensions
+	let longestLine = 0;
+	for(const thisLine of lines) {
+		const lineText = thisLine.join(" ");
+		const lineLength = offscreenGetWidth(lineText, fontSize, fontFace);
+		if(longestLine <= lineLength) longestLine = lineLength;
+	}
+
+	for(let i = 0; i < lines.length; ++i) {
+		const lineText = lines[i].join(" ");
+		const lineLength = offscreenGetWidth(lineText, fontSize, fontFace);
+
+		let dx = 0;
+		let dy = (i + 1) * lineHeight + (i * lineHeight * lineSpacing); // line height + spacing between
+
+		// Alter dx as appropriate
+		if(hCenter) {
+			dx -= width / 2; // Wrap the words so that they fit inside the width provided.
+			// NOTE: This approach has difficulty when working with transitions and updating or exiting.
+
+		}
+
+		// Alter dy as appropriate
+		if(vCenter) {
+			dy -= height / 2;
+		}
+
+		if(vJust) {
+			// Approximation for height
+			dy -= (lines.length * lineHeight + (lines.length - 1) * lineHeight * lineSpacing) / 2;
+		}
+
+		textEle
+			.append("tspan")
+				.attr("x", x || 0) // If x is specified for the text element we need to set x to the absolute position otherwise relative
+				.attr("y", y || 0) // If y is specified for the text element we need to set y to the absolute position otherwise relative
+				.attr("dx", dx)
+				.attr("dy", dy)
+				.text(lines[i].join(" "));
+
+	}
+
+	// console.log(`text wrap "${textEle.text()}" => ${JSON.stringify(lines)}`);
 }
 
+// Wrap the words so that they fit inside the width provided.
+// NOTE: This approach has difficulty when working with transitions and updating or exiting.
 export function wrapTextTspan(text: any, dimensions: IWrapTextDimenions): any {
-	const padding = dimensions.padding || 0;
-	const hCenter = dimensions.hCenter !== undefined ? dimensions.hCenter : false;
-	const vCenter = dimensions.vCenter !== undefined ? dimensions.vCenter : false;
-	const hJust = dimensions.hJust !== undefined ? dimensions.hJust : IWrapTextDimensionsJustification.LEFT;
-	const vJust = dimensions.vJust !== undefined ? dimensions.vJust : false;
-	const width = dimensions.width - 2 * padding;
-	const height = dimensions.height - 2 * padding;
-
 	text.each(function() {
 		const textEle = select(this);
-		const textStyle = window.getComputedStyle(textEle.node());
-		const fontSize = textStyle.fontSize || dimensions.fontSize;
-		const fontFace = textStyle.getPropertyValue("font-face") || dimensions.fontFace;
-		const eleText = textEle.text();
-		const words = eleText.split(/\s+/).reverse();
-		const lineHeight = 1.1; // ems
-		const x = textEle.attr("x");
-		const y = textEle.attr("y");
-
-		const lineNumber = 0;
-
-		// Put all the words into lines. Simplistic approach to fit the most possible on each line.
-		// FIXME: What to do if the words don't fit in the space (including the height?) Probably just want 1 line stretched.
-		const lines = [];
-		let line = [];
-		while(words.length) {
-			const word = words.pop();
-			line.push(word);
-
-			const calculatedWidth = offscreenGetWidth(line.join(" "), fontSize, fontFace);
-			if(calculatedWidth > width) {
-				if(line.length === 1) {
-					// FIXME: This word doesn't fit on a line... what do we want to do? Just plow on for now.
-					lines.push(line);
-				} else {
-					line.pop();
-					lines.push(line);
-					words.push(word);
-				}
-				line = [];
-			}
-		}
-
-		// Catch the last line in case it fit.
-		if(line.length) lines.push(line);
-
-		// Calculate some dimensions
-		let longestLine = 0;
-		for(const thisLine of lines) {
-			const lineText = thisLine.join(" ");
-			const lineLength = offscreenGetWidth(lineText, fontSize, fontFace);
-			if(longestLine <= lineLength) longestLine = lineLength;
-		}
-
-		const tspan = textEle.text(null);
-
-		for(let i = 0; i < lines.length; ++i) {
-			const lineText = lines[i].join(" ");
-			const lineLength = offscreenGetWidth(lineText, fontSize, fontFace);
-
-			let dx = 0;
-			let dy = (i + 1) * lineHeight;
-
-			// Alter dx as appropriate
-			if(hCenter) {
-				dx -= width / 2;
-			}
-
-			switch(hJust) {
-				case IWrapTextDimensionsJustification.CENTER:
-					dx -= lineLength / 2;
-					break;
-
-				case IWrapTextDimensionsJustification.LEFT:
-					dx -= 0;
-					break;
-
-				case IWrapTextDimensionsJustification.RIGHT:
-					dx += (longestLine / 2) - lineLength;
-					break;
-
-				default:
-					console.error(`unknown horizontal justification ${hJust}`);
-			}
-
-			// Alter dy as appropriate
-			if(vCenter) {
-				dy -= height / 2;
-			}
-
-			if(vJust) {
-				// Approximation for height
-				dy -= (lines.length * lineHeight) / 2;
-			}
-
-			textEle
-				.append("tspan")
-					.attr("x", x || 0) // If x is specified for the text element we need to set x to the absolute position otherwise relative
-					.attr("y", y || 0) // If y is specified for the text element we need to set y to the absolute position otherwise relative
-					.attr("dx", dx)
-					.attr("dy", dy + "em")
-					.text(lines[i].join(" "));
-
-		}
-
-		// console.log(`text wrap "${textEle.text()}" => ${JSON.stringify(lines)}`);
+		return wrapTextTspanEach(textEle, dimensions);
 	});
 }
 
@@ -214,7 +156,6 @@ export function wrapTextForeignObject(texts: any, dimensions: IWrapTextDimenions
 		const padding = dimensions.padding || 0;
 		const hCenter = dimensions.hCenter !== undefined ? dimensions.hCenter : false;
 		const vCenter = dimensions.vCenter !== undefined ? dimensions.vCenter : false;
-		const hJust = dimensions.hJust !== undefined ? dimensions.hJust : IWrapTextDimensionsJustification.LEFT;
 		const vJust = dimensions.vJust !== undefined ? dimensions.vJust : false;
 		const width = dimensions.width - 2 * padding;
 		const height = dimensions.height - 2 * padding;
@@ -245,7 +186,7 @@ export function wrapTextForeignObject(texts: any, dimensions: IWrapTextDimenions
 
 		const p = div
 			.append("xhtml:p")
-				.attr("class", `text-wrap-inner ${JustEnumToCss[hJust]}${vJust ? " text-wrap-jvert" : ""}`)
+				.attr("class", `text-wrap-inner ${vJust ? " text-wrap-jvert" : ""}`)
 				.html(content);
 
 		// Remove the text element
