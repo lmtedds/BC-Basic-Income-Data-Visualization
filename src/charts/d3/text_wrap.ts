@@ -35,13 +35,23 @@ export function wrapTextTspanEach(textEle: any, dimensions: IWrapTextDimenions):
 	const textStyle = window.getComputedStyle(textEle.node());
 	const fontSize = textStyle.fontSize || dimensions.fontSize;
 	const fontFace = textStyle.getPropertyValue("font-face") || dimensions.fontFace;
-	const eleText = textEle.text();
-	const words = eleText.split(/\s+/).reverse();
 	const x = textEle.attr("x");
 	const y = textEle.attr("y");
 
+	// Stash the text in a <desc> block so that it can be used later as the definitive source.
+	const desc = textEle.select("desc");
+	const text = desc.empty() ? textEle.text() : desc.text();
+	const words = text.split(/\s+/).reverse();
+
+	// Create a desc block and populate it with the cannonical text. We can then retrieve it later
+	// if needed. Setting the text element's text to null will delete all the children (not sure why
+	// but it does on chrome for sure) so use it to get rid of either the text or the tspans that are
+	// there so we can start with a clean slate.
+	textEle.text(null);
+	textEle.append("desc").text(text);
+
 	// Font height in px is font size in pt (which is 0.75 px) => https://www.html5canvastutorials.com/tutorials/html5-canvas-text-metrics/
-	// See https://practicaltypography.com/line-spacing.html for suggestion of 120% to 145% line height
+	// See https://practicaltypography.com/line-spacing.html for suggestion of 120% to 145% line height.
 
 	let fontSizePx = 16; // try to work with a guess of 16px.
 	if(typeof fontSize === "string") {
@@ -53,11 +63,8 @@ export function wrapTextTspanEach(textEle: any, dimensions: IWrapTextDimenions):
 		}
 	}
 
-	// const lineHeight = 1.1; // ems
 	// FIXME: There's an assumption that fontSize is in pixels.
 	const lineHeight = fontSizePx * 0.75;
-
-	const lineNumber = 0;
 
 	// Put all the words into lines. Simplistic approach to fit the most possible on each line.
 	// FIXME: What to do if the words don't fit in the space (including the height?) Probably just want 1 line stretched.
@@ -91,9 +98,6 @@ export function wrapTextTspanEach(textEle: any, dimensions: IWrapTextDimenions):
 		const lineLength = offscreenGetWidth(lineText, fontSize, fontFace);
 		if(longestLine <= lineLength) longestLine = lineLength;
 	}
-
-	// const tspan = textEle.text(null);
-	const tspan = textEle.text(null);
 
 	for(let i = 0; i < lines.length; ++i) {
 		const lineText = lines[i].join(" ");
