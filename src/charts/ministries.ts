@@ -52,7 +52,7 @@ function listToSortedTree(array, sortKeys: string[]) {
 				} else {
 					subObj[value] = [ele];
 				}
-			} else{
+			} else {
 				// Not last level of hierarchy. Just create the new level (if required)
 				if(!subObj[value]) {
 					subObj[value] = {};
