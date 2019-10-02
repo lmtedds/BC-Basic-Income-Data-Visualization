@@ -1,4 +1,3 @@
-import { format as d3format } from "d3-format";
 import { hierarchy, partition as d3partition } from "d3-hierarchy";
 import { interpolate, quantize } from "d3-interpolate";
 import { scaleOrdinal, scalePow } from "d3-scale";
@@ -130,10 +129,6 @@ export function buildZoomableSunburstChart(
 	path.filter((d: any) => d.children) // FIXME: Type
 		.style("cursor", "pointer")
 		.on("click", clicked);
-
-	const format = d3format(",d");
-	path.append("title")
-		.text((d: any) => `${d.ancestors().map((d2) => d2.data.name).reverse().join("/")}\n${format(d.value)}`); // FIXME: Type
 
 	const label = g
 		.append("g")
