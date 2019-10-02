@@ -139,16 +139,6 @@ export function buildZoomableSunburstChart(
 		.append("g")
 			.attr("class", "tooltip-group");
 
-	const tooltipPoly = tooltipArea
-		.append("polygon")
-			.attr("class", "svg-tooltip-outline")
-			.attr("pointer-events", "none");
-
-	const tooltipContent = tooltipArea
-		.append("foreignObject")
-			.attr("class", "svg-tooltip-content")
-			.attr("pointer-events", "none");
-
 	const tooltipMouseover = function(d) {
 		let [x, y] = mouse(svg.node() as any);
 		console.log(`mouseover event at ${x}, ${y}`);
@@ -166,21 +156,29 @@ export function buildZoomableSunburstChart(
 			invertVert = true;
 		}
 
-		tooltipPoly
-			.attr("opacity", 1)
-			.attr("transform", `translate(${(x + (invertHoriz ? +tip.w : -tip.w))},${(y + (invertVert ? -tip.h : +tip.h))})`)
-			.attr("width", tooltipWidth)
-			.attr("height", tooltipHeight)
-			.attr("points", genTooltipPolyPoints(tooltipWidth, tooltipHeight, t, tip, invertVert, invertHoriz))
-			.attr("fill", "#F8F8F8")
-			.attr("opacity", 0.75);
+		if(d.data.tooltip) {
+			tooltipArea
+				.append("polygon")
+					.attr("class", "svg-tooltip-outline")
+					.attr("pointer-events", "none")
+					.attr("opacity", 1)
+					.attr("transform", `translate(${(x + (invertHoriz ? +tip.w : -tip.w))},${(y + (invertVert ? -tip.h : +tip.h))})`)
+					.attr("width", tooltipWidth)
+					.attr("height", tooltipHeight)
+					.attr("points", genTooltipPolyPoints(tooltipWidth, tooltipHeight, t, tip, invertVert, invertHoriz))
+					.attr("fill", "#F8F8F8")
+					.attr("opacity", 0.75);
 
-		tooltipContent
-			.attr("x", x + (invertHoriz ? tip.w : -tip.w))
-			.attr("y", y + (invertVert ? -tip.h : +tip.h))
-			.attr("width", tooltipWidth)
-			.attr("height", tooltipHeight)
-			.html(d.data.tooltip);
+			tooltipArea
+				.append("foreignObject")
+					.attr("class", "svg-tooltip-content")
+					.attr("pointer-events", "none")
+					.attr("x", x + (invertHoriz ? tip.w : -tip.w))
+					.attr("y", y + (invertVert ? -tip.h : +tip.h))
+					.attr("width", tooltipWidth)
+					.attr("height", tooltipHeight)
+					.html(d.data.tooltip);
+		}
 	};
 
 	// FIXME: svg.chart-sunburst-zoom foreignObject.svg-tooltip { overflow: visible; }
@@ -202,10 +200,12 @@ export function buildZoomableSunburstChart(
 			invertVert = true;
 		}
 
-		tooltipPoly
+		tooltipArea
+			.select("polygon")
 			.attr("transform", `translate(${(x + (invertHoriz ? +tip.w : -tip.w))},${(y + (invertVert ? -tip.h : +tip.h))})`);
 
-		tooltipContent
+		tooltipArea
+			.select("foreignObject")
 			.attr("x", x + (invertHoriz ? tip.w : -tip.w))
 			.attr("y", y + (invertVert ? -tip.h : +tip.h));
 	};
@@ -214,8 +214,13 @@ export function buildZoomableSunburstChart(
 		const [x, y] = mouse(svg.node() as any);
 		console.log(`mouseout event at ${x}, ${y}`);
 
-		tooltipPoly
-			.attr("opacity", 0);
+		tooltipArea
+			.select("foreignObject")
+				.remove();
+
+		tooltipArea
+			.select("polygon")
+				.remove();
 	};
 
 	const path = g
@@ -306,7 +311,7 @@ export function buildZoomableSunburstChart(
 			.filter(function(d: any) { // FIXME: Type
 				return +this.getAttribute("fill-opacity") || labelVisible(d.target);
 			} as any)
-			.transition(t)
+			.transition(trans)
 				.attr("fill-opacity", (d: any) => +labelVisible(d.target)) // FIXME: Type
 				.attrTween("transform", (d: any) => () => labelTransform(d.current)) // FIXME: Type
 				.tween("textwrap", function(d: any) {
