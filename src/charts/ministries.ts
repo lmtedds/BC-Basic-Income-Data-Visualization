@@ -1,4 +1,3 @@
-// This is where typescript/javascript starts from. A reference to it is automatically added to index.html (via webpack).
 import { data as ministryData } from "~data/20190927_ministries";
 
 import { buildZoomablePackedCircleChart, ID3Hierarchy } from "~charts/d3/circle";
@@ -51,7 +50,7 @@ function listToSortedTree(array, sortKeys: string[]) {
 		let subObj = obj;
 		sortKeys.forEach((key, index) => {
 			const value = ele[key];
-			if(index === sortKeys.length - 1) {
+			if(index === sortKeys.length - 1 ) {
 				// Last level of hierarchy/search. Insert our new element.
 				if(subObj[value]) {
 					subObj[value].push(ele);
@@ -59,7 +58,7 @@ function listToSortedTree(array, sortKeys: string[]) {
 					subObj[value] = [ele];
 				}
 			} else {
-				// Not last level of hierarchy. Just create the new level (if required).
+				// Not last level of hierarchy. Just create the new level (if required)
 				if(!subObj[value]) {
 					subObj[value] = {};
 				}
