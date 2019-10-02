@@ -2,7 +2,7 @@ import { hierarchy, partition as d3partition } from "d3-hierarchy";
 import { interpolate, quantize } from "d3-interpolate";
 import { scaleOrdinal, scalePow } from "d3-scale";
 import { interpolateRainbow } from "d3-scale-chromatic";
-import { create, select } from "d3-selection";
+import { create, event as d3Event, mouse, select } from "d3-selection";
 import { arc } from "d3-shape";
 
 import { wrapTextTspanEach } from "~charts/d3/text_wrap";
@@ -15,6 +15,8 @@ export interface ID3Hierarchy {
 
 	ministry: string;
 	program?: string;
+
+	tooltip?: string; // HTML string
 
 	children?: this[];
 }
@@ -115,6 +117,107 @@ export function buildZoomableSunburstChart(
 		.append("g")
 			.attr("transform", `translate(${width / 2},${width / 2})`);
 
+	// FIXME: proto/quick and dirty tooltip support
+	function genTooltipPolyPoints(polyWidth, polyHeight, tipOffset, tipDims, invertVert, invertHoriz): string {
+		if(!invertVert && !invertHoriz) {
+			return `0,0 0,${polyHeight} ${polyWidth},${polyHeight} ${polyWidth},0 ${tipOffset},0 ${tipDims.w},${-tipDims.h} ${tipOffset / 2},0`;
+		} else if(invertVert && !invertHoriz) {
+			return `0,0 0,${polyHeight} ${tipOffset / 2},${polyHeight} ${tipDims.w},${tipDims.h + polyHeight} ${tipOffset},${polyHeight} ${polyWidth},${polyHeight} ${polyWidth},0`;
+		} else if(!invertVert && invertHoriz) {
+			return `0,0 0,${polyHeight} ${polyWidth},${polyHeight} ${polyWidth},0 ${polyWidth - tipOffset / 2},0 ${polyWidth - tipDims.w},${-tipDims.h} ${polyWidth - tipOffset},0`;
+		} else {
+			return `0,0 0,${polyHeight} ${polyWidth - tipOffset},${polyHeight} ${polyWidth - tipDims.w},${tipDims.h + polyHeight} ${polyWidth - tipOffset / 2},${polyHeight} ${polyWidth},${polyHeight} ${polyWidth},0`;
+		}
+	}
+
+	const tooltipWidth = width / 3;  // FIXME: dynamic / CSS based?
+	const tooltipHeight = width / 3; // FIXME: dynamic / CSS based?
+	const t = 50;
+	const k = 15;
+	const tip = {w: (3 / 4 * t), h: k};
+	const tooltipArea = svg
+		.append("g")
+			.attr("class", "tooltip-group");
+
+	const tooltipPoly = tooltipArea
+		.append("polygon")
+			.attr("class", "svg-tooltip-outline")
+			.attr("pointer-events", "none");
+
+	const tooltipContent = tooltipArea
+		.append("foreignObject")
+			.attr("class", "svg-tooltip-content")
+			.attr("pointer-events", "none");
+
+	const tooltipMouseover = function(d) {
+		let [x, y] = mouse(svg.node() as any);
+		console.log(`mouseover event at ${x}, ${y}`);
+
+		// Position the tooltip to keep inside the chart
+		let invertVert = false;
+		let invertHoriz = false;
+		if(x + tooltipWidth > width) {
+			x = x - tooltipWidth;
+			invertHoriz = true;
+		}
+
+		if(y + tooltipHeight > width) {
+			y = y - tooltipHeight;
+			invertVert = true;
+		}
+
+		tooltipPoly
+			.attr("opacity", 1)
+			.attr("transform", `translate(${(x + (invertHoriz ? +tip.w : -tip.w))},${(y + (invertVert ? -tip.h : +tip.h))})`)
+			.attr("width", tooltipWidth)
+			.attr("height", tooltipHeight)
+			.attr("points", genTooltipPolyPoints(tooltipWidth, tooltipHeight, t, tip, invertVert, invertHoriz))
+			.attr("fill", "#F8F8F8")
+			.attr("opacity", 0.75);
+
+		tooltipContent
+			.attr("x", x + (invertHoriz ? tip.w : -tip.w))
+			.attr("y", y + (invertVert ? -tip.h : +tip.h))
+			.attr("width", tooltipWidth)
+			.attr("height", tooltipHeight)
+			.html(d.data.tooltip);
+	};
+
+	// FIXME: svg.chart-sunburst-zoom foreignObject.svg-tooltip { overflow: visible; }
+
+	const tooltipMousemove = function() {
+		let [x, y] = mouse(svg.node() as any);
+		console.log(`mousemove event at ${x}, ${y}`);
+
+		// Position the tooltip to keep inside the chart
+		let invertVert = false;
+		let invertHoriz = false;
+		if(x + tooltipWidth > width) {
+			x = x - tooltipWidth;
+			invertHoriz = true;
+		}
+
+		if(y + tooltipHeight > width) {
+			y = y - tooltipHeight;
+			invertVert = true;
+		}
+
+		tooltipPoly
+			.attr("transform", `translate(${(x + (invertHoriz ? +tip.w : -tip.w))},${(y + (invertVert ? -tip.h : +tip.h))})`);
+
+		tooltipContent
+			.attr("x", x + (invertHoriz ? tip.w : -tip.w))
+			.attr("y", y + (invertVert ? -tip.h : +tip.h));
+	};
+
+	const tooltipMouseout = function() {
+		const [x, y] = mouse(svg.node() as any);
+		console.log(`mouseout event at ${x}, ${y}`);
+
+		tooltipPoly
+			.attr("opacity", 0);
+	};
+
 	const path = g
 		.append("g")
 			.attr("class", "arcs")
@@ -123,9 +226,12 @@ export function buildZoomableSunburstChart(
 			.join("path")
 				.attr("fill", selectFillColour)
 				.attr("fill-opacity", selectFillOpacity)
-				.attr("d", (d: any) => arcs(d.current)); // FIXME: Type
+				.attr("d", (d: any) => arcs(d.current)) // FIXME: Type
+				.on("mouseover", tooltipMouseover)
+				.on("mouseout", tooltipMouseout)
+				.on("mousemove", tooltipMousemove);
 
-	// Add a click handler to anything with children (i.e. not outermost ring)
+	// Add a click handler to anything with children (i.e. not outermost ring) that allows "zooming"
 	path.filter((d: any) => d.children) // FIXME: Type
 		.style("cursor", "pointer")
 		.on("click", clicked);
@@ -176,13 +282,13 @@ export function buildZoomableSunburstChart(
 			y1: Math.max(0, d.y1 - p.depth),
 		});
 
-		const t = g.transition().duration(750);
+		const trans = g.transition().duration(750);
 
 		// Transition the data on all arcs, even the ones that aren’t visible,
 		// so that if this transition is interrupted, entering arcs will start
 		// the next transition from the desired position.
 		path
-			.transition(t)
+			.transition(trans)
 				.tween("scale", (d: any) => {
 					// Reset the radiusScale's domain so that we can take advantage of the fact we have fewer levels to display
 					const yd = interpolate(radiusScale.domain(), [0, Math.min(chartDepth - p.depth, showDepthMax)]);

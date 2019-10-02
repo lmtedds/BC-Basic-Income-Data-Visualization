@@ -71,6 +71,24 @@ function listToSortedTree(array, sortKeys: string[]) {
 	return obj;
 }
 
+function makeTooltip(program): string {
+				// Disability Assistance
+				// Number of Recipients (July 2019): 190,227
+				// Total Expenditures (2017/2018): $1,300M
+				// The BCEA Program for Persons with Disabilities provides disability assistance and supplements to provide greater independence for people with disabilities, including security of income, enhanced well-being, and participation in the community.
+				// Major Eligibility Requirements: persons with disability, low income, means-tested
+				// Website link: https://www2.gov.bc.ca/gov/content/family-social-supports/services-for-people-with-disabilities/disability-assistance
+
+	return `
+		<div>
+			<em>${program}</em>
+			<p>Number of Recipients (July 2019): 190,227</p>
+			<p>Total Expenditures (2017/2018): $1,300M</p>
+			<p>The BCEA Program for Persons with Disabilities provides disability assistance and supplements to provide greater independence for people with disabilities, including security of income, enhanced well-being, and participation in the community. Major Eligibility Requirements: persons with disability, low income, means-tested</p>
+			<a href="https://www2.gov.bc.ca/gov/content/family-social-supports/services-for-people-with-disabilities/disability-assistance">https://www2.gov.bc.ca/gov/content/family-social-supports/services-for-people-with-disabilities/disability-assistance</a>
+		<div>`;
+}
+
 // FIXME: value should be pulled out and moved to a chart type specific function
 function treeToHierarchy(tree, obj: any = {ministry: "root", showName: false, value: 0, name: "root"}): any {
 	if(Array.isArray(tree)) {
@@ -83,6 +101,8 @@ function treeToHierarchy(tree, obj: any = {ministry: "root", showName: false, va
 				value: 1,
 				showName: ele[showName] ? (ele[showName].toLowerCase() === "true") : false,
 				name: ele[programName] || ele[administeredBy] || ele[responsibleMinistry],
+
+				tooltip: makeTooltip(ele[programName]),
 			};
 		});
 	}
