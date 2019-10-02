@@ -3,7 +3,7 @@ import { app, Component } from "apprun";
 import { buildApplicationChart } from "~charts/application";
 import { buildEligibilityChart } from "~charts/eligibility";
 import { buildInKindChart } from "~charts/in_kind";
-import { buildMinistryComplexityCircleChart, buildMinistryComplexitySunburstChart } from "~charts/ministries";
+import { buildMinistryComplexitySunburstChart } from "~charts/ministries";
 import { buildProgramInteractionChart } from "~charts/programs";
 
 import "./style.scss";
@@ -21,7 +21,6 @@ export default class ChartsComponent extends Component {
 	private readonly eligibilitySvgEle: SVGElement;
 	private readonly inKindSvgEle: SVGElement;
 	private readonly interactionLinkSvgEle: SVGElement;
-	private readonly ministryComplexityCircleSvgEle: SVGElement;
 	private readonly ministryComplexitySunburstSvgEle: SVGElement;
 
 	constructor() {
@@ -31,23 +30,21 @@ export default class ChartsComponent extends Component {
 		this.eligibilitySvgEle = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 		this.inKindSvgEle = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 		this.interactionLinkSvgEle = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-		this.ministryComplexityCircleSvgEle = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 		this.ministryComplexitySunburstSvgEle = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 	}
 
 	public view = (state) => {
 		const applicationChart = buildApplicationChart(this.applicationSvgEle);
+		// console.log(applicationChart);
 
 		const eligibilityChart = buildEligibilityChart(this.eligibilitySvgEle);
+		// console.log(eligibilityChart);
 
 		const matrixChart = buildInKindChart(this.inKindSvgEle); // Yes, this really is an SVG element
 		// console.log(matrixChart);
 
 		const linkChart = buildProgramInteractionChart(this.interactionLinkSvgEle);
 		// console.log(linkChart);
-
-		const ministeryCircleChart = buildMinistryComplexityCircleChart(this.ministryComplexityCircleSvgEle);
-		// console.log(ministeryCircleChart);
 
 		const ministerySunburstChart = buildMinistryComplexitySunburstChart(this.ministryComplexitySunburstSvgEle);
 		// console.log(ministerySunburstChart);
@@ -74,10 +71,6 @@ export default class ChartsComponent extends Component {
 				</div>
 			</div>
 			<div class="row">
-				<div className="img-fluid col-xl">
-					<h2 class="text-center">Ministry Complexity</h2>
-					{this.ministryComplexityCircleSvgEle}
-				</div>
 				<div className="img-fluid col-xl">
 					<h2 class="text-center">Ministry Complexity</h2>
 					{this.ministryComplexitySunburstSvgEle}
