@@ -1,5 +1,7 @@
 import { mouse } from "d3-selection";
 
+// Expected to be used with d3.
+// NOTE: It's strongly suggested that you wrap your html in a <div> so that margins, and other styling, can be applied via CSS.
 // FIXME: proto/quick and dirty tooltip support
 export class Tooltip {
 	// Generate a tooltip bubble from a polygon. This generates the points required for the polygon
@@ -22,17 +24,18 @@ export class Tooltip {
 
 	private readonly tooltipArea;
 	private readonly rootSelection;
-	private readonly width;  // FIXME: dynamic / CSS based?
-	private readonly height; // FIXME: dynamic / CSS based?
+	private readonly bubbleWidth;  // FIXME: dynamic / CSS based?
+	private readonly bubbleHeight;
 	private readonly chartWidth;
 	private readonly chartHeight;
 	private readonly bubbleOpacity;
 	private readonly bubbleBackground;
 
-	constructor(rootSelection, width, height, chartWidth, chartHeight, backgroundColour, backgroundOpacity) {
+	// If bubbleHeight < 0 then go with a dynamically calculated bubble height.
+	constructor(rootSelection, bubbleWidth: number, bubbleHeight: number, chartWidth: number, chartHeight: number, backgroundColour, backgroundOpacity) {
 		this.rootSelection = rootSelection;
-		this.width = width;
-		this.height = height;
+		this.bubbleWidth = bubbleWidth;
+		this.bubbleHeight = bubbleHeight;
 		this.chartWidth = chartWidth;
 		this.chartHeight = chartHeight;
 		this.bubbleBackground = backgroundColour;
@@ -46,8 +49,8 @@ export class Tooltip {
 	public mouseoverHandler() {
 		const rootSelection = this.rootSelection;
 		const tooltipArea = this.tooltipArea;
-		const width = this.width;
-		const height = this.height;
+		const width = this.bubbleWidth;
+		const height = this.bubbleHeight;
 		const chartWidth = this.chartWidth;
 		const chartHeight = this.chartHeight;
 		const tip = this.tip;
@@ -55,88 +58,98 @@ export class Tooltip {
 		const bubbleBackground = this.bubbleBackground;
 		const bubbleOpacity = this.bubbleOpacity;
 
-		// NOTE: This function will be called with different "this" which is not the object this
+		// NOTE: This function will be called with different "this" - it is not the object this
 		return function(d) {
 			let [x, y] = mouse(rootSelection.node() as any);
 			console.log(`mouseover event at ${x}, ${y}`);
 
-			// Position the tooltip to keep inside the chart
-			let invertVert = false;
-			let invertHoriz = false;
-			if(x + width > chartWidth) {
-				x = x - width;
-				invertHoriz = true;
-			}
-
-			if(y + height + tip.h > chartHeight) {
-				y = y - height - tip.h;
-				invertVert = true;
-			}
-
 			if(d.data.tooltip) {
+				const testContent = tooltipArea
+					.append("foreignObject")
+						.attr("class", "svg-tooltip-content")
+						.attr("pointer-events", "none")
+						.attr("width", width)
+						.html(d.data.tooltip);
+
+				const calculatedHeight = height >= 0 ? height : testContent.select("div").node().getBoundingClientRect().height;
+
+				// Position the tooltip to keep inside the chart
+				let invertVert = false;
+				let invertHoriz = false;
+				if(x + width > chartWidth) {
+					x = x - width;
+					invertHoriz = true;
+				}
+
+				if(y + height + tip.h > chartHeight) {
+					y = y - height - tip.h;
+					invertVert = true;
+				}
+
+				testContent
+					.attr("x", x + (invertHoriz ? tip.w : -tip.w))
+					.attr("y", y + (invertVert ? -tip.h : +tip.h))
+					.attr("height", calculatedHeight);
+
 				tooltipArea
-					.append("polygon")
+					.insert("polygon", "foreignObject")
 						.attr("class", "svg-tooltip-outline")
 						.attr("pointer-events", "none")
 						.attr("opacity", 1)
 						.attr("transform", `translate(${(x + (invertHoriz ? tip.w : -tip.w))},${(y + (invertVert ? -tip.h : +tip.h))})`)
 						.attr("width", width)
-						.attr("height", height)
-						.attr("points", Tooltip.genBubblePolyPoints(width, height, tipOffset, tip.w, tip.h, invertVert, invertHoriz))
+						.attr("height", calculatedHeight)
+						.attr("points", Tooltip.genBubblePolyPoints(width, calculatedHeight, tipOffset, tip.w, tip.h, invertVert, invertHoriz))
 						.attr("fill", bubbleBackground)
 						.attr("opacity", bubbleOpacity);
-
-				tooltipArea
-					.append("foreignObject")
-						.attr("class", "svg-tooltip-content")
-						.attr("pointer-events", "none")
-						.attr("x", x + (invertHoriz ? tip.w : -tip.w))
-						.attr("y", y + (invertVert ? -tip.h : +tip.h))
-						.attr("width", width)
-						.attr("height", height)
-						.html(d.data.tooltip);
 			}
 		};
 	}
+
 	public mousemoveHandler() {
 		const rootSelection = this.rootSelection;
 		const tooltipArea = this.tooltipArea;
-		const width = this.width;
-		const height = this.height;
+		const width = this.bubbleWidth;
+		const height = this.bubbleHeight;
 		const chartWidth = this.chartWidth;
 		const chartHeight = this.chartHeight;
 		const tip = this.tip;
 		const tipOffset = this.tipOffset;
 
-		// NOTE: This function will be called with different "this" which is not the object this
-		return function() {
+		// NOTE: This function will be called with different "this" - it is not the object this
+		return function(d) {
 			let [x, y] = mouse(rootSelection.node() as any);
 			console.log(`mousemove event at ${x}, ${y}`);
 
-			// Position the tooltip to keep inside the chart
-			let invertVert = false;
-			let invertHoriz = false;
-			if(x + width > chartWidth) {
-				x = x - width;
-				invertHoriz = true;
+			if(d.data.tooltip) {
+				const calculatedHeight = height >= 0 ? height : tooltipArea.select("foreignObject div").node().getBoundingClientRect().height;
+
+				// Position the tooltip to keep inside the chart
+				let invertVert = false;
+				let invertHoriz = false;
+				if(x + width > chartWidth) {
+					x = x - width;
+					invertHoriz = true;
+				}
+
+				if(y + calculatedHeight + tip.h > chartHeight) {
+					y = y - calculatedHeight - tip.h;
+					invertVert = true;
+				}
+
+				tooltipArea
+					.select("polygon")
+					.attr("points", Tooltip.genBubblePolyPoints(width, calculatedHeight, tipOffset, tip.w, tip.h, invertVert, invertHoriz))
+					.attr("transform", `translate(${(x + (invertHoriz ? tip.w : -tip.w))},${(y + (invertVert ? -tip.h : tip.h))})`);
+
+				tooltipArea
+					.select("foreignObject")
+					.attr("x", x + (invertHoriz ? tip.w : -tip.w))
+					.attr("y", y + (invertVert ? -tip.h : tip.h));
 			}
-
-			if(y + height + tip.h > chartHeight) {
-				y = y - height - tip.h;
-				invertVert = true;
-			}
-
-			tooltipArea
-				.select("polygon")
-				.attr("points", Tooltip.genBubblePolyPoints(width, height, tipOffset, tip.w, tip.h, invertVert, invertHoriz))
-				.attr("transform", `translate(${(x + (invertHoriz ? tip.w : -tip.w))},${(y + (invertVert ? -tip.h : tip.h))})`);
-
-			tooltipArea
-				.select("foreignObject")
-				.attr("x", x + (invertHoriz ? tip.w : -tip.w))
-				.attr("y", y + (invertVert ? -tip.h : tip.h));
 		};
 	}
+
 	public mouseoutHandler() {
 		const rootSelection = this.rootSelection;
 		const tooltipArea = this.tooltipArea;

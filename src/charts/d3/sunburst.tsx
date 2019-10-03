@@ -123,7 +123,7 @@ export function buildZoomableSunburstChart(
 	const tooltipOpacity = 0.9; // FIXME: Configurable
 	const tooltipBackground = "#F8F8F8"; // FIXME: Configurable
 
-	const tooltip = new Tooltip(svg, width / 3, width / 3, width, width, tooltipBackground, tooltipOpacity);
+	const tooltip = new Tooltip(svg, width / 3, -1, width, width, tooltipBackground, tooltipOpacity);
 	const tooltipMouseover = tooltip.mouseoverHandler();
 	const tooltipMouseout = tooltip.mouseoutHandler();
 	const tooltipMousemove = tooltip.mousemoveHandler();
