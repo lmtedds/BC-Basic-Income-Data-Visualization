@@ -95,7 +95,6 @@ export class Tooltip {
 					.insert("polygon", "foreignObject")
 						.attr("class", "svg-tooltip-outline")
 						.attr("pointer-events", "none")
-						.attr("opacity", 1)
 						.attr("transform", `translate(${(x + (invertHoriz ? tip.w : -tip.w))},${(y + (invertVert ? -tip.h : +tip.h))})`)
 						.attr("width", width)
 						.attr("height", calculatedHeight)
