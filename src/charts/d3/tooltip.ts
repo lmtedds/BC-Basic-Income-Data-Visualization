@@ -131,10 +131,10 @@ export class Tooltip {
 
 		// NOTE: This function will be called with different "this" - it is not the object this
 		return function(d) {
-			let [x, y] = mouse(rootSelection.node() as any);
-			// console.log(`mouseover event at ${x}, ${y}`);
-
 			if(d.data.tooltip) {
+				let [x, y] = mouse(rootSelection.node() as any);
+				// console.log(`mouseover event at ${x}, ${y}`);
+
 				const testContent = tooltipArea
 					.append("foreignObject")
 						.attr("class", "svg-tooltip-content")
@@ -202,10 +202,10 @@ export class Tooltip {
 
 		// NOTE: This function will be called with different "this" - it is not the object this
 		return function(d) {
-			let [x, y] = mouse(rootSelection.node() as any);
-			// console.log(`mousemove event at ${x}, ${y}`);
-
 			if(d.data.tooltip) {
+				let [x, y] = mouse(rootSelection.node() as any);
+				// console.log(`mousemove event at ${x}, ${y}`);
+
 				const calculatedHeight = height >= 0 ? height : tooltipArea.select("foreignObject div").node().getBoundingClientRect().height;
 
 				// Position the tooltip to keep inside the chart
@@ -247,22 +247,24 @@ export class Tooltip {
 		const roundedBubble = this.roundedBubble;
 
 		// NOTE: This function will be called with different "this" which is not the object this
-		return function() {
-			const [x, y] = mouse(rootSelection.node() as any);
-			// console.log(`mouseout event at ${x}, ${y}`);
+		return function(d) {
+			if(d.data.tooltip) {
+				const [x, y] = mouse(rootSelection.node() as any);
+				// console.log(`mouseout event at ${x}, ${y}`);
 
-			tooltipArea
-				.select("foreignObject")
-					.remove();
+				tooltipArea
+					.select("foreignObject")
+						.remove();
 
-			if(roundedBubble) {
-				tooltipArea
-				.select("path")
-					.remove();
-			} else {
-				tooltipArea
-				.select("polygon")
-					.remove();
+				if(roundedBubble) {
+					tooltipArea
+					.select("path")
+						.remove();
+				} else {
+					tooltipArea
+					.select("polygon")
+						.remove();
+				}
 			}
 		};
 	}}
