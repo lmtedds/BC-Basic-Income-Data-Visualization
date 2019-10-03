@@ -6,6 +6,7 @@ import { create, event as d3Event, mouse, select } from "d3-selection";
 import { arc } from "d3-shape";
 
 import { wrapTextTspanEach } from "~charts/d3/text_wrap";
+import { Tooltip } from "~charts/d3/tooltip";
 import { chooseBestContrastColour } from "~utils/colour";
 
 export interface ID3Hierarchy {
@@ -117,111 +118,13 @@ export function buildZoomableSunburstChart(
 		.append("g")
 			.attr("transform", `translate(${width / 2},${width / 2})`);
 
-	// FIXME: proto/quick and dirty tooltip support
-	function genTooltipPolyPoints(polyWidth, polyHeight, tipOffset, tipDims, invertVert, invertHoriz): string {
-		if(!invertVert && !invertHoriz) {
-			return `0,0 0,${polyHeight} ${polyWidth},${polyHeight} ${polyWidth},0 ${tipOffset},0 ${tipDims.w},${-tipDims.h} ${tipOffset / 2},0`;
-		} else if(invertVert && !invertHoriz) {
-			return `0,0 0,${polyHeight} ${tipOffset / 2},${polyHeight} ${tipDims.w},${tipDims.h + polyHeight} ${tipOffset},${polyHeight} ${polyWidth},${polyHeight} ${polyWidth},0`;
-		} else if(!invertVert && invertHoriz) {
-			return `0,0 0,${polyHeight} ${polyWidth},${polyHeight} ${polyWidth},0 ${polyWidth - tipOffset / 2},0 ${polyWidth - tipDims.w},${-tipDims.h} ${polyWidth - tipOffset},0`;
-		} else {
-			return `0,0 0,${polyHeight} ${polyWidth - tipOffset},${polyHeight} ${polyWidth - tipDims.w},${tipDims.h + polyHeight} ${polyWidth - tipOffset / 2},${polyHeight} ${polyWidth},${polyHeight} ${polyWidth},0`;
-		}
-	}
+	const tooltipOpacity = 0.9; // FIXME: Configurable
+	const tooltipBackground = "#F8F8F8"; // FIXME: Configurable
 
-	const tooltipWidth = width / 3;  // FIXME: dynamic / CSS based?
-	const tooltipHeight = width / 3; // FIXME: dynamic / CSS based?
-	const t = 50;
-	const k = 15;
-	const tip = {w: (3 / 4 * t), h: k};
-	const tooltipArea = svg
-		.append("g")
-			.attr("class", "tooltip-group");
-
-	const tooltipMouseover = function(d) {
-		let [x, y] = mouse(svg.node() as any);
-		console.log(`mouseover event at ${x}, ${y}`);
-
-		// Position the tooltip to keep inside the chart
-		let invertVert = false;
-		let invertHoriz = false;
-		if(x + tooltipWidth > width) {
-			x = x - tooltipWidth;
-			invertHoriz = true;
-		}
-
-		if(y + tooltipHeight > width) {
-			y = y - tooltipHeight;
-			invertVert = true;
-		}
-
-		if(d.data.tooltip) {
-			tooltipArea
-				.append("polygon")
-					.attr("class", "svg-tooltip-outline")
-					.attr("pointer-events", "none")
-					.attr("opacity", 1)
-					.attr("transform", `translate(${(x + (invertHoriz ? +tip.w : -tip.w))},${(y + (invertVert ? -tip.h : +tip.h))})`)
-					.attr("width", tooltipWidth)
-					.attr("height", tooltipHeight)
-					.attr("points", genTooltipPolyPoints(tooltipWidth, tooltipHeight, t, tip, invertVert, invertHoriz))
-					.attr("fill", "#F8F8F8")
-					.attr("opacity", 0.75);
-
-			tooltipArea
-				.append("foreignObject")
-					.attr("class", "svg-tooltip-content")
-					.attr("pointer-events", "none")
-					.attr("x", x + (invertHoriz ? tip.w : -tip.w))
-					.attr("y", y + (invertVert ? -tip.h : +tip.h))
-					.attr("width", tooltipWidth)
-					.attr("height", tooltipHeight)
-					.html(d.data.tooltip);
-		}
-	};
-
-	// FIXME: svg.chart-sunburst-zoom foreignObject.svg-tooltip { overflow: visible; }
-
-	const tooltipMousemove = function() {
-		let [x, y] = mouse(svg.node() as any);
-		console.log(`mousemove event at ${x}, ${y}`);
-
-		// Position the tooltip to keep inside the chart
-		let invertVert = false;
-		let invertHoriz = false;
-		if(x + tooltipWidth > width) {
-			x = x - tooltipWidth;
-			invertHoriz = true;
-		}
-
-		if(y + tooltipHeight > width) {
-			y = y - tooltipHeight;
-			invertVert = true;
-		}
-
-		tooltipArea
-			.select("polygon")
-			.attr("transform", `translate(${(x + (invertHoriz ? +tip.w : -tip.w))},${(y + (invertVert ? -tip.h : +tip.h))})`);
-
-		tooltipArea
-			.select("foreignObject")
-			.attr("x", x + (invertHoriz ? tip.w : -tip.w))
-			.attr("y", y + (invertVert ? -tip.h : +tip.h));
-	};
-
-	const tooltipMouseout = function() {
-		const [x, y] = mouse(svg.node() as any);
-		console.log(`mouseout event at ${x}, ${y}`);
-
-		tooltipArea
-			.select("foreignObject")
-				.remove();
-
-		tooltipArea
-			.select("polygon")
-				.remove();
-	};
+	const tooltip = new Tooltip(svg, width / 3, width / 3, width, width, tooltipBackground, tooltipOpacity);
+	const tooltipMouseover = tooltip.mouseoverHandler();
+	const tooltipMouseout = tooltip.mouseoutHandler();
+	const tooltipMousemove = tooltip.mousemoveHandler();
 
 	const path = g
 		.append("g")
