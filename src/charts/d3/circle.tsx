@@ -1,4 +1,8 @@
-import * as d3 from "d3";
+import { hierarchy, pack as d3Pack } from "d3-hierarchy";
+import { interpolateHcl, interpolateZoom } from "d3-interpolate";
+import { scaleLinear } from "d3-scale";
+import { create, event, select, selection } from "d3-selection";
+import "d3-transition"; // required to make d3 transitions work
 
 export interface ID3Hierarchy {
 	name: string;
@@ -14,7 +18,7 @@ export interface ID3Hierarchy {
 // Adapted from https://observablehq.com/@d3/zoomable-circle-packing
 export function buildZoomablePackedCircleChart(hierarchicalData: ID3Hierarchy, svgEle?: SVGElement) {
 	// Create a new svg node or use an existing one.
-	const svg = svgEle ? d3.select(svgEle) : d3.create("svg");
+	const svg = svgEle ? select(svgEle) : create("svg");
 	svg.classed("chart-packed-circle-zoom", true);
 
 	const height: number = 1000;
@@ -22,10 +26,10 @@ export function buildZoomablePackedCircleChart(hierarchicalData: ID3Hierarchy, s
 	const aspect: number = width / height;
 
 	const pack = (dataToPack) => {
-		return d3.pack()
+		return d3Pack()
 			.size([width, height])
 			.padding(3)
-			(d3.hierarchy(dataToPack)
+			(hierarchy(dataToPack)
 				.sum((d) => d.value)
 				.sort((a, b) => b.value - a.value));
 	};
@@ -34,15 +38,15 @@ export function buildZoomablePackedCircleChart(hierarchicalData: ID3Hierarchy, s
 	let focus = root;
 	let view;
 
-	const colour = d3.scaleLinear()
+	const colour = scaleLinear()
 		.domain([0, 5])
 		.range(["hsl(152,80%,80%)" as any, "hsl(228,30%,40%)" as any]) // FIXME: cast works around typescript def'n bug
-		.interpolate(d3.interpolateHcl as any); // FIXME: cast works around typescript def'n bug
+		.interpolate(interpolateHcl as any); // FIXME: cast works around typescript def'n bug
 
 	// Mouse events
-	const mouseover = function() { d3.select(this).attr("stroke", "#000"); };
-	const mouseout = function() { d3.select(this).attr("stroke", null); };
-	const mouseclick = function(d) { return focus !== d && (zoom(d), d3.event.stopPropagation()); };
+	const mouseover = function() { select(this).attr("stroke", "#000"); };
+	const mouseout = function() { select(this).attr("stroke", null); };
+	const mouseclick = function(d) { return focus !== d && (zoom(d), event.stopPropagation()); };
 
 	svg
 		.attr("viewBox", `-${width / 2} -${height / 2} ${width} ${height}`)
@@ -94,9 +98,9 @@ export function buildZoomablePackedCircleChart(hierarchicalData: ID3Hierarchy, s
 		focus = newRoot;
 
 		const transition = svg.transition()
-			.duration(d3.event.altKey ? 7500 : 750)
+			.duration(event.altKey ? 7500 : 750)
 			.tween("zoom", (d) => {
-			const i = d3.interpolateZoom(view, [focus.x, focus.y, focus.r * 2]);
+			const i = interpolateZoom(view, [focus.x, focus.y, focus.r * 2]);
 			return (t) => zoomTo(i(t));
 			});
 
