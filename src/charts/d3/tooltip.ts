@@ -1,3 +1,4 @@
+import { oneLine } from "common-tags";
 import { mouse } from "d3-selection";
 
 // Expected to be used with d3.
@@ -18,6 +19,68 @@ export class Tooltip {
 		}
 	}
 
+	private static genBubblePath(polyWidth, polyHeight, tipOffset, tipWidth, tipHeight, pointDown, tipOnRight): string {
+		const radius = 10; // FIXME: modify on polyWidth and polyHeight
+
+		if(!pointDown && !tipOnRight) {
+			return oneLine`
+				M 0 ${radius}
+				L 0 ${polyHeight - radius}
+				Q 0 ${polyHeight}, ${radius} ${polyHeight}
+				L ${polyWidth - radius} ${polyHeight}
+				Q ${polyWidth} ${polyHeight}, ${polyWidth} ${polyHeight - radius}
+				L ${polyWidth} ${radius}
+				Q ${polyWidth} 0, ${polyWidth - radius} 0
+				L ${tipOffset} 0
+				L ${tipWidth} ${-tipHeight}
+				L ${tipOffset / 2} 0
+				L ${radius} 0
+				Q 0 0, 0 ${radius}`;
+		} else if(pointDown && !tipOnRight) {
+			return oneLine`
+				M 0 ${radius}
+				L 0 ${polyHeight - radius}
+				Q 0 ${polyHeight}, ${radius} ${polyHeight}
+				L ${tipOffset / 2} ${polyHeight}
+				L ${tipWidth} ${tipHeight + polyHeight}
+				L ${tipOffset} ${polyHeight}
+				L ${polyWidth - radius} ${polyHeight}
+				Q ${polyWidth} ${polyHeight}, ${polyWidth} ${polyHeight - radius}
+				L ${polyWidth} ${radius}
+				Q ${polyWidth} 0, ${polyWidth - radius} 0
+				L ${radius} 0
+				Q 0 0, 0 ${radius}`;
+		} else if(!pointDown && tipOnRight) {
+			return oneLine`
+				M 0 ${radius}
+				L 0 ${polyHeight - radius}
+				Q 0 ${polyHeight}, ${radius} ${polyHeight}
+				L ${polyWidth - radius} ${polyHeight}
+				Q ${polyWidth} ${polyHeight}, ${polyWidth} ${polyHeight - radius}
+				L ${polyWidth} ${radius}
+				Q ${polyWidth} 0, ${polyWidth - radius} 0
+				L ${polyWidth - tipOffset / 2} 0
+				L ${polyWidth - tipWidth} ${-tipHeight}
+				L ${polyWidth - tipOffset} 0
+				L ${radius} 0
+				Q 0 0, 0 ${radius}`;
+		} else { // pointDown && tipOnRight
+			return oneLine`
+				M 0 ${radius}
+				L 0 ${polyHeight - radius}
+				Q 0 ${polyHeight}, ${radius} ${polyHeight}
+				L ${polyWidth - tipOffset} ${polyHeight}
+				L ${polyWidth - tipWidth} ${tipHeight + polyHeight}
+				L ${polyWidth - tipOffset / 2} ${polyHeight}
+				L ${polyWidth - radius} ${polyHeight}
+				Q ${polyWidth} ${polyHeight}, ${polyWidth} ${polyHeight - radius}
+				L ${polyWidth} ${radius}
+				Q ${polyWidth} 0, ${polyWidth - radius} 0
+				L ${radius} 0
+				Q 0 0, 0 ${radius}`;
+		}
+	}
+
 	// FIXME: Should be configurable
 	private tipOffset = 50;
 	private tip = {w: (3 / 4 * 50), h: 15};
@@ -30,6 +93,7 @@ export class Tooltip {
 	private readonly chartHeight;
 	private readonly bubbleOpacity;
 	private readonly bubbleBackground;
+	private readonly roundedBubble;
 
 	// If bubbleHeight < 0 then go with a dynamically calculated bubble height.
 	constructor(rootSelection, bubbleWidth: number, bubbleHeight: number, chartWidth: number, chartHeight: number, backgroundColour, backgroundOpacity) {
@@ -40,6 +104,7 @@ export class Tooltip {
 		this.chartHeight = chartHeight;
 		this.bubbleBackground = backgroundColour;
 		this.bubbleOpacity = backgroundOpacity;
+		this.roundedBubble = true;
 
 		this.tooltipArea = rootSelection
 			.append("g")
@@ -57,11 +122,12 @@ export class Tooltip {
 		const tipOffset = this.tipOffset;
 		const bubbleBackground = this.bubbleBackground;
 		const bubbleOpacity = this.bubbleOpacity;
+		const roundedBubble = this.roundedBubble;
 
 		// NOTE: This function will be called with different "this" - it is not the object this
 		return function(d) {
 			let [x, y] = mouse(rootSelection.node() as any);
-			console.log(`mouseover event at ${x}, ${y}`);
+			// console.log(`mouseover event at ${x}, ${y}`);
 
 			if(d.data.tooltip) {
 				const testContent = tooltipArea
@@ -91,16 +157,27 @@ export class Tooltip {
 					.attr("y", y + (invertVert ? -tip.h : +tip.h))
 					.attr("height", calculatedHeight);
 
-				tooltipArea
-					.insert("polygon", "foreignObject")
-						.attr("class", "svg-tooltip-outline")
-						.attr("pointer-events", "none")
-						.attr("transform", `translate(${(x + (invertHoriz ? tip.w : -tip.w))},${(y + (invertVert ? -tip.h : +tip.h))})`)
-						.attr("width", width)
-						.attr("height", calculatedHeight)
-						.attr("points", Tooltip.genBubblePolyPoints(width, calculatedHeight, tipOffset, tip.w, tip.h, invertVert, invertHoriz))
-						.attr("fill", bubbleBackground)
-						.attr("opacity", bubbleOpacity);
+				if(roundedBubble) {
+					tooltipArea
+						.insert("path", "foreignObject")
+							.attr("class", "svg-tooltip-outline")
+							.attr("pointer-events", "none")
+							.attr("transform", `translate(${(x + (invertHoriz ? tip.w : -tip.w))},${(y + (invertVert ? -tip.h : +tip.h))})`)
+							.attr("d", Tooltip.genBubblePath(width, calculatedHeight, tipOffset, tip.w, tip.h, invertVert, invertHoriz))
+							.attr("fill", bubbleBackground)
+							.attr("opacity", bubbleOpacity);
+				} else {
+					tooltipArea
+						.insert("polygon", "foreignObject")
+							.attr("class", "svg-tooltip-outline")
+							.attr("pointer-events", "none")
+							.attr("transform", `translate(${(x + (invertHoriz ? tip.w : -tip.w))},${(y + (invertVert ? -tip.h : +tip.h))})`)
+							.attr("width", width)
+							.attr("height", calculatedHeight)
+							.attr("points", Tooltip.genBubblePolyPoints(width, calculatedHeight, tipOffset, tip.w, tip.h, invertVert, invertHoriz))
+							.attr("fill", bubbleBackground)
+							.attr("opacity", bubbleOpacity);
+				}
 			}
 		};
 	}
@@ -114,11 +191,12 @@ export class Tooltip {
 		const chartHeight = this.chartHeight;
 		const tip = this.tip;
 		const tipOffset = this.tipOffset;
+		const roundedBubble = this.roundedBubble;
 
 		// NOTE: This function will be called with different "this" - it is not the object this
 		return function(d) {
 			let [x, y] = mouse(rootSelection.node() as any);
-			console.log(`mousemove event at ${x}, ${y}`);
+			// console.log(`mousemove event at ${x}, ${y}`);
 
 			if(d.data.tooltip) {
 				const calculatedHeight = height >= 0 ? height : tooltipArea.select("foreignObject div").node().getBoundingClientRect().height;
@@ -136,10 +214,17 @@ export class Tooltip {
 					invertVert = true;
 				}
 
-				tooltipArea
-					.select("polygon")
-					.attr("points", Tooltip.genBubblePolyPoints(width, calculatedHeight, tipOffset, tip.w, tip.h, invertVert, invertHoriz))
-					.attr("transform", `translate(${(x + (invertHoriz ? tip.w : -tip.w))},${(y + (invertVert ? -tip.h : tip.h))})`);
+				if(roundedBubble) {
+					tooltipArea
+						.select("path")
+						.attr("d", Tooltip.genBubblePath(width, calculatedHeight, tipOffset, tip.w, tip.h, invertVert, invertHoriz))
+						.attr("transform", `translate(${(x + (invertHoriz ? tip.w : -tip.w))},${(y + (invertVert ? -tip.h : tip.h))})`);
+				} else {
+					tooltipArea
+						.select("polygon")
+						.attr("points", Tooltip.genBubblePolyPoints(width, calculatedHeight, tipOffset, tip.w, tip.h, invertVert, invertHoriz))
+						.attr("transform", `translate(${(x + (invertHoriz ? tip.w : -tip.w))},${(y + (invertVert ? -tip.h : tip.h))})`);
+				}
 
 				tooltipArea
 					.select("foreignObject")
@@ -152,18 +237,25 @@ export class Tooltip {
 	public mouseoutHandler() {
 		const rootSelection = this.rootSelection;
 		const tooltipArea = this.tooltipArea;
+		const roundedBubble = this.roundedBubble;
 
 		// NOTE: This function will be called with different "this" which is not the object this
 		return function() {
 			const [x, y] = mouse(rootSelection.node() as any);
-			console.log(`mouseout event at ${x}, ${y}`);
+			// console.log(`mouseout event at ${x}, ${y}`);
 
 			tooltipArea
 				.select("foreignObject")
 					.remove();
 
-			tooltipArea
+			if(roundedBubble) {
+				tooltipArea
+				.select("path")
+					.remove();
+			} else {
+				tooltipArea
 				.select("polygon")
 					.remove();
+			}
 		};
 	}}
