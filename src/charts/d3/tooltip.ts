@@ -1,6 +1,8 @@
 import { oneLine } from "common-tags";
 import { mouse } from "d3-selection";
 
+import { chooseBestContrastColour } from "~utils/colour";
+
 // Expected to be used with d3.
 // NOTE: It's strongly suggested that you wrap your html in a <div> so that margins, and other styling, can be applied via CSS.
 // FIXME: proto/quick and dirty tooltip support
@@ -93,6 +95,7 @@ export class Tooltip {
 	private readonly chartHeight;
 	private readonly bubbleOpacity;
 	private readonly bubbleBackground;
+	private readonly bubbleStroke;
 	private readonly roundedBubble;
 
 	// If bubbleHeight < 0 then go with a dynamically calculated bubble height.
@@ -104,6 +107,7 @@ export class Tooltip {
 		this.chartHeight = chartHeight;
 		this.bubbleBackground = backgroundColour;
 		this.bubbleOpacity = backgroundOpacity;
+		this.bubbleStroke = chooseBestContrastColour(backgroundColour, backgroundOpacity);
 		this.roundedBubble = true;
 
 		this.tooltipArea = rootSelection
@@ -122,6 +126,7 @@ export class Tooltip {
 		const tipOffset = this.tipOffset;
 		const bubbleBackground = this.bubbleBackground;
 		const bubbleOpacity = this.bubbleOpacity;
+		const bubbleStroke = this.bubbleStroke;
 		const roundedBubble = this.roundedBubble;
 
 		// NOTE: This function will be called with different "this" - it is not the object this
@@ -165,7 +170,9 @@ export class Tooltip {
 							.attr("transform", `translate(${(x + (invertHoriz ? tip.w : -tip.w))},${(y + (invertVert ? -tip.h : +tip.h))})`)
 							.attr("d", Tooltip.genBubblePath(width, calculatedHeight, tipOffset, tip.w, tip.h, invertVert, invertHoriz))
 							.attr("fill", bubbleBackground)
-							.attr("opacity", bubbleOpacity);
+							.attr("opacity", bubbleOpacity)
+							.attr("stroke", bubbleStroke)
+							.attr("stroke-width", width / 100);
 				} else {
 					tooltipArea
 						.insert("polygon", "foreignObject")
