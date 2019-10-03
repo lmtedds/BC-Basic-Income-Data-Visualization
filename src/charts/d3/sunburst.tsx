@@ -9,6 +9,8 @@ import { wrapTextTspanEach } from "~charts/d3/text_wrap";
 import { Tooltip } from "~charts/d3/tooltip";
 import { chooseBestContrastColour } from "~utils/colour";
 
+import "./sunburst.scss";
+
 export interface ID3Hierarchy {
 	name: string;
 	showName: boolean;
