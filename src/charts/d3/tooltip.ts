@@ -68,8 +68,8 @@ export class Tooltip {
 				invertHoriz = true;
 			}
 
-			if(y + height > chartHeight) {
-				y = y - height;
+			if(y + height + tip.h > chartHeight) {
+				y = y - height - tip.h;
 				invertVert = true;
 			}
 
@@ -106,6 +106,7 @@ export class Tooltip {
 		const chartWidth = this.chartWidth;
 		const chartHeight = this.chartHeight;
 		const tip = this.tip;
+		const tipOffset = this.tipOffset;
 
 		// NOTE: This function will be called with different "this" which is not the object this
 		return function() {
@@ -120,13 +121,14 @@ export class Tooltip {
 				invertHoriz = true;
 			}
 
-			if(y + height > chartHeight) {
-				y = y - height;
+			if(y + height + tip.h > chartHeight) {
+				y = y - height - tip.h;
 				invertVert = true;
 			}
 
 			tooltipArea
 				.select("polygon")
+				.attr("points", Tooltip.genBubblePolyPoints(width, height, tipOffset, tip.w, tip.h, invertVert, invertHoriz))
 				.attr("transform", `translate(${(x + (invertHoriz ? tip.w : -tip.w))},${(y + (invertVert ? -tip.h : tip.h))})`);
 
 			tooltipArea
