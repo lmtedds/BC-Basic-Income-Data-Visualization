@@ -147,8 +147,8 @@ export class Tooltip {
 					invertHoriz = true;
 				}
 
-				if(y + height + tip.h > chartHeight) {
-					y = y - height - tip.h;
+				if(y + calculatedHeight + tip.h > chartHeight) {
+					y = y - calculatedHeight - tip.h;
 					invertVert = true;
 				}
 
