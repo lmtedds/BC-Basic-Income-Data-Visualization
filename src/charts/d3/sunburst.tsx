@@ -136,10 +136,16 @@ export function buildZoomableSunburstChart(
 			.join("path")
 				.attr("fill", selectFillColour)
 				.attr("fill-opacity", selectFillOpacity)
-				.attr("d", (d: any) => arcs(d.current)) // FIXME: Type
-				.on("mouseover", tooltipMouseover)
-				.on("mouseout", tooltipMouseout)
-				.on("mousemove", tooltipMousemove);
+				.attr("d", (d: any) => arcs(d.current)); // FIXME: Type
+
+	// Add tooltips as appropriate
+	path
+		.filter(function(d: any) {
+			return d.data.tooltip;
+		})
+		.on("mouseover", tooltipMouseover)
+		.on("mouseout", tooltipMouseout)
+		.on("mousemove", tooltipMousemove);
 
 	// Add a click handler to anything with children (i.e. not outermost ring) that allows "zooming"
 	path.filter((d: any) => d.children) // FIXME: Type
