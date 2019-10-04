@@ -120,14 +120,6 @@ export function buildZoomableSunburstChart(
 		.append("g")
 			.attr("transform", `translate(${width / 2},${width / 2})`);
 
-	const tooltipOpacity = 0.9; // FIXME: Configurable
-	const tooltipBackground = "#F8F8F8"; // FIXME: Configurable
-
-	const tooltip = new Tooltip(svg, width / 3, -1, width, width, tooltipBackground, tooltipOpacity);
-	const tooltipMouseover = tooltip.mouseoverHandler();
-	const tooltipMouseout = tooltip.mouseoutHandler();
-	const tooltipMousemove = tooltip.mousemoveHandler();
-
 	const path = g
 		.append("g")
 			.attr("class", "arcs")
@@ -139,6 +131,14 @@ export function buildZoomableSunburstChart(
 				.attr("d", (d: any) => arcs(d.current)); // FIXME: Type
 
 	// Add tooltips as appropriate
+	const tooltipOpacity = 0.9; // FIXME: Configurable
+	const tooltipBackground = "#F8F8F8"; // FIXME: Configurable
+
+	const tooltip = new Tooltip(svg, width / 3, -1, width, width, tooltipBackground, tooltipOpacity);
+	const tooltipMouseover = tooltip.mouseoverHandler();
+	const tooltipMouseout = tooltip.mouseoutHandler();
+	const tooltipMousemove = tooltip.mousemoveHandler();
+
 	path
 		.filter(function(d: any) {
 			return d.data.tooltip;
@@ -148,7 +148,8 @@ export function buildZoomableSunburstChart(
 		.on("mousemove", tooltipMousemove);
 
 	// Add a click handler to anything with children (i.e. not outermost ring) that allows "zooming"
-	path.filter((d: any) => d.children) // FIXME: Type
+	path
+		.filter((d: any) => d.children) // FIXME: Type
 		.style("cursor", "pointer")
 		.on("click", clicked);
 
@@ -240,6 +241,11 @@ export function buildZoomableSunburstChart(
 						});
 					};
 				});
+
+		parent
+			.transition(trans)
+				.attrTween("r", (d: any) => () => radiusScale(1) as any);
+
 	}
 
 	function arcVisible(d) {
