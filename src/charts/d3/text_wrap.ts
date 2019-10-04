@@ -1,6 +1,5 @@
 import { select } from "d3-selection";
 
-import { LineToLineMappedSource } from "webpack-sources";
 import "./text_wrap.scss";
 
 export interface IWrapTextDimenions {
@@ -11,32 +10,42 @@ export interface IWrapTextDimenions {
 	vCenter?: boolean; // rect positioning
 	vJust?: boolean;
 
-	fontSize?: string; // fallback guess for calculations in case can't query actual element
-	fontFace?: string; // fallback guess for calculations in case can't query actual element
+	fontSize: string;
+	fontFamily: string;
 }
 
-const canvas = document.createElement("canvas");
+const canvas: HTMLCanvasElement = document.createElement("canvas");
 const context = canvas.getContext("2d");
-function offscreenGetWidth(text, fontSize?, fontFace?) {
-	if(fontSize && fontFace) context.font = fontSize + " " + fontFace;
+function offscreenGetWidth(text, fontSize?, fontFamily?) {
+	// FIXME: Should also consider SVG's kerning, letter-spacing, and word-spacing attributes. Not sure how these translate.
+	if(fontSize && fontFamily) context.font = fontSize + " " + fontFamily;
 	return context.measureText(text).width;
 }
 
 // Wrap the words so that they fit inside the width provided.
 // NOTE: This approach has difficulty when working with transitions and updating or exiting.
 export function wrapTextTspanEach(textEle: any, dimensions: IWrapTextDimenions): any {
-	const lineSpacing = 0.3; // 30% extra, so 130% line spacing.
 	const padding = dimensions.padding || 0;
 	const hCenter = dimensions.hCenter !== undefined ? dimensions.hCenter : false;
 	const vCenter = dimensions.vCenter !== undefined ? dimensions.vCenter : false;
 	const vJust = dimensions.vJust !== undefined ? dimensions.vJust : false;
 	const width = dimensions.width - 2 * padding;
 	const height = dimensions.height - 2 * padding;
-	const textStyle = window.getComputedStyle(textEle.node());
-	const fontSize = textStyle.fontSize || dimensions.fontSize;
-	const fontFace = textStyle.getPropertyValue("font-face") || dimensions.fontFace;
 	const x = textEle.attr("x");
 	const y = textEle.attr("y");
+
+	// Can dynamically get the element's style, but it's quite expensive when running
+	// this function as part of a d3 transition. For the time being remove it and
+	// require the caller to provide this information.
+	// const textStyle = window.getComputedStyle(textEle.node());
+	// const fontSize = textStyle.fontSize || dimensions.fontSize;
+	// const fontFamily = textStyle.getPropertyValue("font-face") || dimensions.fontFamily;
+	// console.assert(dimensions.fontSize && dimensions.fontFamily, "font not provided");
+	const fontSize = dimensions.fontSize;
+	const fontFamily = dimensions.fontFamily;
+
+	// See https://practicaltypography.com/line-spacing.html for suggestion of 120% to 145% line height.
+	const lineSpacing = 0.3; // 30% extra, so 130% line spacing.
 
 	// Stash the text in a <desc> block so that it can be used later as the definitive source.
 	const desc = textEle.select("desc");
@@ -50,9 +59,7 @@ export function wrapTextTspanEach(textEle: any, dimensions: IWrapTextDimenions):
 	textEle.text(null);
 	textEle.append("desc").text(text);
 
-	// Font height in px is font size in pt (which is 0.75 px) => https://www.html5canvastutorials.com/tutorials/html5-canvas-text-metrics/
-	// See https://practicaltypography.com/line-spacing.html for suggestion of 120% to 145% line height.
-
+	// FIXME: There's a requirement that fontSize is in pixels.
 	let fontSizePx = 16; // try to work with a guess of 16px.
 	if(typeof fontSize === "string") {
 		const match = fontSize.match(/^([0-9.]+)px$/);
@@ -63,7 +70,7 @@ export function wrapTextTspanEach(textEle: any, dimensions: IWrapTextDimenions):
 		}
 	}
 
-	// FIXME: There's an assumption that fontSize is in pixels.
+	// Font height in px is font size in pt (which is 0.75 px) => https://www.html5canvastutorials.com/tutorials/html5-canvas-text-metrics/
 	const lineHeight = fontSizePx * 0.75;
 
 	// Put all the words into lines. Simplistic approach to fit the most possible on each line.
@@ -74,7 +81,7 @@ export function wrapTextTspanEach(textEle: any, dimensions: IWrapTextDimenions):
 		const word = words.pop();
 		line.push(word);
 
-		const calculatedWidth = offscreenGetWidth(line.join(" "), fontSize, fontFace);
+		const calculatedWidth = offscreenGetWidth(line.join(" "), fontSize, fontFamily);
 		if(calculatedWidth > width) {
 			if(line.length === 1) {
 				// FIXME: This word doesn't fit on a line... what do we want to do? Just plow on for now.
@@ -95,13 +102,13 @@ export function wrapTextTspanEach(textEle: any, dimensions: IWrapTextDimenions):
 	let longestLine = 0;
 	for(const thisLine of lines) {
 		const lineText = thisLine.join(" ");
-		const lineLength = offscreenGetWidth(lineText, fontSize, fontFace);
+		const lineLength = offscreenGetWidth(lineText, fontSize, fontFamily);
 		if(longestLine <= lineLength) longestLine = lineLength;
 	}
 
 	for(let i = 0; i < lines.length; ++i) {
 		const lineText = lines[i].join(" ");
-		const lineLength = offscreenGetWidth(lineText, fontSize, fontFace);
+		const lineLength = offscreenGetWidth(lineText, fontSize, fontFamily);
 
 		let dx = 0;
 		let dy = (i + 1) * lineHeight + (i * lineHeight * lineSpacing); // line height + spacing between

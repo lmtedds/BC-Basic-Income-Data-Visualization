@@ -2,7 +2,7 @@ import { hierarchy, partition as d3partition } from "d3-hierarchy";
 import { interpolate, quantize } from "d3-interpolate";
 import { scaleOrdinal, scalePow } from "d3-scale";
 import { interpolateRainbow } from "d3-scale-chromatic";
-import { create, event as d3Event, mouse, select } from "d3-selection";
+import { create, select } from "d3-selection";
 import { arc } from "d3-shape";
 
 import { wrapTextTspanEach } from "~charts/d3/text_wrap";
@@ -53,7 +53,7 @@ export function buildZoomableSunburstChart(
 	const minOpacity = 0.4;
 
 	const fontSize = "10px";
-	const fontFace = "sans-serif";
+	const fontFamily = "Roboto";
 
 	const textWrapPadding = sunburstData.setup ? sunburstData.setup.textWrapPadding : 10;
 
@@ -114,7 +114,7 @@ export function buildZoomableSunburstChart(
 	svg
 		.attr("viewBox", `0 0 ${width} ${width}`)
 		.attr("perserveAspectRatio", "xMinYMin meet")
-		.style("font", `${fontSize} ${fontFace}`);
+		.style("font", `${fontSize} ${fontFamily}`);
 
 	const g = svg
 		.append("g")
@@ -170,7 +170,7 @@ export function buildZoomableSunburstChart(
 						hCenter: false,
 						vJust: true,
 						fontSize: fontSize,
-						fontFace: fontFace,
+						fontFamily: fontFamily,
 					});
 				});
 
@@ -230,11 +230,10 @@ export function buildZoomableSunburstChart(
 							hCenter: false,
 							vJust: true,
 							fontSize: fontSize,
-							fontFace: fontFace,
+							fontFamily: fontFamily,
 						});
 					};
 				});
-
 	}
 
 	function arcVisible(d) {
