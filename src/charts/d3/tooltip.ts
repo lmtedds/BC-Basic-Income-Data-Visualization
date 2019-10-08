@@ -4,8 +4,8 @@ import { mouse } from "d3-selection";
 import { chooseBestContrastColour } from "~utils/colour";
 
 // Expected to be used with d3.
-// NOTE: It's strongly suggested that you wrap your html in a <div> so that margins, and other styling, can be applied via CSS.
-// FIXME: proto/quick and dirty tooltip support
+// NOTE: You must wrap your html in a <div>, since it's assumed there is one, so that calculations of size can be done. Also, it gives a good anchor for applying
+//       padding, and other styling, can be applied via CSS.
 export class Tooltip {
 	// Generate a tooltip bubble from a polygon. This generates the points required for the polygon
 	// based on where the bubble should be (i.e. tip pointing up/down and tip on left or right side of the bubble.)
@@ -97,6 +97,7 @@ export class Tooltip {
 	private readonly bubbleBackground;
 	private readonly bubbleStroke;
 	private readonly roundedBubble;
+	private calculatedHeight: number;
 
 	// If bubbleHeight < 0 then go with a dynamically calculated bubble height.
 	constructor(rootSelection, bubbleWidth: number, bubbleHeight: number, chartWidth: number, chartHeight: number, backgroundColour, backgroundOpacity) {
@@ -109,6 +110,7 @@ export class Tooltip {
 		this.bubbleOpacity = backgroundOpacity;
 		this.bubbleStroke = chooseBestContrastColour(backgroundColour, backgroundOpacity);
 		this.roundedBubble = true;
+		this.calculatedHeight = 0;
 
 		this.tooltipArea = rootSelection
 			.append("g")
@@ -116,152 +118,158 @@ export class Tooltip {
 	}
 
 	public mouseoverHandler() {
-		const rootSelection = this.rootSelection;
-		const tooltipArea = this.tooltipArea;
-		const width = this.bubbleWidth;
-		const height = this.bubbleHeight;
-		const chartWidth = this.chartWidth;
-		const chartHeight = this.chartHeight;
-		const tip = this.tip;
-		const tipOffset = this.tipOffset;
-		const bubbleBackground = this.bubbleBackground;
-		const bubbleOpacity = this.bubbleOpacity;
-		const bubbleStroke = this.bubbleStroke;
-		const roundedBubble = this.roundedBubble;
+		const This = this;
 
 		// NOTE: This function will be called with different "this" - it is not the object this
 		return function(d) {
 			if(d.data.tooltip) {
-				let [x, y] = mouse(rootSelection.node() as any);
+				let [x, y] = mouse(This.rootSelection.node() as any);
 				// console.log(`mouseover event at ${x}, ${y}`);
 
-				const testContent = tooltipArea
+				const testContent = This.tooltipArea
 					.append("foreignObject")
 						.attr("class", "svg-tooltip-content")
 						.attr("pointer-events", "none")
-						.attr("width", width)
+						.attr("width", This.bubbleWidth)
 						.html(d.data.tooltip);
 
-				const calculatedHeight = height >= 0 ? height : testContent.select("div").node().getBoundingClientRect().height;
+				const calculatedHeight = This.bubbleHeight >= 0 ? This.bubbleHeight : getBoundingHeight(testContent, This.rootSelection);
+				This.calculatedHeight = calculatedHeight;
 
 				// Position the tooltip to keep inside the chart
 				let invertVert = false;
 				let invertHoriz = false;
-				if(x + width > chartWidth) {
-					x = x - width;
+				if(x + This.bubbleWidth > This.chartWidth) {
+					x = x - This.bubbleWidth;
 					invertHoriz = true;
 				}
 
-				if(y + calculatedHeight + tip.h > chartHeight) {
+				if(y + calculatedHeight + This.tip.h > This.chartHeight) {
 					y = y - calculatedHeight;
 					invertVert = true;
 				}
 
 				testContent
-					.attr("x", x + (invertHoriz ? tip.w : -tip.w))
-					.attr("y", y + (invertVert ? -tip.h : +tip.h))
+					.attr("x", x + (invertHoriz ? This.tip.w : -This.tip.w))
+					.attr("y", y + (invertVert ? -This.tip.h : +This.tip.h))
 					.attr("height", calculatedHeight);
 
-				if(roundedBubble) {
-					tooltipArea
+				if(This.roundedBubble) {
+					This.tooltipArea
 						.insert("path", "foreignObject")
 							.attr("class", "svg-tooltip-outline")
 							.attr("pointer-events", "none")
-							.attr("transform", `translate(${(x + (invertHoriz ? tip.w : -tip.w))},${(y + (invertVert ? -tip.h : +tip.h))})`)
-							.attr("d", Tooltip.genBubblePath(width, calculatedHeight, tipOffset, tip.w, tip.h, invertVert, invertHoriz))
-							.attr("fill", bubbleBackground)
-							.attr("opacity", bubbleOpacity)
-							.attr("stroke", bubbleStroke)
-							.attr("stroke-width", width / 100);
+							.attr("transform", `translate(${(x + (invertHoriz ? This.tip.w : -This.tip.w))},${(y + (invertVert ? -This.tip.h : +This.tip.h))})`)
+							.attr("d", Tooltip.genBubblePath(This.bubbleWidth, calculatedHeight, This.tipOffset, This.tip.w, This.tip.h, invertVert, invertHoriz))
+							.attr("fill", This.bubbleBackground)
+							.attr("opacity", This.bubbleOpacity)
+							.attr("stroke", This.bubbleStroke)
+							.attr("stroke-width", This.bubbleWidth / 100);
 				} else {
-					tooltipArea
+					This.tooltipArea
 						.insert("polygon", "foreignObject")
 							.attr("class", "svg-tooltip-outline")
 							.attr("pointer-events", "none")
-							.attr("transform", `translate(${(x + (invertHoriz ? tip.w : -tip.w))},${(y + (invertVert ? -tip.h : +tip.h))})`)
-							.attr("width", width)
+							.attr("transform", `translate(${(x + (invertHoriz ? This.tip.w : -This.tip.w))},${(y + (invertVert ? -This.tip.h : +This.tip.h))})`)
+							.attr("width", This.bubbleWidth)
 							.attr("height", calculatedHeight)
-							.attr("points", Tooltip.genBubblePolyPoints(width, calculatedHeight, tipOffset, tip.w, tip.h, invertVert, invertHoriz))
-							.attr("fill", bubbleBackground)
-							.attr("opacity", bubbleOpacity);
+							.attr("points", Tooltip.genBubblePolyPoints(This.bubbleWidth, calculatedHeight, This.tipOffset, This.tip.w, This.tip.h, invertVert, invertHoriz))
+							.attr("fill", This.bubbleBackground)
+							.attr("opacity", This.bubbleOpacity);
 				}
+			}
+
+			// The the bounding height of the content in SVG coordinates
+			function getBoundingHeight(content, rootSelection) {
+				// Get size in element based coords
+				const boundingRect = content.select("div").node().getBoundingClientRect();
+
+				// Transform to SVG coords
+				const rootNode = rootSelection.node();
+				const pt1 = rootNode.createSVGPoint();
+				const pt2 = rootNode.createSVGPoint();
+
+				pt1.x = boundingRect.left;
+				pt1.y = boundingRect.top;
+				pt2.x = boundingRect.right;
+				pt2.y = boundingRect.bottom;
+
+				const ctmInverse = rootNode.getScreenCTM().inverse();
+
+				const svgPt1 = pt1.matrixTransform(ctmInverse);
+				const svgPt2 = pt2.matrixTransform(ctmInverse);
+
+				// Height is difference between the 2 transformed y values.
+				return svgPt2.y - svgPt1.y;
 			}
 		};
 	}
 
 	public mousemoveHandler() {
-		const rootSelection = this.rootSelection;
-		const tooltipArea = this.tooltipArea;
-		const width = this.bubbleWidth;
-		const height = this.bubbleHeight;
-		const chartWidth = this.chartWidth;
-		const chartHeight = this.chartHeight;
-		const tip = this.tip;
-		const tipOffset = this.tipOffset;
-		const roundedBubble = this.roundedBubble;
+		const This = this;
 
 		// NOTE: This function will be called with different "this" - it is not the object this
 		return function(d) {
 			if(d.data.tooltip) {
-				let [x, y] = mouse(rootSelection.node() as any);
+				let [x, y] = mouse(This.rootSelection.node() as any);
 				// console.log(`mousemove event at ${x}, ${y}`);
 
-				const calculatedHeight = height >= 0 ? height : tooltipArea.select("foreignObject div").node().getBoundingClientRect().height;
+				const calculatedHeight = This.calculatedHeight;
 
 				// Position the tooltip to keep inside the chart
 				let invertVert = false;
 				let invertHoriz = false;
-				if(x + width > chartWidth) {
-					x = x - width;
+				if(x + This.bubbleWidth > This.chartWidth) {
+					x = x - This.bubbleWidth;
 					invertHoriz = true;
 				}
 
-				if(y + calculatedHeight + tip.h > chartHeight) {
+				if(y + calculatedHeight + This.tip.h > This.chartHeight) {
 					y = y - calculatedHeight;
 					invertVert = true;
 				}
 
-				if(roundedBubble) {
-					tooltipArea
+				if(This.roundedBubble) {
+					This.tooltipArea
 						.select("path")
-						.attr("d", Tooltip.genBubblePath(width, calculatedHeight, tipOffset, tip.w, tip.h, invertVert, invertHoriz))
-						.attr("transform", `translate(${(x + (invertHoriz ? tip.w : -tip.w))},${(y + (invertVert ? -tip.h : tip.h))})`);
+						.attr("d", Tooltip.genBubblePath(This.bubbleWidth, calculatedHeight, This.tipOffset, This.tip.w, This.tip.h, invertVert, invertHoriz))
+						.attr("transform", `translate(${(x + (invertHoriz ? This.tip.w : -This.tip.w))},${(y + (invertVert ? -This.tip.h : This.tip.h))})`);
 				} else {
-					tooltipArea
+					This.tooltipArea
 						.select("polygon")
-						.attr("points", Tooltip.genBubblePolyPoints(width, calculatedHeight, tipOffset, tip.w, tip.h, invertVert, invertHoriz))
-						.attr("transform", `translate(${(x + (invertHoriz ? tip.w : -tip.w))},${(y + (invertVert ? -tip.h : tip.h))})`);
+						.attr("points", Tooltip.genBubblePolyPoints(This.bubbleWidth, calculatedHeight, This.tipOffset, This.tip.w, This.tip.h, invertVert, invertHoriz))
+						.attr("transform", `translate(${(x + (invertHoriz ? This.tip.w : -This.tip.w))},${(y + (invertVert ? -This.tip.h : This.tip.h))})`);
 				}
 
-				tooltipArea
+				This.tooltipArea
 					.select("foreignObject")
-					.attr("x", x + (invertHoriz ? tip.w : -tip.w))
-					.attr("y", y + (invertVert ? -tip.h : tip.h));
+					.attr("x", x + (invertHoriz ? This.tip.w : -This.tip.w))
+					.attr("y", y + (invertVert ? -This.tip.h : This.tip.h));
 			}
 		};
 	}
 
 	public mouseoutHandler() {
-		const rootSelection = this.rootSelection;
-		const tooltipArea = this.tooltipArea;
-		const roundedBubble = this.roundedBubble;
+		const This = this;
 
 		// NOTE: This function will be called with different "this" which is not the object this
 		return function(d) {
 			if(d.data.tooltip) {
-				const [x, y] = mouse(rootSelection.node() as any);
+				const [x, y] = mouse(This.rootSelection.node() as any);
 				// console.log(`mouseout event at ${x}, ${y}`);
 
-				tooltipArea
+				This.calculatedHeight = 0;
+
+				This.tooltipArea
 					.select("foreignObject")
 						.remove();
 
-				if(roundedBubble) {
-					tooltipArea
+				if(This.roundedBubble) {
+					This.tooltipArea
 					.select("path")
 						.remove();
 				} else {
-					tooltipArea
+					This.tooltipArea
 					.select("polygon")
 						.remove();
 				}
