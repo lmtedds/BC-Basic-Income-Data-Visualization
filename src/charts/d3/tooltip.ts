@@ -85,7 +85,7 @@ export class Tooltip {
 
 	// FIXME: Should be configurable
 	private tipOffset = 50;
-	private tip = {w: (3 / 4 * 50), h: 15};
+	private tip = {w: (3 / 4 * 50), h: 10};
 
 	private readonly tooltipArea;
 	private readonly rootSelection;
