@@ -86,7 +86,7 @@ function makeTooltip(program): string {
 			<p>Total Expenditures (2017/2018): $1,300M</p>
 			<p>The BCEA Program for Persons with Disabilities provides disability assistance and supplements to provide greater independence for people with disabilities, including security of income, enhanced well-being, and participation in the community. Major Eligibility Requirements: persons with disability, low income, means-tested</p>
 			<a href="https://www2.gov.bc.ca/gov/content/family-social-supports/services-for-people-with-disabilities/disability-assistance">https://www2.gov.bc.ca/gov/content/family-social-supports/services-for-people-with-disabilities/disability-assistance</a>
-		<div>`;
+		</div>`;
 }
 
 // FIXME: value should be pulled out and moved to a chart type specific function

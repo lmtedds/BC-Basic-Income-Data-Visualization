@@ -1,3 +1,3 @@
-svg.chart-sunburst-zoom g.tooltip-group foreignObject div {
-    margin: 10px 10px 10px 10px;
+svg.chart-sunburst-zoom g.tooltip-group foreignObject > div {
+    padding: 10px 10px 10px 10px;
 }
