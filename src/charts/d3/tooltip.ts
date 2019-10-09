@@ -131,6 +131,7 @@ export class Tooltip {
 						.attr("class", "svg-tooltip-content")
 						.attr("pointer-events", "none")
 						.attr("width", This.bubbleWidth)
+						.attr("height", 1) // Firefox, at this point, requires height >= 1 to calculate children correctly.
 						.html(d.data.tooltip);
 
 				const calculatedHeight = This.bubbleHeight >= 0 ? This.bubbleHeight : getBoundingHeight(testContent, This.rootSelection);
