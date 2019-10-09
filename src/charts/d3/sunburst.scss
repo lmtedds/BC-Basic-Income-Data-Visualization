@@ -1,4 +1,203 @@
 svg.chart-sunburst-zoom g.tooltip-group foreignObject div {
-    margin: 10px 10px 10px 10px;
+    margin: 5px 5px 5px 5px;
+    padding: 0px 8px 8px 8px;
+    border: 0px;
+    border-radius: 8px;
+
+    *:empty{
+	    display: none;
+    }
+
+    .header {
+	    font-size: 20px;
+	    color: blue;
+	    font-weight: bold;
+    }
+
+    .list{
+	    margin-top: -12px;
+    }
+
+	.eligibility:before{
+	content: "Major Eligibility Requirement: ";
+	font-weight: bold;
+	}
+
+	.eligibility{
+		font-weight: normal;
+		padding-left: 3em;
+		text-indent: -3em;
+	}
+
+	.condition:before{
+		content: "Conditions: ";
+		font-weight: bold;
+	}
+
+	.condition{
+		font-weight: normal
+	}
+
+	.expend201819:before{
+		content: "Expenditures (2018/19): ";
+		font-weight: bold
+	}
+
+	.expend201819{
+		font-weight: normal
+	}
+
+	.recip201819:before{
+		content: "Recipients (2018/19): ";
+		font-weight: bold
+	}
+
+	.recip201819{
+		padding-left: 3em;
+		font-weight: normal;
+		text-indent: -3em;
+	}
+
+	.cases2019:before{
+		content: "Cases (July 2019): ";
+		font-weight: bold
+	}
+
+	.cases2019{
+		padding-left: 3em;
+		font-weight: normal;
+		text-indent: -3em;
+	}
+
+	.expend201718:before{
+		content: "Expenditures (2017/18): ";
+		font-weight: bold
+	}
+
+	.expend201718{
+		font-weight: normal
+	}
+
+	.child2018:before{
+		content: "Number of Eligible Children (Mar. 2018): ";
+		font-weight: bold
+	}
+
+	.child2018{
+		font-weight: normal
+	}
+
+	.baseFund2018:before{
+		content: "Base Funding (2018/19): ";
+		font-weight: bold
+	}
+
+	.baseFund2018{
+		font-weight: normal
+	}
+
+	.recip2017:before{
+		content: "Recipients (2017): ";
+		font-weight: bold
+	}
+
+	.recip2017{
+		font-weight: normal
+	}
+
+
+	.expend2017:before{
+		content: "Expenditures (2017): ";
+		font-weight: bold
+	}
+
+	.expend2017{
+		font-weight: normal
+	}
+
+
+	.budget2019::before{
+		content: "Budget (2019/20): ";
+		font-weight: bold
+	}
+
+	.budget2019{
+		font-weight: normal
+	}
+
+
+	.expend2019::before{
+		content: "Expenditures (2019 YTD): ";
+		font-weight: bold
+	}
+
+	.expend2019{
+		font-weight: normal
+	}
+
+	.recip2019:before{
+		content: "Recipients (2019 YTD): ";
+		font-weight: bold
+	}
+
+	.recip2019{
+		font-weight: normal;
+	}
+
+
+	.recip201718:before{
+		content: "Recipients (2017/18): ";
+		font-weight: bold
+	}
+
+	.recip201718{
+		font-weight: normal;
+	}
+
+	.recip2018:before{
+		content: "Recipients (2018): ";
+		font-weight: bold
+	}
+
+	.recip2018{
+		padding-left: 3em;
+		font-weight: normal;
+		text-indent: -3em;
+	}
+
+	.expend2018:before{
+		content: "Expenditures (2018): ";
+		font-weight: bold
+	}
+
+	.expend2018{
+		font-weight: normal
+	}
+
+	.expend2016:before{
+		content: "Expenditures (2016): ";
+		font-weight: bold
+	}
+
+	.expend2016{
+		font-weight: normal
+	}
+
+	.recip201617:before{
+		content: "Recipients (2016/17): ";
+		font-weight: bold
+	}
+
+	.recip2016{
+		padding-left: 3em;
+		font-weight: normal;
+		text-indent: -3em;
+	}
+
+
+
+
+
+   
 
 }
