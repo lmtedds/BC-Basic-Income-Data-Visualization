@@ -121,20 +121,23 @@ function listToSortedTree(array, sortKeys: string[]) {
 }
 
 function makeTooltip(fullprogram, descrip, elig, condit, expend201819Ele, recip201819Ele, cases2019Ele, expend201718Ele, child2018Ele, baseFund2018Ele, recip2017Ele, expend2017Ele, budget2019Ele, expend2019Ele, recip2019Ele, recip201718Ele, recip2018Ele, expend2018Ele, expend2016Ele, recip201617Ele): string {
-	return `
+	const tooltip =  `
 		<div>
-		<hr> <p class="header">${fullprogram}</p><hr>
+			<hr>
+			<p class="header">${fullprogram}</p>
+			<hr>
+
 			<p>${descrip}</p>
 			<p class = "recip201617">${recip201617Ele}</p>
 			<p class = "expend2016">${expend2016Ele}</p>
 			<p class = "recip2017">${recip2017Ele}</p>
 			<p class = "recip201718">${recip201718Ele}</p>
 			<p class = "expend2017">${expend2017Ele}</p>
-			<p class="expend201718">${expend201718Ele}</p>
+			<p class = "expend201718">${expend201718Ele}</p>
 			<p class = "recip2018">${recip2018Ele}</p>
-			<p class="child2018">${child2018Ele}</p>
-			<p class="recip201819">${recip201819Ele}</p>
-			<p class="expend201819">${expend201819Ele}</p>
+			<p class = "child2018">${child2018Ele}</p>
+			<p class = "recip201819">${recip201819Ele}</p>
+			<p class = "expend201819">${expend201819Ele}</p>
 			<p class = "expend2018">${expend2018Ele}</p>
 			<p class = "baseFund2018">${baseFund2018Ele}</p>
 			<p class = "recip2019">${recip2019Ele}</p>
@@ -142,8 +145,10 @@ function makeTooltip(fullprogram, descrip, elig, condit, expend201819Ele, recip2
 			<p class = "expend2019">${expend2019Ele}</p>
 			<p class = "budget2019">${budget2019Ele}</p>
 			<p class = "eligibility">${elig}</p>
-			<p class="condition">${condit}</p>
-		<div>`;
+			<p class = "condition">${condit}</p>
+		</div>`;
+
+	return tooltip;
 }
 
 // FIXME: value should be pulled out and moved to a chart type specific function
