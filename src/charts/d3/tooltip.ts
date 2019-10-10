@@ -83,6 +83,33 @@ export class Tooltip {
 		}
 	}
 
+	private static getBoundingHeight(content, rootSelection): number {
+		// Get size in element based coords
+		const boundingRect = content.select("div").node().getBoundingClientRect();
+
+		// Ratio of CSS pixels to screen pixels.
+		const pixelRatio = window.devicePixelRatio;
+
+		// Transform to SVG coords
+		const rootNode = rootSelection.node();
+		const pt1 = rootNode.createSVGPoint();
+		const pt2 = rootNode.createSVGPoint();
+
+		pt1.x = boundingRect.left;
+		pt1.y = boundingRect.top;
+		pt2.x = boundingRect.right;
+		pt2.y = boundingRect.bottom;
+
+		const ctmInverse = rootNode.getScreenCTM().inverse();
+
+		const svgPt1 = pt1.matrixTransform(ctmInverse);
+		const svgPt2 = pt2.matrixTransform(ctmInverse);
+
+		// Height is difference between the 2 transformed y values modified by
+		// any multiplication in the CSS pixel size to screen pixels from zooming.
+		return (svgPt2.y - svgPt1.y) / pixelRatio;
+	}
+
 	// FIXME: Should be configurable
 	private tipOffset = 50;
 	private tip = {w: (3 / 4 * 50), h: 10};
@@ -134,7 +161,7 @@ export class Tooltip {
 						.attr("height", 1) // Firefox, at this point, requires height >= 1 to calculate children correctly.
 						.html(d.data.tooltip);
 
-				const calculatedHeight = This.bubbleHeight >= 0 ? This.bubbleHeight : getBoundingHeight(testContent, This.rootSelection);
+				const calculatedHeight = This.bubbleHeight >= 0 ? This.bubbleHeight : Tooltip.getBoundingHeight(testContent, This.rootSelection);
 				This.calculatedHeight = calculatedHeight;
 
 				// Position the tooltip to keep inside the chart
@@ -178,30 +205,6 @@ export class Tooltip {
 							.attr("fill", This.bubbleBackground)
 							.attr("opacity", This.bubbleOpacity);
 				}
-			}
-
-			// The the bounding height of the content in SVG coordinates
-			function getBoundingHeight(content, rootSelection) {
-				// Get size in element based coords
-				const boundingRect = content.select("div").node().getBoundingClientRect();
-
-				// Transform to SVG coords
-				const rootNode = rootSelection.node();
-				const pt1 = rootNode.createSVGPoint();
-				const pt2 = rootNode.createSVGPoint();
-
-				pt1.x = boundingRect.left;
-				pt1.y = boundingRect.top;
-				pt2.x = boundingRect.right;
-				pt2.y = boundingRect.bottom;
-
-				const ctmInverse = rootNode.getScreenCTM().inverse();
-
-				const svgPt1 = pt1.matrixTransform(ctmInverse);
-				const svgPt2 = pt2.matrixTransform(ctmInverse);
-
-				// Height is difference between the 2 transformed y values.
-				return svgPt2.y - svgPt1.y;
 			}
 		};
 	}
@@ -276,4 +279,5 @@ export class Tooltip {
 				}
 			}
 		};
-	}}
+	}
+}
