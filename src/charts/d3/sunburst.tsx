@@ -1,3 +1,4 @@
+import { chooseHighestContrastColour } from "@phbalance/contrast-colour";
 import { hierarchy, partition as d3partition } from "d3-hierarchy";
 import { interpolate, quantize } from "d3-interpolate";
 import { scaleOrdinal, scalePow } from "d3-scale";
@@ -7,7 +8,6 @@ import { arc } from "d3-shape";
 
 import { wrapTextTspanEach } from "~charts/d3/text_wrap";
 import { Tooltip } from "~charts/d3/tooltip";
-import { chooseBestContrastColour } from "~utils/colour";
 
 import "./sunburst.scss";
 
@@ -165,7 +165,7 @@ export function buildZoomableSunburstChart(
 			.data(root.descendants().slice(1)) // first entry is root (keep everything else)
 			.join("text")
 				.attr("fill-opacity", (d: any) => +labelVisible(d.current)) // FIXME: Type
-				.attr("fill", (d) => chooseBestContrastColour(selectFillColour(d), selectFillOpacity(d)))
+				.attr("fill", (d) => chooseHighestContrastColour(selectFillColour(d), selectFillOpacity(d)))
 				.attr("transform", (d: any) => labelTransform(d.current)) // FIXME: Type
 				.text((d: any) => { // FIXME: Type
 					return honourShowName ? (d.data.showName ? d.data.name : null) : d.data.name;

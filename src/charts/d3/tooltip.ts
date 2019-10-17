@@ -1,7 +1,7 @@
 import { oneLine } from "common-tags";
 import { mouse } from "d3-selection";
 
-import { chooseBestContrastColour } from "~utils/colour";
+import { chooseHighestContrastColour } from "@phbalance/contrast-colour";
 
 // Blink (Chrome) has an issue with foreignObjects and screen zooming (or high density screens). See:
 // https://bugs.chromium.org/p/chromium/issues/detail?id=738022&q=chrome%20svg%20devicePixelRatio&colspec=ID%20Pri%20M%20Stars%20ReleaseBlock%20Component%20Status%20Owner%20Summary%20OS%20Modified
@@ -196,7 +196,7 @@ export class Tooltip {
 		this.chartHeight = chartHeight;
 		this.bubbleBackground = backgroundColour;
 		this.bubbleOpacity = backgroundOpacity;
-		this.bubbleStroke = chooseBestContrastColour(backgroundColour, backgroundOpacity);
+		this.bubbleStroke = chooseHighestContrastColour(backgroundColour, backgroundOpacity);
 		this.roundedBubble = true;
 		this.calculatedHeight = 0;
 
