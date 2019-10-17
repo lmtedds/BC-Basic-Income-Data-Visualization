@@ -222,6 +222,7 @@ export function buildMinistryComplexitySunburstChart(svgEle?: SVGElement) {
 
 	sunburstChartData.setup = {
 		width: 1000,
+		margin: 10,
 
 		showDepth: 4,
 		radiusScaleExponent: 1.4,

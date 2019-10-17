@@ -26,6 +26,7 @@ export interface ID3Hierarchy {
 
 export interface ISunburstChartSetup {
 	width: number;
+	margin: number;
 
 	radiusScaleExponent: number; // 1 for same size torus, < 1 for outer being smaller than inner, > 1 for outer being larger than inner
 	showDepth: number; // number of torii to show
@@ -66,7 +67,9 @@ export function buildZoomableSunburstChart(
 	svg.classed("chart-sunburst-zoom", true);
 
 	// FIXME: Configurable dimensions ... non square to allow space for other annotations
-	const width = sunburstData.setup ? sunburstData.setup.width : 1000;
+	const fullWidth = sunburstData.setup ? sunburstData.setup.width : 1000;
+	const margin = sunburstData.setup ? sunburstData.setup.margin : 10;
+	const width = fullWidth - 2 * margin;
 	const radius = width / (showDepthMax * 2);
 
 	const radiusScale = scalePow().exponent(radiusScaleExponent).range([0, width / 2]).domain([0, showDepthMax]);
@@ -112,13 +115,13 @@ export function buildZoomableSunburstChart(
 	});
 
 	svg
-		.attr("viewBox", `0 0 ${width} ${width}`)
+		.attr("viewBox", `0 0 ${fullWidth} ${fullWidth}`)
 		.attr("perserveAspectRatio", "xMinYMin meet")
 		.style("font", `${fontSize} ${fontFamily}`);
 
 	const g = svg
 		.append("g")
-			.attr("transform", `translate(${width / 2},${width / 2})`);
+			.attr("transform", `translate(${fullWidth / 2},${fullWidth / 2})`);
 
 	const path = g
 		.append("g")
