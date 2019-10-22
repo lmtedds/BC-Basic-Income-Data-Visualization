@@ -59,6 +59,7 @@
   },
   "dependencies": {
     "@phbalance/contrast-colour": "0.0.2",
+    "@phbalance/d3-tooltip": "^0.1.0",
     "apprun": "^1.21.9",
     "apprun-router": "^0.3.0",
     "bootstrap": "^4.3.1",

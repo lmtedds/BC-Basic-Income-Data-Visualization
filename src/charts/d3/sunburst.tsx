@@ -1,23 +1,23 @@
 import { chooseHighestContrastColour } from "@phbalance/contrast-colour";
+import { ITooltipConfig, Tooltip } from "@phbalance/d3-tooltip";
 import { hierarchy, partition as d3partition } from "d3-hierarchy";
 import { interpolate, quantize } from "d3-interpolate";
 import { scaleOrdinal, scalePow } from "d3-scale";
 import { interpolateRainbow } from "d3-scale-chromatic";
-import { create, select } from "d3-selection";
+import { create, select, Selection } from "d3-selection";
 import { arc } from "d3-shape";
 
 import { wrapTextTspanEach } from "~charts/d3/text_wrap";
-import { Tooltip } from "~charts/d3/tooltip";
 
 import "./sunburst.scss";
 
-export interface ID3Hierarchy {
+export interface ID3HierarchyBase {
 	name: string;
 	showName: boolean;
 	value: number;
 
-	ministry: string;
-	program?: string;
+	ministry: string; // FIXME: Should be moved higher
+	program?: string; // FIXME: Should be moved higher
 
 	tooltip?: string; // HTML string
 
@@ -36,7 +36,7 @@ export interface ISunburstChartSetup {
 	honourShowName: boolean;
 }
 
-export interface ISunburstChart extends ID3Hierarchy {
+export interface ISunburstChart extends ID3HierarchyBase {
 	setup?: ISunburstChartSetup;
 }
 
@@ -134,10 +134,20 @@ export function buildZoomableSunburstChart(
 				.attr("d", (d: any) => arcs(d.current)); // FIXME: Type
 
 	// Add tooltips as appropriate
-	const tooltipOpacity = 0.9; // FIXME: Configurable
-	const tooltipBackground = "#F8F8F8"; // FIXME: Configurable
+	const bubbleWidth = width / 3;
+	const tooltipConfig: ITooltipConfig<any> = { // FIXME: type
+		rounded: true,
+		bubbleWidth: bubbleWidth,
+		bubbleHeight: -1,
+		bubbleTip: {tipOffset: (3 / 4 * bubbleWidth / 9), h: 10, edgeOffset: bubbleWidth / 9},
+		chartWidth: width,
+		chartHeight: width,
+		backgroundColour: "#F8F8F8", // FIXME: Configurable
+		backgroundOpacity: 0.9, // FIXME: Configurable
+		getData: (d) => d.data.tooltip,
+	};
 
-	const tooltip = new Tooltip(svg, width / 3, -1, width, width, tooltipBackground, tooltipOpacity);
+	const tooltip = new Tooltip(svg as Selection<SVGSVGElement, unknown, null, undefined>, tooltipConfig);
 	const tooltipMouseover = tooltip.mouseoverHandler();
 	const tooltipMouseout = tooltip.mouseoutHandler();
 	const tooltipMousemove = tooltip.mousemoveHandler();
