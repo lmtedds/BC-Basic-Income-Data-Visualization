@@ -29,14 +29,6 @@ svg.chart-sunburst-zoom g.tooltip-group foreignObject div {
 		text-indent: -3em;
 	}
 
-	.condition:before{
-		content: "Conditions: ";
-		font-weight: bold;
-	}
-
-	.condition{
-		font-weight: normal
-	}
 
 	.expend201819:before{
 		content: "Expenditures (2018/19): ";
@@ -200,4 +192,13 @@ svg.chart-sunburst-zoom g.tooltip-group foreignObject div {
 
    
 
+
+.condition::before{
+		content: "Conditions: ";
+		font-weight: bold;
+	}
+
+	.condition{
+		font-weight: normal
+	}
 }

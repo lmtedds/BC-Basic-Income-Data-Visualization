@@ -126,9 +126,7 @@ function makeTooltip(fullprogram, descrip, elig, condit, expend201819Ele, recip2
 	const tooltip =  `
 		<div>
 			<hr>
-			<p class="header">${fullprogram}</p>
-			<hr>
-
+			<p class="header">${fullprogram}</p><hr>
 			<p>${descrip}</p>
 			<p>${childEle}</p>
 			<p class = "recip201617">${recip201617Ele}</p>
@@ -149,7 +147,8 @@ function makeTooltip(fullprogram, descrip, elig, condit, expend201819Ele, recip2
 			<p class = "budget2019">${budget2019Ele}</p>
 			<p class = "eligibility">${elig}</p>
 			<p class = "condition">${condit}</p>
-		</div>`;
+			</div>
+		`;
 
 	return tooltip;
 }
