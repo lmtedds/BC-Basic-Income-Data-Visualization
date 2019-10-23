@@ -30,6 +30,7 @@ const recip2018 = "Recipients (2018)";
 const expend2018 = "Expenditures (2018)";
 const expend2016 = "Expenditures (2016)";
 const recip201617 = "Recipients (2016/17)";
+const child = "ChildPrograms";
 
 // Older version of data looks like this
 interface IMinistry20190824Version {
@@ -89,6 +90,7 @@ interface IMinistry {
 	[expend2018]: string;
 	[expend2016]: string;
 	[recip201617]: string;
+	[child]: string;
 }
 
 function listToSortedTree(array, sortKeys: string[]) {
@@ -120,7 +122,7 @@ function listToSortedTree(array, sortKeys: string[]) {
 	return obj;
 }
 
-function makeTooltip(fullprogram, descrip, elig, condit, expend201819Ele, recip201819Ele, cases2019Ele, expend201718Ele, child2018Ele, baseFund2018Ele, recip2017Ele, expend2017Ele, budget2019Ele, expend2019Ele, recip2019Ele, recip201718Ele, recip2018Ele, expend2018Ele, expend2016Ele, recip201617Ele): string {
+function makeTooltip(fullprogram, descrip, elig, condit, expend201819Ele, recip201819Ele, cases2019Ele, expend201718Ele, child2018Ele, baseFund2018Ele, recip2017Ele, expend2017Ele, budget2019Ele, expend2019Ele, recip2019Ele, recip201718Ele, recip2018Ele, expend2018Ele, expend2016Ele, recip201617Ele, childEle): string {
 	const tooltip =  `
 		<div>
 			<hr>
@@ -128,6 +130,7 @@ function makeTooltip(fullprogram, descrip, elig, condit, expend201819Ele, recip2
 			<hr>
 
 			<p>${descrip}</p>
+			<p>${childEle}</p>
 			<p class = "recip201617">${recip201617Ele}</p>
 			<p class = "expend2016">${expend2016Ele}</p>
 			<p class = "recip2017">${recip2017Ele}</p>
@@ -180,11 +183,12 @@ function treeToHierarchy(tree, obj: any = {ministry: "root", showName: false, va
 				expend2018Ele: ele[expend2018],
 				expend2016Ele: ele[expend2016],
 				recip201617Ele: ele[recip201617],
+				childEle: ele[child],
 				value: 1,
 				showName: ele[showName] ? (ele[showName].toLowerCase() === "true") : false,
 				name: ele[programName] || ele[administeredBy] || ele[responsibleMinistry],
 
-				tooltip: makeTooltip(ele[fullProgramName], ele[description], ele[eligibility], ele[conditions], ele[expend201819], ele[recip201819], ele[cases2019], ele[expend201718], ele[child2018], ele[baseFund2018], ele[recip2017], ele[expend2017], ele[budget2019], ele[expend2019], ele[recip2019], ele[recip201718], ele[recip2018], ele[expend2018], ele[expend2016], ele[recip201617] ),
+				tooltip: makeTooltip(ele[fullProgramName], ele[description], ele[eligibility], ele[conditions], ele[expend201819], ele[recip201819], ele[cases2019], ele[expend201718], ele[child2018], ele[baseFund2018], ele[recip2017], ele[expend2017], ele[budget2019], ele[expend2019], ele[recip2019], ele[recip201718], ele[recip2018], ele[expend2018], ele[expend2016], ele[recip201617], ele[child] ),
 			};
 		});
 	}
