@@ -1,10 +1,21 @@
-svg.chart-sunburst-zoom g.tooltip-group foreignObject div {
-    margin: 8px 8px 8px 8px;
-    padding: 5px 8px 8px 8px;
-    border: 0px;
-    border-radius: 8px;
 
-    *:empty{
+svg.chart-sunburst-zoom g.tooltip-group div > *:last-child {
+	margin-bottom: 0; // let's avoid an extra margin at the bottom since we have padding all around the div and it won't collapse.
+}
+
+svg.chart-sunburst-zoom g.tooltip-group div {
+	display: inline-block;
+
+	padding: 0.75rem; // tooltip lib requires padding, not margin, spacing (i.e. element itself).
+    border: 0px;
+	border-radius: 8px;
+
+	p { // reset bootstrap's def'n for p
+		margin-top: 0;
+		margin-bottom: .5rem; // 1.5 spacing
+	};  
+	
+    *:empty {
 	    display: none;
     }
 
@@ -14,16 +25,16 @@ svg.chart-sunburst-zoom g.tooltip-group foreignObject div {
 	    font-weight: bold;
     }
 
-    .list{
-	    margin-top: -12px;
+    .list {
+	    padding-top: -12px;
     }
 
-	.eligibility:before{
-	content: "Major Eligibility Requirement: ";
-	font-weight: bold;
+	.eligibility:before {
+		content: "Major Eligibility Requirement: ";
+		font-weight: bold;
 	}
 
-	.eligibility{
+	.eligibility {
 		font-weight: normal;
 		padding-left: 3em;
 		text-indent: -3em;
@@ -35,170 +46,159 @@ svg.chart-sunburst-zoom g.tooltip-group foreignObject div {
 		font-weight: bold
 	}
 
-	.expend201819{
+	.expend201819 {
 		font-weight: normal
 	}
 
-	.recip201819:before{
+	.recip201819::before {
 		content: "Recipients (2018/19): ";
 		font-weight: bold
 	}
 
-	.recip201819{
+	.recip201819 {
 		padding-left: 3em;
 		font-weight: normal;
 		text-indent: -3em;
 	}
 
-	.cases2019:before{
+	.cases2019::before {
 		content: "Cases (July 2019): ";
 		font-weight: bold
 	}
 
-	.cases2019{
+	.cases2019 {
 		padding-left: 3em;
 		font-weight: normal;
 		text-indent: -3em;
 	}
 
-	.expend201718:before{
+	.expend201718::before {
 		content: "Expenditures (2017/18): ";
 		font-weight: bold
 	}
 
-	.expend201718{
+	.expend201718 {
 		font-weight: normal
 	}
 
-	.child2018:before{
+	.child2018::before {
 		content: "Number of Eligible Children (Mar. 2018): ";
 		font-weight: bold
 	}
 
-	.child2018{
+	.child2018 {
 		font-weight: normal
 	}
 
-	.baseFund2018:before{
+	.baseFund2018::before {
 		content: "Base Funding (2018/19): ";
 		font-weight: bold
 	}
 
-	.baseFund2018{
+	.baseFund2018 {
 		font-weight: normal
 	}
 
-	.recip2017:before{
+	.recip2017::before {
 		content: "Recipients (2017): ";
 		font-weight: bold
 	}
 
-	.recip2017{
+	.recip2017 {
 		font-weight: normal
 	}
 
-
-	.expend2017:before{
+	.expend2017::before {
 		content: "Expenditures (2017): ";
 		font-weight: bold
 	}
 
-	.expend2017{
+	.expend2017 {
 		font-weight: normal
 	}
 
-
-	.budget2019::before{
+	.budget2019::before {
 		content: "Budget (2019/20): ";
 		font-weight: bold
 	}
 
-	.budget2019{
+	.budget2019 {
 		font-weight: normal
 	}
 
-
-	.expend2019::before{
+	.expend2019::before {
 		content: "Expenditures (2019 YTD): ";
 		font-weight: bold
 	}
 
-	.expend2019{
+	.expend2019 {
 		font-weight: normal
 	}
 
-	.recip2019:before{
+	.recip2019::before {
 		content: "Recipients (2019 YTD): ";
 		font-weight: bold
 	}
 
-	.recip2019{
+	.recip2019 {
 		font-weight: normal;
 	}
 
-
-	.recip201718:before{
+	.recip201718::before {
 		content: "Recipients (2017/18): ";
 		font-weight: bold
 	}
 
-	.recip201718{
+	.recip201718 {
 		font-weight: normal;
 	}
 
-	.recip2018:before{
+	.recip2018::before {
 		content: "Recipients (2018): ";
 		font-weight: bold
 	}
 
-	.recip2018{
+	.recip2018 {
 		padding-left: 3em;
 		font-weight: normal;
 		text-indent: -3em;
 	}
 
-	.expend2018:before{
+	.expend2018::before {
 		content: "Expenditures (2018): ";
 		font-weight: bold
 	}
 
-	.expend2018{
+	.expend2018 {
 		font-weight: normal
 	}
 
-	.expend2016:before{
+	.expend2016::before {
 		content: "Expenditures (2016): ";
 		font-weight: bold
 	}
 
-	.expend2016{
+	.expend2016 {
 		font-weight: normal
 	}
 
-	.recip201617:before{
+	.recip201617::before {
 		content: "Recipients (2016/17): ";
 		font-weight: bold
 	}
 
-	.recip2016{
+	.recip2016 {
 		padding-left: 3em;
 		font-weight: normal;
 		text-indent: -3em;
 	}
 
-
-
-
-
-   
-
-
-.condition::before{
+	.condition::before {
 		content: "Conditions: ";
 		font-weight: bold;
 	}
 
-	.condition{
-		font-weight: normal
+	.condition {
+		font-weight: normal;
 	}
 }
