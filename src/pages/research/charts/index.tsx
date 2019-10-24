@@ -50,7 +50,7 @@ export default class ChartsComponent extends Component {
 		// console.log(ministerySunburstChart);
 
 		return <>
-			<div class="row">
+			{/* <div class="row">
 				<div className="img-fluid col-xl">
 					<h2 class="text-center">Eligibility</h2>
 					{this.eligibilitySvgEle}
@@ -69,7 +69,7 @@ export default class ChartsComponent extends Component {
 					<h2 class="text-center">Interactions</h2>
 					{this.interactionLinkSvgEle}
 				</div>
-			</div>
+			</div> */}
 			<div class="row">
 				<div className="img-fluid col-xl">
 					<h2 class="text-center">Ministry Complexity</h2>
