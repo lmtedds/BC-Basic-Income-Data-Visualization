@@ -128,10 +128,10 @@ const websiteConfig = (env, argv) => {
         },
         canPrint: true
       }),
-      new PurgecssPlugin({
-        paths: glob.sync(`${PATHS.src}/**/*`,  { nodir: true }),
-        whitelist: ["body", "html", "show", "active"]
-      }),
+      // new PurgecssPlugin({
+      //   paths: glob.sync(`${PATHS.src}/**/*`,  { nodir: true }),
+      //   whitelist: ["body", "html", "show", "active"]
+      // }),
       new LicenseWebpackPlugin({
         perChunkOutput: false
       }),
