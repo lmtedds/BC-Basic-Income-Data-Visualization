@@ -42,7 +42,8 @@ const websiteConfig = (env, argv) => {
     },
     output: {
       filename: "[name].[chunkhash].js",
-      path: path.resolve(__dirname, "dist")
+      path: path.resolve(__dirname, "dist"),
+      publicPath: "/" // This should make script and link paths absolute which will allow full depth links.
     },
     resolve: {
       extensions: [".ts", ".tsx", ".js"],
@@ -91,8 +92,10 @@ const websiteConfig = (env, argv) => {
     },
     devServer: {
       open: true,
-      historyApiFallback: true,
-      port: 8080
+      historyApiFallback: {
+        index: "/index.html",
+      },
+      port: 8080,
     },
     devtool: "source-map",
     plugins: [
