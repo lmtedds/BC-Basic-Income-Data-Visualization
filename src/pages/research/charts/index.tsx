@@ -1,6 +1,7 @@
 import { app, Component } from "apprun";
 
 import { buildApplicationChart } from "~charts/application";
+import { buildcashInKindSunburstChart } from "~charts/cashInKind";
 import { buildEligibilityChart } from "~charts/eligibility";
 import { buildInKindChart } from "~charts/in_kind";
 import { buildMinistryComplexitySunburstChart } from "~charts/ministries";
@@ -22,6 +23,7 @@ export default class ChartsComponent extends Component {
 	private readonly inKindSvgEle: SVGElement;
 	private readonly interactionLinkSvgEle: SVGElement;
 	private readonly ministryComplexitySunburstSvgEle: SVGElement;
+	private readonly cashInKindSunburstSvgEle: SVGElement;
 
 	constructor() {
 		super();
@@ -31,6 +33,8 @@ export default class ChartsComponent extends Component {
 		this.inKindSvgEle = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 		this.interactionLinkSvgEle = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 		this.ministryComplexitySunburstSvgEle = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+		this.cashInKindSunburstSvgEle = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+
 	}
 
 	public view = (state) => {
@@ -46,8 +50,9 @@ export default class ChartsComponent extends Component {
 		const linkChart = buildProgramInteractionChart(this.interactionLinkSvgEle);
 		// console.log(linkChart);
 
-		const ministerySunburstChart = buildMinistryComplexitySunburstChart(this.ministryComplexitySunburstSvgEle);
+		const ministrySunburstChart = buildMinistryComplexitySunburstChart(this.ministryComplexitySunburstSvgEle);
 		// console.log(ministerySunburstChart);
+		// const cashInKindSunburstChart = buildcashInKindSunburstChart(this.cashInKindSunburstSvgEle);
 
 		return <>
 			{/* <div class="row">
@@ -76,6 +81,14 @@ export default class ChartsComponent extends Component {
 					{this.ministryComplexitySunburstSvgEle}
 				</div>
 			</div>
+
+			{/*	<div class="row">
+				<div className="img-fluid col-xl">
+					<h2 class="text-center">Cash In-Kind</h2>
+					{this.CashInKindSunburstSvgEle}
+				</div>
+			</div>*/}
+
 		</>;
 	}
 }
