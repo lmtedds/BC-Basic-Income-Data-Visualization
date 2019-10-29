@@ -52,7 +52,9 @@ export default class ChartsComponent extends Component {
 
 		const ministrySunburstChart = buildMinistryComplexitySunburstChart(this.ministryComplexitySunburstSvgEle);
 		// console.log(ministerySunburstChart);
-		// const cashInKindSunburstChart = buildcashInKindSunburstChart(this.cashInKindSunburstSvgEle);
+
+		const cashInKindSunburstChart = buildcashInKindSunburstChart(this.cashInKindSunburstSvgEle);
+		// console.log(cashInKindSunburstChart);
 
 		return <>
 			{/* <div class="row">
@@ -82,12 +84,12 @@ export default class ChartsComponent extends Component {
 				</div>
 			</div>
 
-			{/*	<div class="row">
+			<div class="row">
 				<div className="img-fluid col-xl">
 					<h2 class="text-center">Cash In-Kind</h2>
-					{this.CashInKindSunburstSvgEle}
+					{this.cashInKindSunburstSvgEle}
 				</div>
-			</div>*/}
+			</div>
 
 		</>;
 	}
