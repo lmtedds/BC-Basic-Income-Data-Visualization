@@ -1,4 +1,4 @@
-import { data as cashInKinddata } from "~data/20191028_cashInKind";
+import { data as cashInKindData } from "~data/20191028_cashInKind";
 
 import { buildZoomableSunburstChart, ISunburstChart } from "~charts/d3/sunburst";
 
@@ -51,12 +51,12 @@ function treeToHierarchy(tree, obj: any = {spectrumEle: "root",  value: 0, name:
 		return tree.map((ele: IInKind) => {
 			return {
 				fullprogram: ele[fullProgramName],
-				program: ele[programName],
+				program: ele[program],
 				levelEle: ele[level],
 				spectrumEle: ele[spectrum],
 				parentProg: ele[parentProg],
 				value: 1,
-				name: ele[programName] || ele[spectrum] || ele[parentProg],
+				name: ele[program] || ele[spectrum] || ele[parentProg],
 			};
 		});
 	}
@@ -78,8 +78,8 @@ function treeToHierarchy(tree, obj: any = {spectrumEle: "root",  value: 0, name:
 }
 
 export function buildcashInKindSunburstChart(svgEle?: SVGElement) {
-	const sortKeys = [level, spectrum, programName, parentProg];
-	const sortData = listToSortedTree(cashInKinddata, sortKeys);
+	const sortKeys = [level, spectrum, program, parentProg];
+	const sortData = listToSortedTree(cashInKindData, sortKeys);
 	const sunburstChartData: ISunburstChart = treeToHierarchy(sortData);
 	// console.log(`hier: ${JSON.stringify(hierData, null, 4)}`);
 
