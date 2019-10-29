@@ -1,7 +1,7 @@
 import { app, Component } from "apprun";
 
 import { buildApplicationChart } from "~charts/application";
-import { buildcashInKindSunburstChart } from "~charts/cashInKind";
+import { buildCashInKindSunburstChart } from "~charts/cashInKind";
 import { buildEligibilityChart } from "~charts/eligibility";
 import { buildInKindChart } from "~charts/in_kind";
 import { buildMinistryComplexitySunburstChart } from "~charts/ministries";
@@ -53,7 +53,7 @@ export default class ChartsComponent extends Component {
 		const ministrySunburstChart = buildMinistryComplexitySunburstChart(this.ministryComplexitySunburstSvgEle);
 		// console.log(ministerySunburstChart);
 
-		const cashInKindSunburstChart = buildcashInKindSunburstChart(this.cashInKindSunburstSvgEle);
+		const cashInKindSunburstChart = buildCashInKindSunburstChart(this.cashInKindSunburstSvgEle);
 		// console.log(cashInKindSunburstChart);
 
 		return <>

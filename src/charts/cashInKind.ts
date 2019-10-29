@@ -77,7 +77,7 @@ function treeToHierarchy(tree, obj: any = {spectrumEle: "root",  value: 0, name:
 	return obj;
 }
 
-export function buildcashInKindSunburstChart(svgEle?: SVGElement) {
+export function buildCashInKindSunburstChart(svgEle?: SVGElement) {
 	const sortKeys = [level, spectrum, program, parentProg];
 	const sortData = listToSortedTree(cashInKindData, sortKeys);
 	const sunburstChartData: ISunburstChart = treeToHierarchy(sortData);
