@@ -282,7 +282,7 @@ export function buildMatrixForceChart(chartData: IMatrixChart, svgEle?: SVGEleme
 		}))
 		.force("collision", forceCollide().radius(function(d: IMatrixDatum) {
 			return d.radius;
-		}));    // FIXME: Verify the tick is unregistered when finished
+		}));
 
 	// Run a fixed number simulation steps (potentially prior to rendering) or until
 	// d3 simulation's alpha < alphaMin is reached?
