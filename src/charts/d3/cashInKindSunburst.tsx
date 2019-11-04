@@ -22,6 +22,7 @@ export interface ID3HierarchyBase {
 	tooltip?: string; // HTML string
 
 	children?: this[];
+	colorB: string;
 }
 
 export interface ISunburstChartSetup {
@@ -84,18 +85,15 @@ export function buildZoomableSunburstChart(
 
 	// Colours for the sunburst will be either chosen automatically or can be provided in the colour property
 	// of the data. The colour is based on the parent and then the opacity is varied based on the depth.
-	// const colour = scaleOrdinal(quantize(interpolateRainbow, sunburstData.children.length + 1));
-	//
-	function colour(d: any) {
-		if (d.spectrumEle === "Pure In-Kind") {
-			return "yellow";
-		} else {
-			return "blue"; }
-			}
+	const colour = scaleOrdinal(quantize(interpolateRainbow, sunburstData.children.length + 12));
+
 	const selectFillColour = (d: any) => { // FIXME: Type
-	// while (d.depth > 1) d = d.parent;
-		return d.data.colour || colour(d.data.name);
+		while (d.depth > 3) d = d.parent;
+		if (d.data.spectrumEle === "Pure In-Kind" || d.data.spectrumEle === "Pure Cash Transfer" ) {
+			return  d.data.colorB; } 
+		else {return colour(d.data.name); }
 	};
+		// return d.data.colour || colour(d.data.name)
 	const opacityInterpolate = (d: any) => {
 		const computed = (showDepthMax - 1 - d.y0) / (showDepthMax - 1 - showDepthMin) * (maxOpacity - minOpacity) + minOpacity;
 		return computed > minOpacity ? computed : minOpacity;
