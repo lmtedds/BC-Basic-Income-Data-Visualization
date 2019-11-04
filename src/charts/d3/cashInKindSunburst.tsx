@@ -86,14 +86,14 @@ export function buildZoomableSunburstChart(
 	// of the data. The colour is based on the parent and then the opacity is varied based on the depth.
 	// const colour = scaleOrdinal(quantize(interpolateRainbow, sunburstData.children.length + 1));
 	//
-	const colour = (d: any) => {
-		if (d.level === "Government of B.C.") {
+	function colour(d: any) {
+		if (d.spectrumEle === "Pure In-Kind") {
 			return "yellow";
 		} else {
 			return "blue"; }
-			};
+			}
 	const selectFillColour = (d: any) => { // FIXME: Type
-		while (d.depth > 1) d = d.parent;
+	// while (d.depth > 1) d = d.parent;
 		return d.data.colour || colour(d.data.name);
 	};
 	const opacityInterpolate = (d: any) => {
