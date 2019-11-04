@@ -44,7 +44,7 @@ export default class ChartsComponent extends Component {
 		const eligibilityChart = buildEligibilityChart(this.eligibilitySvgEle);
 		// console.log(eligibilityChart);
 
-		const matrixChart = buildInKindChart(this.inKindSvgEle); // Yes, this really is an SVG element
+		const matrixChart = buildInKindChart(this.inKindSvgEle);
 		// console.log(matrixChart);
 
 		const linkChart = buildProgramInteractionChart(this.interactionLinkSvgEle);
@@ -90,7 +90,6 @@ export default class ChartsComponent extends Component {
 					{this.cashInKindSunburstSvgEle}
 				</div>
 			</div>
-
 		</>;
 	}
 }
