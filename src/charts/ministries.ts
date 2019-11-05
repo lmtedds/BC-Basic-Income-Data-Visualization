@@ -99,9 +99,17 @@ function listToSortedTree(array, sortKeys: string[]) {
 
 	array.forEach((ele) => {
 		let subObj = obj;
-		sortKeys.forEach((key, index) => {
+
+		// Iterate over all the sort keys until we encounter one that doesn't exist.
+		sortKeys.every((key, index) => {
 			const value = ele[key];
-			if(index === sortKeys.length - 1 ) {
+
+			// If there is no value for the key, we should stop iterating keys here.
+			if(!value) return false;
+
+			// Last level of the hierarchy?
+			if(index === sortKeys.length - 1 ||
+				(ele[sortKeys[index + 1]] === "")) {
 				// Last level of hierarchy/search. Insert our new element.
 				if(subObj[value]) {
 					subObj[value].push(ele);
@@ -116,6 +124,8 @@ function listToSortedTree(array, sortKeys: string[]) {
 
 				subObj = subObj[value];
 			}
+
+			return true;
 		});
 	});
 
