@@ -85,15 +85,19 @@ export function buildZoomableSunburstChart(
 
 	// Colours for the sunburst will be either chosen automatically or can be provided in the colour property
 	// of the data. The colour is based on the parent and then the opacity is varied based on the depth.
-	const colour = scaleOrdinal(quantize(interpolateRainbow, sunburstData.children.length + 12));
+	const colour = scaleOrdinal(quantize(interpolateRainbow, sunburstData.children.length + 1));
+	 const colour2 = scaleOrdinal(quantize(interpolateRainbow, sunburstData.children.length + 7));
+
 
 	const selectFillColour = (d: any) => { // FIXME: Type
-		while (d.depth > 3) d = d.parent;
-		if (d.data.spectrumEle === "Pure In-Kind" || d.data.spectrumEle === "Pure Cash Transfer" ) {
-			return  d.data.colorB; } 
-		else {return colour(d.data.name); }
+		    if(d.depth >= 3) {
+           		 while (d.depth > 3) d = d.parent;
+           			 return colour2(d.data.name);
+       			} else {
+           			 while (d.depth > 1) d = d.parent;
+           				 return d.data.colour || colour(d.data.name);
+        		}	
 	};
-		// return d.data.colour || colour(d.data.name)
 	const opacityInterpolate = (d: any) => {
 		const computed = (showDepthMax - 1 - d.y0) / (showDepthMax - 1 - showDepthMin) * (maxOpacity - minOpacity) + minOpacity;
 		return computed > minOpacity ? computed : minOpacity;

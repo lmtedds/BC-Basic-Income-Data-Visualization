@@ -93,7 +93,7 @@ export function buildCashInKindSunburstChart(svgEle?: SVGElement) {
 	sunburstChartData.setup = {
 		width: 1000,
 		margin: 10,
-		showDepth: 4,
+		showDepth: 5,
 		radiusScaleExponent: 1.4,
 		honourShowName: false,
 		textWrapPadding: 10,
