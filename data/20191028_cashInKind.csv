@@ -4,10 +4,11 @@ Aboriginal Emergency Assistance Fund (post-secondary),AEAF,"Education, Training,
 Affordable Child Care Benefit,ACCB,Children and Family,Government of B.C.,Pure In-Kind,,
 Affordable Rental Housing,Affordable Rental Housing,Housing,Government of B.C.,Pure In-Kind,,
 Agreements with Young Adults,AYA,"Education, Training, and Employment",Government of B.C.,Cash Geared to Cost,,
+Basic Personal Tax Credit,Basic Person. Tax Cred.,Financial Supports: Non-Work,Government of B.C.,Non-refundable tax credit,,
 BC access grant for students with permanent disabilities,Access Grant,"Education, Training, and Employment",Government of B.C.,Pure In-Kind,,
 BC Bus Pass for Seniors,Senior Bus Pass,Financial Supports: Non-Work,Government of B.C.,Pure In-Kind,,
-BC Child Opportunity Benefit,Child Opportunity,Children and Family,Government of B.C.,Pure Cash Transfer,,
-BC Climate Action Tax Credit,CATC,Financial Supports: Non-Work,Government of B.C.,Pure Cash Transfer,,
+BC Child Opportunity Benefit,Child Opportunity,Children and Family,Government of B.C.,Refundable tax credit,,
+BC Climate Action Tax Credit,CATC,Financial Supports: Non-Work,Government of B.C.,Refundable tax credit,,
 BC Education and Training Savings Grant ,Education Savings,"Education, Training, and Employment",Government of B.C.,Pure Cash Transfer,,
 BC Farmer's Market Nutrition Program,Nutrition Program,Financial Supports: Non-Work,Government of B.C.,Pure In-Kind,,
 BC Home Renovation Tax Credit,Home Renovation,Housing,Government of B.C.,Refundable tax credit,,
@@ -39,8 +40,8 @@ General Supplements,General Supp.,Housing,Government of B.C.,Cash Geared to Cost
 General Supplements,General Supp.,Financial Supports: Non-Work,Government of B.C.,Pure Cash Transfer,X-mas Supp.,Christmas Supplement
 General Supplements,General Supp.,Financial Supports: Non-Work,Government of B.C.,Pure Cash Transfer,Crisis Supp.,Crisis Supplement
 General Supplements,General Supp.,Children and Family,Government of B.C.,Pure Cash Transfer,School Start-up Supp.,School Start-up Supplement
-General Supplements,General Supp.,Children and Family,Government of B.C.,Pure Cash Transfer,Temp. Child Ben. Top-up,Temporary Child Benefits Top-Up Supplement
-General Supplements,General Supp.,Children and Family,Government of B.C.,Pure Cash Transfer,Auto. Child Ben. Top-up,Automatic Child Benefits Top-Up Supplement
+General Supplements,General Supp.,Children and Family,Government of B.C.,Refundable tax credit,Temp. Child Ben. Top-up,Temporary Child Benefits Top-Up Supplement
+General Supplements,General Supp.,Children and Family,Government of B.C.,Refundable tax credit,Auto. Child Ben. Top-up,Automatic Child Benefits Top-Up Supplement
 General Supplements,General Supp.,Children and Family,Government of B.C.,Pure In-Kind,Family Maintenance,Family Maintenance Services
 General Supplements,General Supp.,Financial Supports: Non-Work,Government of B.C.,Pure In-Kind,Funeral,Funeral Costs
 General Supplements,General Supp.,Financial Supports: Non-Work,Government of B.C.,Pure In-Kind,Transport Supp.,Transportation Supplement  
@@ -96,30 +97,48 @@ Supportive Housing (for low income adults),Support Housing,Housing,Government of
 Transitional Health Services,THS,Medical/Health,Government of B.C.,Pure In-Kind,,
 Victim Travel Fund,Victim Travel Fund,Financial Supports: Non-Work,Government of B.C.,Cash Geared to Cost,,
 Women's Transition Housing and Supports,Transition Houses,Housing,Government of B.C.,Pure In-Kind,,
-Workforce Development Agreement Programs,WDA,"Education, Training, and Employment",Government of B.C.,Pure In-Kind,,
+Workforce Development Agreement Programs,WDA,"Education, Training, and Employment",Government of B.C.,Pure Cash Transfer,Employer Training Grant,BC Employer Training Grant
+Workforce Development Agreement Programs,WDA,"Education, Training, and Employment",Government of B.C.,Pure Cash Transfer,Community Workforce Grant ,Community Workforce Response Grant 
+Workforce Development Agreement Programs,WDA,"Education, Training, and Employment",Government of B.C.,Pure In-Kind,Skills Training for Employment,Skills Training for Employment (WDA)
 WorkSafe BC: Health Care Benefits,WorkSafe Health Ben.,Financial Supports: Work-Related,Government of B.C.,Pure In-Kind,,
 WorkSafe BC: Permanent Disability Benefit ,Perm Dis. Benefit,Financial Supports: Work-Related,Government of B.C.,Pure Cash Transfer,,
 WorkSafe BC: Wage loss benefits,Wage Loss Benefits,Financial Supports: Work-Related,Government of B.C.,Pure Cash Transfer,,
 Youth Educational Assistance Fund for Former Youth in Care,YEAF,"Education, Training, and Employment",Government of B.C.,Cash Geared to Cost,,
 Aboriginal Leadership Opportunities Year,ALOY,"Education, Training, and Employment",Government of Canada,Pure In-Kind,,
-Allowance ,Allowance ,Financial Supports: Non-Work,Government of Canada,Pure Cash Transfer,,
-Apprenticeship Grants,Apprenticeship Grants,"Education, Training, and Employment",Government of Canada,Pure Cash Transfer,,
+Allowance ,Allowance ,Financial Supports: Non-Work,Government of Canada,Refundable tax credit,Allowance Aged 60 to 64,Allowance for People Aged 60 to 64
+Allowance ,Allowance ,Financial Supports: Non-Work,Government of Canada,Refundable tax credit,Allowance: Survivor,Allowance for the Survivor
+Apprenticeship Grants,Apprenticeship Grants,"Education, Training, and Employment",Government of Canada,Pure Cash Transfer,ACG,Apprenticeship Completion Grant (ACG)
+Apprenticeship Grants,Apprenticeship Grants,"Education, Training, and Employment",Government of Canada,Pure Cash Transfer,AIG ,Apprenticeship Incentive Grant (AIG)
+Apprenticeship Grants,Apprenticeship Grants,"Education, Training, and Employment",Government of Canada,Pure Cash Transfer,AIG-W,Apprenticeship Incentive Grant for Women
+Basic Personal Tax Credit,Basic Person. Tax Cred.,Financial Supports: Non-Work,Government of Canada,Non-refundable tax credit,,
 Canada Child Benefit,CCB,Children and Family,Government of Canada,Refundable tax credit,,
-Canada Education Savings,Canada Education Savings,"Education, Training, and Employment",Government of Canada,Pure Cash Transfer,,
-Canada Pension Plan,CPP,Financial Supports: Work-Related,Government of Canada,Pure Cash Transfer,,
-Canada Student Grants,Canada Student Grants,"Education, Training, and Employment",Government of Canada,Cash Geared to Cost,,
+Canada Education Savings,Canada Ed. Savings,"Education, Training, and Employment",Government of Canada,Pure Cash Transfer,Ed. Savings Grant ,Canada Education Savings Grant 
+Canada Education Savings,Canada Ed. Savings,"Education, Training, and Employment",Government of Canada,Pure Cash Transfer,Ed. Savings Grant addition,Canada Education Savings Grant addition
+Canada Education Savings,Canada Ed. Savings,"Education, Training, and Employment",Government of Canada,Pure Cash Transfer,Learning Bond,Canada Learning Bond
+Canada Pension Plan,CPP,Financial Supports: Work-Related,Government of Canada,Pure Cash Transfer,CPP: Children's ,CPP: Children's Benefits
+Canada Pension Plan,CPP,Financial Supports: Work-Related,Government of Canada,Pure Cash Transfer,CPP: Death,CPP: Death Benefit
+Canada Pension Plan,CPP,Financial Supports: Work-Related,Government of Canada,Pure Cash Transfer,CPP: Disability ,CPP: Disability Benefit
+Canada Pension Plan,CPP,Financial Supports: Work-Related,Government of Canada,Pure Cash Transfer,CPP: Retirement,CPP: Retirement Pension
+Canada Pension Plan,CPP,Financial Supports: Work-Related,Government of Canada,Pure Cash Transfer,CPP: Survivor's ,CPP: Survivor's Pension
+Canada Student Grants,Canada Student Grants,"Education, Training, and Employment",Government of Canada,Cash Geared to Cost, ,
 Canada Student Loans,Canada Student Loans,"Education, Training, and Employment",Government of Canada,Cash Geared to Cost,,
 Canada Training Credit,CTC,"Education, Training, and Employment",Government of Canada,Pure In-Kind,,
-Canada Worker's Benefit ,CWB,Financial Supports: Work-Related,Government of Canada,Refundable tax credit,,
+Canada Worker's Benefit ,CWB,Financial Supports: Work-Related,Government of Canada,Refundable tax credit,CWB: general,CWB: general
+Canada Worker's Benefit ,CWB,Financial Supports: Work-Related,Government of Canada,Refundable tax credit,CWB: dis. Supp.,CWB: Disability Supplement
 Canadian Benefit for Parents of Young Victims of Crime,Victims of Crime,Financial Supports: Work-Related,Government of Canada,Pure Cash Transfer,,
 Canadian Forces Disability Benefits,Disability Benefits,Financial Supports: Non-Work,Government of Canada,Pure Cash Transfer,,
 Canadian Forces Income Replacement Benefit,Income Replacement,Financial Supports: Work-Related,Government of Canada,Pure Cash Transfer,,
 Canadian Forces Income Support,Income Support,Financial Supports: Non-Work,Government of Canada,Pure Cash Transfer,,
 Child Disability Benefit,Child Dis. Benefit,Children and Family,Government of Canada,Refundable tax credit,,
-Disability Savings,Disability Savings,Financial Supports: Non-Work,Government of Canada,Pure Cash Transfer,,
+Disability Savings,Disability Savings,Financial Supports: Non-Work,Government of Canada,Pure Cash Transfer,Disability Savings Bonds,Disability Savings Bonds
+Disability Savings,Disability Savings,Financial Supports: Non-Work,Government of Canada,Pure Cash Transfer,Disability Savings Grant,Disability Savings Grant
 Disability Tax Credit,DTC,Financial Supports: Non-Work,Government of Canada,Non-refundable tax credit,,
 Education and Training Benefit (Veterans),Education & Training,"Education, Training, and Employment",Government of Canada,Cash Geared to Cost,,
-Employment Insurance,Employment Insurance,Financial Supports: Non-Work,Government of Canada,Pure Cash Transfer,,
+Employment Insurance,Employment Insurance,Financial Supports: Non-Work,Government of Canada,Pure Cash Transfer,EI: regular benefits,Employment Insurance (EI): regular benefits
+Employment Insurance,Employment Insurance,Financial Supports: Non-Work,Government of Canada,Pure Cash Transfer,EI: caregiving,Employment Insurance: caregiving benefits (adult and/or child(ren))
+Employment Insurance,Employment Insurance,Financial Supports: Non-Work,Government of Canada,Pure Cash Transfer,EI: family supp.,Employment Insurance: family supplement
+Employment Insurance,Employment Insurance,Financial Supports: Non-Work,Government of Canada,Pure Cash Transfer,EI: maternity & parental,Employment Insurance: maternity and parental
+Employment Insurance,Employment Insurance,Financial Supports: Non-Work,Government of Canada,Pure Cash Transfer,EI: sickness,Employment Insurance: sickness
 Excise Gasoline Tax Refund,Excise Gasoline Refund,Financial Supports: Non-Work,Government of Canada,Bill Refund,,
 Federal Internship for Newcomers Program,Newcomers Intern.,"Education, Training, and Employment",Government of Canada,Pure In-Kind,,
 Federal Worker's Comp.,Federal Worker's Comp.,Financial Supports: Work-Related,Government of Canada,Pure Cash Transfer,,
@@ -127,7 +146,7 @@ First Nation & Inuit post-secondary student support program,PSSSP,"Education, Tr
 First Time Home Buyer Incentive,FTHBI,Housing,Government of Canada,Pure In-Kind,,
 GST/HST Credit,GST/HST Cred.,Financial Supports: Non-Work,Government of Canada,Refundable tax credit,,
 GST/HST New Housing Rebate,New Housing Rebate,Housing,Government of Canada,Bill Refund,,
-Guaranteed Income Supplement,GIS,Financial Supports: Non-Work,Government of Canada,Pure Cash Transfer,,
+Guaranteed Income Supplement,GIS,Financial Supports: Non-Work,Government of Canada,Refundable tax credit,,
 Home Buyer's Plan,Home Buyer's Plan,Housing,Government of Canada,Pure In-Kind,,
 Housing Internship for First Nation and Inuit Youth,HIIFNIY,"Education, Training, and Employment",Government of Canada,Pure In-Kind,,
 Housing Supply Challenge,Housing Supply,Housing,Government of Canada,Services,,
@@ -136,7 +155,7 @@ Indian Residential Schools Resolution Health Support Program,IRS RHSP,Medical/He
 Language Instruction for Newcomers to Canada,LINC,"Education, Training, and Employment",Government of Canada,Pure In-Kind,,
 Medical Expenses Tax Credit,Med Expense Cred.,Medical/Health,Government of Canada,Non-refundable tax credit,,
 Non-Insured Health Benefits Program,NIHB,Medical/Health,Government of Canada,Pure In-Kind,,
-Old Age Security Pension,OAS,Financial Supports: Non-Work,Government of Canada,Pure Cash Transfer,,
+Old Age Security Pension,OAS,Financial Supports: Non-Work,Government of Canada,Refundable tax credit,,
 RDSP ,RDSP ,Financial Supports: Non-Work,Government of Canada,Voluntary Savings,,
 Resettlement Assistance Program,Resettlement Assistance,Financial Supports: Non-Work,Government of Canada,Pure In-Kind,,
 RESP,RESP,"Education, Training, and Employment",Government of Canada,Voluntary Savings,,
@@ -144,12 +163,12 @@ Right of Permanent Residence Fee Loan,Right of PR loan,Financial Supports: Non-W
 RRSP,RRSP,Financial Supports: Non-Work,Government of Canada,Voluntary Savings,,
 Skills Link,Skills Link,"Education, Training, and Employment",Government of Canada,Pure In-Kind,,
 TFSA,TFSA,Financial Supports: Non-Work,Government of Canada,Voluntary Savings,,
-Veteran Exceptional Incapacity Allowance,Incapacity Allowance,Financial Supports: Non-Work,Government of Canada,Pure Cash Transfer,,
-Veteran's Attendance Allowance,Attendance Allowance,Financial Supports: Non-Work,Government of Canada,Cash Geared to Cost,,
-Veteran's Detention Benefit,Detention Benefit,Financial Supports: Non-Work,Government of Canada,Pure Cash Transfer,,
-Veteran's Independence Program,Independence,Financial Supports: Non-Work,Government of Canada,Pure In-Kind OR Bill Refund,,
-Veteran's Independence Program for Survivors,Independence for Survivors,Financial Supports: Non-Work,Government of Canada,Pure In-Kind OR Bill Refund,,
-Veterans Clothing Allowance,Clothing Allowance,Financial Supports: Non-Work,Government of Canada,Cash Geared to Cost,,
+Veteran Exceptional Incapacity Allowance,Veteran Incapacity Allowance,Financial Supports: Non-Work,Government of Canada,Pure Cash Transfer,,
+Veteran's Attendance Allowance,Veteran Attendance Allowance,Financial Supports: Non-Work,Government of Canada,Cash Geared to Cost,,
+Veteran's Detention Benefit,Veteran Detention Benefit,Financial Supports: Non-Work,Government of Canada,Pure Cash Transfer,,
+Veteran's Independence Program,Veteran Independence,Financial Supports: Non-Work,Government of Canada,Pure In-Kind OR Bill Refund,,
+Veteran's Independence Program for Survivors,Veteran Independence: Survivors,Financial Supports: Non-Work,Government of Canada,Pure In-Kind OR Bill Refund,,
+Veterans Clothing Allowance,Veteran Clothing Allowance,Financial Supports: Non-Work,Government of Canada,Cash Geared to Cost,,
 War Veteran's Funeral and Burial Assistance,Vet. Funeral Assistance,Financial Supports: Non-Work,Government of Canada,Pure In-Kind,,
 War Veteran's Prisoner of War Compensation,War Vet POW Comp.,Financial Supports: Non-Work,Government of Canada,Pure Cash Transfer,,
 War Veterans Allowance,War Vet Allowance,Financial Supports: Non-Work,Government of Canada,Pure Cash Transfer,,
