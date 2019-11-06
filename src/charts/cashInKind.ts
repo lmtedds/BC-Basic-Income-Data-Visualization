@@ -60,7 +60,7 @@ function listToSortedTree(array, sortKeys: string[]) {
 	return obj;
 }
 
-function treeToHierarchy(tree, obj: any = {programTypeEle: "root", value: 0,  name: "root"}): any {
+function treeToHierarchy(tree, obj: any = {spectrumEle: "root", value: 0,  name: "root"}): any {
 	if(Array.isArray(tree)) {
 		return tree.map((ele: IInKind) => {
 			return {
@@ -71,7 +71,7 @@ function treeToHierarchy(tree, obj: any = {programTypeEle: "root", value: 0,  na
 				childProg: ele[childName],
 				programTypeEle: ele[programType],
 				value: 1,
-				name: ele[childName] || ele[programName] || ele[spectrum],
+				name:  ele[childName]  || ele[programName] || ele[spectrum],
 				};
 		});
 	}
@@ -81,7 +81,7 @@ function treeToHierarchy(tree, obj: any = {programTypeEle: "root", value: 0,  na
 			obj.children = [];
 		}
 
-		const sub = treeToHierarchy(tree[key], {programTypeEle: key, value: 0.2,  name: key});
+		const sub = treeToHierarchy(tree[key], {spectrumEle: key, value: 1,  name: key});
 		if(Array.isArray(sub)) {
 			obj.children = obj.children.concat(sub);
 		} else {
@@ -93,7 +93,7 @@ function treeToHierarchy(tree, obj: any = {programTypeEle: "root", value: 0,  na
 }
 
 export function buildCashInKindSunburstChart(svgEle?: SVGElement) {
-	const sortKeys = [level, programType, spectrum, programName, childName];
+	const sortKeys = [level, spectrum, programName];
 	const sortData = listToSortedTree(cashInKindData, sortKeys);
 	const sunburstChartData: ISunburstChart = treeToHierarchy(sortData);
 	// console.log(`hier: ${JSON.stringify(hierData, null, 4)}`);
@@ -101,7 +101,7 @@ export function buildCashInKindSunburstChart(svgEle?: SVGElement) {
 	sunburstChartData.setup = {
 		width: 1000,
 		margin: 10,
-		showDepth: 5,
+		showDepth: 3,
 		radiusScaleExponent: 1.4,
 		honourShowName: false,
 		textWrapPadding: 10,
