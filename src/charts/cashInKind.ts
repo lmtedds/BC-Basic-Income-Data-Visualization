@@ -9,7 +9,6 @@ const spectrum = "Cash to In-Kind Spectrum";
 const level = "Level of Government";
 const childName = "Child";
 const childFullName = "Child Full Name";
-const colorA = "color";
 
 interface IInKind {
 	[fullProgramName]: string;
@@ -20,7 +19,6 @@ interface IInKind {
 	[programType]: string;
 	[childName]: string;
 	[childFullName]: string;
-	[colorA]: string;
 }
 
 function listToSortedTree(array, sortKeys: string[]) {
@@ -73,9 +71,8 @@ function treeToHierarchy(tree, obj: any = {programTypeEle: "root", value: 0,  na
 				childProg: ele[childName],
 				programTypeEle: ele[programType],
 				value: 1,
-				name: ele[programName] || ele[childName] || ele[spectrum],
-				colorB: ele[colorA],
-			};
+				name: ele[childName] || ele[programName] || ele[spectrum],
+				};
 		});
 	}
 
@@ -84,7 +81,7 @@ function treeToHierarchy(tree, obj: any = {programTypeEle: "root", value: 0,  na
 			obj.children = [];
 		}
 
-		const sub = treeToHierarchy(tree[key], {programTypeEle: key, value: 1,  name: key});
+		const sub = treeToHierarchy(tree[key], {programTypeEle: key, value: 0.2,  name: key});
 		if(Array.isArray(sub)) {
 			obj.children = obj.children.concat(sub);
 		} else {
