@@ -93,7 +93,7 @@ function treeToHierarchy(tree, obj: any = {spectrumEle: "root", value: 0,  name:
 }
 
 export function buildCashInKindSunburstChart(svgEle?: SVGElement) {
-	const sortKeys = [level, spectrum, programName];
+	const sortKeys = [level, spectrum,  programName];
 	const sortData = listToSortedTree(cashInKindData, sortKeys);
 	const sunburstChartData: ISunburstChart = treeToHierarchy(sortData);
 	// console.log(`hier: ${JSON.stringify(hierData, null, 4)}`);

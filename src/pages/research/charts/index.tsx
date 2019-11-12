@@ -4,6 +4,7 @@ import { buildApplicationChart } from "~charts/application";
 import { buildCashInKindSunburstChart } from "~charts/cashInKind";
 import { buildEligibilityChart } from "~charts/eligibility";
 import { buildInKindChart } from "~charts/in_kind";
+import { buildCashSuppSunburstChart } from "~charts/cashInKindSupp";
 import { buildMinistryComplexitySunburstChart } from "~charts/ministries";
 import { buildProgramInteractionChart } from "~charts/programs";
 
@@ -24,6 +25,8 @@ export default class ChartsComponent extends Component {
 	private readonly interactionLinkSvgEle: SVGElement;
 	private readonly ministryComplexitySunburstSvgEle: SVGElement;
 	private readonly cashInKindSunburstSvgEle: SVGElement;
+	private readonly cashSuppSunburstSvgEle: SVGElement;
+
 
 	constructor() {
 		super();
@@ -34,6 +37,7 @@ export default class ChartsComponent extends Component {
 		this.interactionLinkSvgEle = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 		this.ministryComplexitySunburstSvgEle = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 		this.cashInKindSunburstSvgEle = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+		this.cashSuppSunburstSvgEle = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 
 	}
 
@@ -55,6 +59,9 @@ export default class ChartsComponent extends Component {
 
 		const cashInKindSunburstChart = buildCashInKindSunburstChart(this.cashInKindSunburstSvgEle);
 		// console.log(cashInKindSunburstChart);
+		
+		const cashSuppSunburstChart = buildCashSuppSunburstChart(this.cashSuppSunburstSvgEle);
+
 
 		return <>
 			{/* <div class="row">
@@ -90,6 +97,15 @@ export default class ChartsComponent extends Component {
 					{this.cashInKindSunburstSvgEle}
 				</div>
 			</div>
+
+				<div class="row">
+				<div className="img-fluid col-xl">
+					<h2 class="text-center">B.C. General and Health Supplements</h2>
+			<p>This sunburst contains only those programs provided by the Government of B.C. to recipients of Income ASsistance, Disability, and Hardship Assistance as either a General Supplement or a Disability Supplement.</p>
+					{this.cashSuppSunburstSvgEle}
+				</div>
+			</div>
+
 		</>;
 	}
 }
