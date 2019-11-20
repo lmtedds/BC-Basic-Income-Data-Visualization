@@ -7,8 +7,6 @@ const programName = "Program";
 const programType = "Program Type/Target";
 const spectrum = "Cash to In-Kind Spectrum";
 const level = "Level of Government";
-const childName = "Child";
-const childFullName = "Child Full Name";
 
 interface IInKind {
 	[fullProgramName]: string;
@@ -16,9 +14,6 @@ interface IInKind {
 	[programType]: string;
 	[spectrum]: string;
 	[level]: string;
-	[programType]: string;
-	[childName]: string;
-	[childFullName]: string;
 }
 
 function listToSortedTree(array, sortKeys: string[]) {
@@ -68,10 +63,9 @@ function treeToHierarchy(tree, obj: any = {spectrumEle: "root", value: 0,  name:
 				program: ele[programName],
 				levelEle: ele[level],
 				spectrumEle: ele[spectrum],
-				childProg: ele[childName],
 				programTypeEle: ele[programType],
 				value: 1,
-				name:  ele[childName]  || ele[programName] || ele[spectrum],
+				name: ele[programName] || ele[programType] || ele[spectrum],
 				};
 		});
 	}
@@ -93,7 +87,7 @@ function treeToHierarchy(tree, obj: any = {spectrumEle: "root", value: 0,  name:
 }
 
 export function buildCashInKindSunburstChart(svgEle?: SVGElement) {
-	const sortKeys = [level, spectrum,  programName];
+	const sortKeys = [level, spectrum, programType];
 	const sortData = listToSortedTree(cashInKindData, sortKeys);
 	const sunburstChartData: ISunburstChart = treeToHierarchy(sortData);
 	// console.log(`hier: ${JSON.stringify(hierData, null, 4)}`);

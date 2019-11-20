@@ -15,7 +15,7 @@ export interface ID3HierarchyBase {
 	name: string;
 	value: number;
 	level: string;
-
+	programTypeEle: string;
 	spectrumEle: string; // FIXME: Should be moved higher
 	program?: string; // FIXME: Should be moved higher
 
@@ -84,8 +84,8 @@ export function buildZoomableSunburstChart(
 
 	// Colours for the sunburst will be either chosen automatically or can be provided in the colour property
 	// of the data. The colour is based on the parent and then the opacity is varied based on the depth.
-	const colour = scaleOrdinal(["rgb(83, 94, 126)", "rgb(225, 190, 190)", "rgb(187, 206, 178)"]);
-	const colour2 = scaleOrdinal(["rgb(255, 198, 0)", "rgb(255, 85, 17)" , "rgb(39, 118, 71)", "rgb(0, 80, 134)", "rgb(152, 95, 25)", "rgb(73, 21, 68)", "rgb(49, 49, 49)", "rgb(231, 231, 231)", "rgb(255, 190, 190)"]);
+	const colour = scaleOrdinal(["rgb(197, 27, 125)", "rgb(241, 182, 218)", "rgb(253, 224, 239)"]);
+	const colour2 = scaleOrdinal(["rgb(140, 81, 10)" , "rgb(191, 129, 45)", "rgb(223, 194, 125)", "rgb(246, 232, 205)", "rgb(255, 222, 181)", "rgb(199, 234, 229)", "rgb(128, 205, 193)", "rgb(53, 151, 143)", "rgb(84, 48, 5)" ]);
 
 	const selectFillColour = (d: any) => { // FIXME: Type
 		if(d.depth >= 2) {
@@ -106,8 +106,8 @@ export function buildZoomableSunburstChart(
 
 	const partition = (data) => {
 		const rooted = hierarchy(data)
-			.sum((d) => d.value)
-			.sort((a, b) => b.value - a.value);
+			.sum((d) => d.value);
+			//.sort((a, b) => b.value - a.value);
 
 		return d3partition()
 			.size([2 * Math.PI, rooted.height + 1])

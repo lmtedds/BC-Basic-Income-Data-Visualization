@@ -17,7 +17,6 @@ const recip2018 = "Number of Recipients (2018/2019)";
 const expend2018 = "Expenditures (2018/2019)";
 const notes = "Notes";
 
-
 interface ICashKindSupp {
 	[programName]: string;
 	[fullProgramName]: string;
@@ -151,4 +150,3 @@ export function buildCashSuppSunburstChart(svgEle?: SVGElement) {
 
 	return buildZoomableSunburstChart(sunburstChartData, svgEle);
 }
-
