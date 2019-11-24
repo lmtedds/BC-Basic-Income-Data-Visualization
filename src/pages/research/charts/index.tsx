@@ -82,6 +82,11 @@ export default class ChartsComponent extends Component {
 					{this.interactionLinkSvgEle}
 				</div>
 			</div> */}
+
+<div>
+	<h1> Income and Social Support Programs in B.C. </h1>
+	</div>
+
 			<div class="row">
 				<div className="img-fluid col-xl">
 					<h2 class="text-center">Ministry Complexity</h2>
@@ -91,16 +96,16 @@ export default class ChartsComponent extends Component {
 
 			<div class="row">
 				<div className="img-fluid col-xl">
-					<h2 class="text-center">Cash In-Kind</h2>
-			<p>This sunburst arranges all 177 income and social support programs offered in B.C. into method of receipt. The methods are: 
+					<h2 class="text-center">Cash Transfer vs. In-Kind</h2>
+			<p>This sunburst arranges all 177 income and social support programs offered in B.C. into their method of receipt. The methods are:
 		<ul>
-			<li>Pure cash transfer: these programs are paid out as cash with cash amounts set without regard to actual expenses incurred.</li>
-			<li>Refundable tax credit: these programs are offered through the tax system and may result in an actual cash payment to an eligible recipient (if there is money left over after first being applied to taxes owing). </li>
-			<li>Non-refundable tax credit: these programs are offered through the tax system and are used to reduce taxes owing. Any remainder after paying off taxes owing is not recieved by an eligible recipient.</li>
-			<li>Cash geared to cost: these program are paid out as cash with the amount of benefit tied to an actual expense to be incurred by an eligible recipient.</li>
-			<li>Bill repayment: these programs are paid out as case with the amount of beneefit tied to an expense already incurred.</li>
-		<li>Pure In-kind: these programs irectly cover the cost of a service used by an eligible recipient, such as health care or education. </li>
-			<li>Services: these are programs where the funding goes to an eligible third-party such as an employer.</li>
+			<li><b>Pure cash transfer:</b> these programs are paid out as cash with the benefit amounts set without regard to actual expenses incurred.</li>
+			<li> <b>Refundable tax credit:</b> these programs are offered through the tax system and may result in an actual cash payment to an eligible recipient (if there is money left over after first being applied to taxes owing). </li>
+			<li><b>Non-refundable tax credit:</b> these programs are offered through the tax system and are used to reduce taxes owing. Any remainder after paying off taxes owing is immediatly forfeited by the taxpayer.</li>
+			<li><b>Cash geared to cost:</b> these programs are paid out as cash with the amount of benefit tied to an actual expense to be incurred by an eligible recipient. Although similiar to pure in-kind (and often included as in-kind programs), cash geared to cost programs can affect spending behavior differently than pure in-kind. Cash geared to cost programs gives cash to the recipient and does not follow-up on how the cash is actually spent. This may cause difficulty for some recipients in ensuring the intended expense is paid.</li>
+			<li><b>Bill repayment:</b> these programs are paid out as cash with the amount of benefit tied to an expense already incurred. Although generally included as in-kind, bill repayments affect behavior differently than a pure in-kind program. Take-up may be lower if large expenses must be incurred first.</li>
+		<li><b>Pure In-kind:</b> these programs directly cover the cost of a service used by an eligible recipient, such as health care or education. </li>
+			<li><b>Services:</b> these are programs where the funding goes to an eligible third-party such as an employer or network.</li>
 			</ul>
 		</p>
 					{this.cashInKindSunburstSvgEle}
