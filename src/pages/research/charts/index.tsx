@@ -7,6 +7,8 @@ import { buildEligibilityChart } from "~charts/eligibility";
 import { buildInKindChart } from "~charts/in_kind";
 import { buildMinistryComplexitySunburstChart } from "~charts/ministries";
 import { buildProgramInteractionChart } from "~charts/programs";
+import { buildWorkingAgeTypeSunburstChart } from "~charts/workingAgeType.ts";
+import { buildTypeSunburstChart } from "~charts/workingAgeType.ts";
 
 import "./style.scss";
 
@@ -26,6 +28,8 @@ export default class ChartsComponent extends Component {
 	private readonly ministryComplexitySunburstSvgEle: SVGElement;
 	private readonly cashInKindSunburstSvgEle: SVGElement;
 	private readonly cashSuppSunburstSvgEle: SVGElement;
+	private readonly workingAgeTypeSvgEle: SVGElement;
+	private readonly typeSvgEle: SVGElement;
 
 	constructor() {
 		super();
@@ -37,6 +41,8 @@ export default class ChartsComponent extends Component {
 		this.ministryComplexitySunburstSvgEle = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 		this.cashInKindSunburstSvgEle = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 		this.cashSuppSunburstSvgEle = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+		this.workingAgeTypeSvgEle = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+		this.typeSvgEle = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 
 	}
 
@@ -60,6 +66,10 @@ export default class ChartsComponent extends Component {
 		// console.log(cashInKindSunburstChart);
 
 		const cashSuppSunburstChart = buildCashSuppSunburstChart(this.cashSuppSunburstSvgEle);
+
+		const workingAgeTypeSunburstChart = buildWorkingAgeTypeSunburstChart(this.workingAgeTypeSvgEle);
+
+		const typeSunburstChart = buildTypeSunburstChart(this.typeSvgEle);
 
 		return <>
 			{/* <div class="row">
@@ -119,6 +129,15 @@ export default class ChartsComponent extends Component {
 					{this.cashSuppSunburstSvgEle}
 				</div>
 			</div>
+
+	<div class="row">
+				<div className="img-fluid col-xl" id = "workingAge">
+					<h2 class="text-center">Programs for Working-Age Persons</h2>
+					{this.workingAgeTypeSvgEle}
+			<button onclick = {this.typeSvgEle} > All programs </button>
+
+				</div>
+					</div>
 
 		</>;
 	}

@@ -1,14 +1,15 @@
-import { data as cashInKindData } from "~data/20191124_cashInKind";
+import { data as typeData } from "~data/20191124_cashInKind";
 
-import { buildZoomableSunburstChart, ISunburstChart } from "~charts/d3/cashInKindSunburst";
+import { buildZoomableSunburstChart, ISunburstChart } from "~charts/d3/workingAgeTypeSunburst";
 
-const dataFiltered = cashInKindData.filter(function(workingAge) {
+const typeDataFiltered = typeData.filter(function(workingAge) {
 	return workingAge.Age === "Working-Age";
 },
 );
 
 const fullProgramName = "Full Program Name";
 const programName = "Program";
+const age = "Age";
 const programType = "Program Type/Target";
 const spectrum = "Cash to In-Kind Spectrum";
 const level = "Level of Government";
@@ -32,8 +33,9 @@ const expend2018 = "Expenditures (2018)";
 const expend2016 = "Expenditures (2016)";
 const recip201617 = "Recipients (2016/17)";
 
-interface IInKind {
+interface IworkingAge {
 	[fullProgramName]: string;
+	[age]: string;
 	[programName]: string;
 	[programType]: string;
 	[spectrum]: string;
@@ -127,9 +129,9 @@ function makeTooltip(fullprogram, descrip, elig, condit, expend201819Ele, recip2
 	return tooltip;
 }
 
-function treeToHierarchy(tree, obj: any = {spectrumEle: "root", value: 0,  name: "root"}): any {
+function treeToHierarchy(tree, obj: any = {programTypeEle: "root", value: 0,  name: "root"}): any {
 	if(Array.isArray(tree)) {
-		return tree.map((ele: IInKind) => {
+		return tree.map((ele: IworkingAge) => {
 			return {
 				fullprogram: ele[fullProgramName],
 				program: ele[programName],
@@ -167,7 +169,7 @@ function treeToHierarchy(tree, obj: any = {spectrumEle: "root", value: 0,  name:
 			obj.children = [];
 		}
 
-		const sub = treeToHierarchy(tree[key], {spectrumEle: key, value: 1,  name: key});
+		const sub = treeToHierarchy(tree[key], {programTypeEle: key, value: 1,  name: key});
 		if(Array.isArray(sub)) {
 			obj.children = obj.children.concat(sub);
 		} else {
@@ -178,9 +180,27 @@ function treeToHierarchy(tree, obj: any = {spectrumEle: "root", value: 0,  name:
 	return obj;
 }
 
-export function buildCashInKindSunburstChart(svgEle?: SVGElement) {
-	const sortKeys = [level, spectrum, programType] ;
-	const sortData = listToSortedTree(dataFiltered, sortKeys);
+export function buildWorkingAgeTypeSunburstChart(svgEle?: SVGElement) {
+	const sortKeys = [level,  programType, spectrum];
+	const sortData = listToSortedTree(typeDataFiltered, sortKeys);
+	const sunburstChartData: ISunburstChart = treeToHierarchy(sortData);
+	// console.log(`hier: ${JSON.stringify(hierData, null, 4)}`);
+
+	sunburstChartData.setup = {
+		width: 1000,
+		margin: 10,
+		showDepth: 3,
+		radiusScaleExponent: 1.5,
+		honourShowName: false,
+		textWrapPadding: 10,
+	};
+
+	return buildZoomableSunburstChart(sunburstChartData, svgEle);
+}
+
+export function buildTypeSunburstChart(svgEle?: SVGElement) {
+	const sortKeys = [level,  programType, spectrum];
+	const sortData = listToSortedTree(typeData, sortKeys);
 	const sunburstChartData: ISunburstChart = treeToHierarchy(sortData);
 	// console.log(`hier: ${JSON.stringify(hierData, null, 4)}`);
 
