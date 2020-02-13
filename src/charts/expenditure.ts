@@ -1,13 +1,14 @@
-import { data as ministryData } from "~data/20200213_ministries";
+import { data as ministryData } from "~data/20200113_expenditure";
 
 import { buildZoomableSunburstChart, ISunburstChart } from "~charts/d3/sunburst";
 
 const levelOfGovernment = "Level of Government";
-const responsibleMinistry = "Responsible Ministry";
-const administeredBy = "Administered By";
-const showName = "Show Name";
+const programSize = "ExpendituresTotal";
 const programName = "Program";
 const fullProgramName = "Full Program Name";
+const programType = "Program Type/Target";
+const responsibleMinistry = "Responsible Ministry";
+const administeredBy = "Administered By";
 const description = "Description";
 const eligibility = "Eligbility";
 const conditions = "Conditions";
@@ -27,14 +28,11 @@ const recip2018 = "Recipients (2018)";
 const expend2018 = "Expenditures (2018)";
 const expend2016 = "Expenditures (2016)";
 const recip201617 = "Recipients (2016/17)";
-const child = "ChildPrograms";
-const totalExpend = "Total Expenditures";
 
-
-interface IMinistry {
+interface IExpenditure {
+	[programSize]: string; // string represention a number
 	[programName]: string;
 	[fullProgramName]: string;
-	[showName]: string; // string representation of a boolean
 	[levelOfGovernment]: string;
 	[administeredBy]: string;
 	[responsibleMinistry]: string;
@@ -57,8 +55,6 @@ interface IMinistry {
 	[expend2018]: string;
 	[expend2016]: string;
 	[recip201617]: string;
-	[child]: string;
-	[totalExpend]: string;
 }
 
 function listToSortedTree(array, sortKeys: string[]) {
@@ -100,12 +96,12 @@ function listToSortedTree(array, sortKeys: string[]) {
 	return obj;
 }
 
-function makeTooltip(fullprogram, descrip, elig, condit, expend201819Ele, recip201819Ele, cases2019Ele, expend201718Ele, child2018Ele, baseFund2018Ele, recip2017Ele, expend2017Ele, budget2019Ele, expend2019Ele, recip2019Ele, recip201718Ele, recip2018Ele, expend2018Ele, expend2016Ele, recip201617Ele, childEle): string {
+
+function makeTooltip(fullprogram, descrip, elig, condit, expend201819Ele, recip201819Ele, cases2019Ele, expend201718Ele, child2018Ele, baseFund2018Ele, recip2017Ele, expend2017Ele, budget2019Ele, expend2019Ele, recip2019Ele, recip201718Ele, recip2018Ele, expend2018Ele, expend2016Ele, recip201617Ele): string {
 	const tooltip =  `
 		<div>
 			${fullprogram ? `<hr><p class="header">${fullprogram}</p><hr>` : ""}
 			${descrip ? `<p>${descrip}</p>` : ""}
-			${childEle ? `<p>${childEle}</p>` : ""}
 			${recip201617Ele ? `<p class = "recip201617">${recip201617Ele}</p>` : ""}
 			${expend2016Ele ? `<p class = "expend2016">${expend2016Ele}</p>` : ""}
 			${recip2017Ele ? `<p class = "recip2017">${recip2017Ele}</p>` : ""}
@@ -124,21 +120,25 @@ function makeTooltip(fullprogram, descrip, elig, condit, expend201819Ele, recip2
 			${budget2019Ele ? `<p class = "budget2019">${budget2019Ele}</p>` : ""}
 			${elig ? `<p class = "eligibility">${elig}</p>` : ""}
 			${condit ? `<p class = "condition">${condit}</p>` : ""}
+
 		</div>`;
 
 	return tooltip;
 }
 
+
 // FIXME: value should be pulled out and moved to a chart type specific function
-function treeToHierarchy(tree, obj: any = {level: "root", ministry: "root", showName: false, value: 0, name: "root"}): any {
+function treeToHierarchy(tree, obj: any = {levelofGovernment: "root", showName: false, value: 0, name: "root"}): any {
 	if(Array.isArray(tree)) {
-		return tree.map((ele: IMinistry) => {
+		return tree.map((ele: IExpenditure) => {
 			return {
 				fullprogram: ele[fullProgramName],
 				program: ele[programName],
 				level: ele[levelOfGovernment],
 				ministry: ele[responsibleMinistry],
 				admin: ele[administeredBy],
+				value: ele[programSize] ,
+				name: ele[programName] ,
 				descrip: ele[description],
 				elig: ele[eligibility],
 				condit: ele[conditions],
@@ -158,13 +158,8 @@ function treeToHierarchy(tree, obj: any = {level: "root", ministry: "root", show
 				expend2018Ele: ele[expend2018],
 				expend2016Ele: ele[expend2016],
 				recip201617Ele: ele[recip201617],
-				childEle: ele[child],
-				value: 1,
-				showName: ele[showName] ? (ele[showName].toLowerCase() === "true") : false,
-				name: ele[programName] || ele[administeredBy] || ele[responsibleMinistry],
-
-				tooltip: makeTooltip(ele[fullProgramName], ele[description], ele[eligibility], ele[conditions], ele[expend201819], ele[recip201819], ele[cases2019], ele[expend201718], ele[child2018], ele[baseFund2018], ele[recip2017], ele[expend2017], ele[budget2019], ele[expend2019], ele[recip2019], ele[recip201718], ele[recip2018], ele[expend2018], ele[expend2016], ele[recip201617], ele[child] ),
-			};
+				tooltip: makeTooltip(ele[fullProgramName], ele[description], ele[eligibility], ele[conditions], ele[expend201819], ele[recip201819], ele[cases2019], ele[expend201718], ele[child2018], ele[baseFund2018], ele[recip2017], ele[expend2017], ele[budget2019], ele[expend2019], ele[recip2019], ele[recip201718], ele[recip2018], ele[expend2018], ele[expend2016], ele[recip201617]),
+				};
 		});
 	}
 
@@ -173,7 +168,7 @@ function treeToHierarchy(tree, obj: any = {level: "root", ministry: "root", show
 			obj.children = [];
 		}
 
-		const sub = treeToHierarchy(tree[key], {level: key, ministry: key, value: 1, showName: true, name: key});
+		const sub = treeToHierarchy(tree[key], {levelofGovernment: key, value: 1, showName: false, name: key});
 		if(Array.isArray(sub)) {
 			obj.children = obj.children.concat(sub);
 		} else {
@@ -185,9 +180,8 @@ function treeToHierarchy(tree, obj: any = {level: "root", ministry: "root", show
 }
 
 
-
-export function buildMinistryComplexitySunburstChart(svgEle?: SVGElement) {
-	const sortKeys = [levelOfGovernment, responsibleMinistry, administeredBy, programName];
+export function buildExpenditureChart(svgEle?: SVGElement) {
+	const sortKeys = [levelOfGovernment, programType, programName];
 	const sortData = listToSortedTree(ministryData, sortKeys);
 	const sunburstChartData: ISunburstChart = treeToHierarchy(sortData);
 	// console.log(`hier: ${JSON.stringify(hierData, null, 4)}`);
@@ -196,7 +190,7 @@ export function buildMinistryComplexitySunburstChart(svgEle?: SVGElement) {
 		width: 1000,
 		margin: 10,
 
-		showDepth: 4,
+		showDepth: 3,
 		radiusScaleExponent: 1.4,
 
 		textWrapPadding: 10,
@@ -206,3 +200,4 @@ export function buildMinistryComplexitySunburstChart(svgEle?: SVGElement) {
 
 	return buildZoomableSunburstChart(sunburstChartData, svgEle);
 }
+

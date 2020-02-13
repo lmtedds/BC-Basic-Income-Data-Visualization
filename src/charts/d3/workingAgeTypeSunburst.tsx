@@ -16,6 +16,7 @@ export interface ID3HierarchyBase {
 	value: number;
 	level: string;
 	programTypeEle: string;
+	adminEle: string;
 	spectrumEle: string; // FIXME: Should be moved higher
 	program?: string; // FIXME: Should be moved higher
 

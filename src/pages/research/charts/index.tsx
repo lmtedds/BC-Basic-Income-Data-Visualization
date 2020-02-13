@@ -1,14 +1,11 @@
 import { app, Component } from "apprun";
-
-import { buildApplicationChart } from "~charts/application";
+import { buildWorkingAgeApplicationSunburstChart } from "~charts/applicationSunburst.ts";
 import { buildCashInKindSunburstChart } from "~charts/cashInKind";
 import { buildCashSuppSunburstChart } from "~charts/cashInKindSupp";
-import { buildEligibilityChart } from "~charts/eligibility";
-import { buildInKindChart } from "~charts/in_kind";
 import { buildMinistryComplexitySunburstChart } from "~charts/ministries";
-import { buildProgramInteractionChart } from "~charts/programs";
 import { buildWorkingAgeTypeSunburstChart } from "~charts/workingAgeType.ts";
 import { buildTypeSunburstChart } from "~charts/workingAgeType.ts";
+import { buildExpenditureChart } from "~charts/expenditure.ts";
 
 import "./style.scss";
 
@@ -21,43 +18,30 @@ export default class ChartsComponent extends Component {
 		[CHARTS_PAGE_URL]: (state) => state,
 	};
 
-	private readonly applicationSvgEle: SVGElement;
-	private readonly eligibilitySvgEle: SVGElement;
-	private readonly inKindSvgEle: SVGElement;
-	private readonly interactionLinkSvgEle: SVGElement;
 	private readonly ministryComplexitySunburstSvgEle: SVGElement;
 	private readonly cashInKindSunburstSvgEle: SVGElement;
 	private readonly cashSuppSunburstSvgEle: SVGElement;
 	private readonly workingAgeTypeSvgEle: SVGElement;
 	private readonly typeSvgEle: SVGElement;
+	private readonly workingAgeApplicationSvgEle: SVGElement;
+	private readonly expenditureSvgEle: SVGElement;
+
 
 	constructor() {
 		super();
 
-		this.applicationSvgEle = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-		this.eligibilitySvgEle = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-		this.inKindSvgEle = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-		this.interactionLinkSvgEle = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 		this.ministryComplexitySunburstSvgEle = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 		this.cashInKindSunburstSvgEle = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 		this.cashSuppSunburstSvgEle = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 		this.workingAgeTypeSvgEle = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 		this.typeSvgEle = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+		this.workingAgeApplicationSvgEle = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+		this.expenditureSvgEle = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+
 
 	}
 
 	public view = (state) => {
-		const applicationChart = buildApplicationChart(this.applicationSvgEle);
-		// console.log(applicationChart);
-
-		const eligibilityChart = buildEligibilityChart(this.eligibilitySvgEle);
-		// console.log(eligibilityChart);
-
-		const matrixChart = buildInKindChart(this.inKindSvgEle);
-		// console.log(matrixChart);
-
-		const linkChart = buildProgramInteractionChart(this.interactionLinkSvgEle);
-		// console.log(linkChart);
 
 		const ministrySunburstChart = buildMinistryComplexitySunburstChart(this.ministryComplexitySunburstSvgEle);
 		// console.log(ministerySunburstChart);
@@ -70,6 +54,11 @@ export default class ChartsComponent extends Component {
 		const workingAgeTypeSunburstChart = buildWorkingAgeTypeSunburstChart(this.workingAgeTypeSvgEle);
 
 		const typeSunburstChart = buildTypeSunburstChart(this.typeSvgEle);
+
+		const workingAgeApplicationSunburst = buildWorkingAgeApplicationSunburstChart(this.workingAgeApplicationSvgEle);
+
+		const expenditureSunburst = buildExpenditureChart(this.expenditureSvgEle);
+
 
 		return <>
 			{/* <div class="row">
@@ -104,6 +93,16 @@ export default class ChartsComponent extends Component {
 				</div>
 			</div>
 
+
+			<div class="row">
+				<div className="img-fluid col-xl">
+					<h2 class="text-center"> By Expenditure </h2>
+					{this.expenditureSvgEle}
+				</div>
+			</div>
+
+
+
 			<div class="row">
 				<div className="img-fluid col-xl">
 					<h2 class="text-center">Cash Transfer vs. In-Kind</h2>
@@ -130,14 +129,22 @@ export default class ChartsComponent extends Component {
 				</div>
 			</div>
 
-	<div class="row">
-				<div className="img-fluid col-xl" id = "workingAge">
+				<div class="row">
+				<div className="img-fluid col-xl">
 					<h2 class="text-center">Programs for Working-Age Persons</h2>
-					{this.workingAgeTypeSvgEle}
-			<button onclick = {this.typeSvgEle} > All programs </button>
+					{this.typeSvgEle}
 
 				</div>
 					</div>
+
+			<div class="row">
+			<div className="img-fluid col-xl">
+				<h2 class="text-center"> Application Method</h2>
+				{this.workingAgeApplicationSvgEle}
+			</div>
+			</div>
+
+		
 
 		</>;
 	}

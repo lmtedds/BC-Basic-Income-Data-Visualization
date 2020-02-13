@@ -127,7 +127,7 @@ function makeTooltip(fullprogram, descrip, elig, condit, expend201819Ele, recip2
 	return tooltip;
 }
 
-function treeToHierarchy(tree, obj: any = {spectrumEle: "root", value: 0,  name: "root"}): any {
+function treeToHierarchy(tree, obj: any = {level: "root", value: 0,  name: "root"}): any {
 	if(Array.isArray(tree)) {
 		return tree.map((ele: IInKind) => {
 			return {
@@ -167,7 +167,7 @@ function treeToHierarchy(tree, obj: any = {spectrumEle: "root", value: 0,  name:
 			obj.children = [];
 		}
 
-		const sub = treeToHierarchy(tree[key], {spectrumEle: key, value: 1,  name: key});
+		const sub = treeToHierarchy(tree[key], {level: key, value: 1,  name: key});
 		if(Array.isArray(sub)) {
 			obj.children = obj.children.concat(sub);
 		} else {
@@ -179,15 +179,15 @@ function treeToHierarchy(tree, obj: any = {spectrumEle: "root", value: 0,  name:
 }
 
 export function buildCashInKindSunburstChart(svgEle?: SVGElement) {
-	const sortKeys = [level, spectrum, programType] ;
-	const sortData = listToSortedTree(dataFiltered, sortKeys);
+	const sortKeys = [level, spectrum, programType, programName] ;
+	const sortData = listToSortedTree(cashInKindData, sortKeys);
 	const sunburstChartData: ISunburstChart = treeToHierarchy(sortData);
 	// console.log(`hier: ${JSON.stringify(hierData, null, 4)}`);
 
 	sunburstChartData.setup = {
 		width: 1000,
 		margin: 10,
-		showDepth: 3,
+		showDepth: 4,
 		radiusScaleExponent: 1.4,
 		honourShowName: false,
 		textWrapPadding: 10,

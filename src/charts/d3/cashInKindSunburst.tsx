@@ -85,10 +85,10 @@ export function buildZoomableSunburstChart(
 	// Colours for the sunburst will be either chosen automatically or can be provided in the colour property
 	// of the data. The colour is based on the parent and then the opacity is varied based on the depth.
 	const colour = scaleOrdinal(["rgb(197, 27, 125)", "rgb(241, 182, 218)", "rgb(253, 224, 239)"]);
-	const colour2 = scaleOrdinal(["rgb(140, 81, 10)" , "rgb(191, 129, 45)", "rgb(223, 194, 125)", "rgb(246, 232, 205)", "rgb(255, 222, 181)", "rgb(199, 234, 229)", "rgb(128, 205, 193)", "rgb(53, 151, 143)", "rgb(84, 48, 5)" ]);
+	const colour2 = scaleOrdinal(["rgb(84, 48, 5)", "rgb(140, 81, 10)" , "rgb(191, 129, 45)", "rgb(223, 194, 125)", "rgb(246, 232, 205)", "rgb(255, 222, 181)", "rgb(199, 234, 229)", "rgb(128, 205, 193)", "rgb(53, 151, 143)" ]);
 
 	const selectFillColour = (d: any) => { // FIXME: Type
-		if(d.depth >= 2) {
+		if(d.depth >= 2  ) {
 			while (d.depth > 2) d = d.parent;
 			return colour2(d.data.name);
 		} else {

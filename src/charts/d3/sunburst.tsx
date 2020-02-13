@@ -15,8 +15,9 @@ export interface ID3HierarchyBase {
 	name: string;
 	showName: boolean;
 	value: number;
+	ministry: string;
 
-	ministry: string; // FIXME: Should be moved higher
+	level: string; // FIXME: Should be moved higher
 	program?: string; // FIXME: Should be moved higher
 
 	tooltip?: string; // HTML string
@@ -84,10 +85,20 @@ export function buildZoomableSunburstChart(
 
 	// Colours for the sunburst will be either chosen automatically or can be provided in the colour property
 	// of the data. The colour is based on the parent and then the opacity is varied based on the depth.
-	const colour = scaleOrdinal(["rgb(83, 94, 126)", "rgb(225, 190, 190)", "rgb(187, 206, 178)"]);
+	const colour = scaleOrdinal(["rgb(197, 27, 125)", "rgb(241, 182, 218)", "rgb(253, 224, 239)"]);
+	const colour2 = scaleOrdinal(["rgb(84, 48, 5)"]);
+	const colour3 = scaleOrdinal(["rgb(140, 81, 10)"]);
+
 	const selectFillColour = (d: any) => { // FIXME: Type
-		while (d.depth > 1) d = d.parent;
-		return d.data.colour || colour(d.data.name);
+		 if(d.data.level==="Government of Canada" && d.depth >= 2){
+			while (d.depth >= 2) d = d.parent;
+			return colour2(d.data.name);
+		} else if(d.data.level==="Government of British Columbia" && d.depth >= 2){
+			while (d.depth >= 2) d = d.parent;
+			return colour3(d.data.name);
+		} else if(d.depth == 1) {
+			return colour(d.data.name) || colour(d.data.name);
+		}	
 	};
 	const opacityInterpolate = (d: any) => {
 		const computed = (showDepthMax - 1 - d.y0) / (showDepthMax - 1 - showDepthMin) * (maxOpacity - minOpacity) + minOpacity;
