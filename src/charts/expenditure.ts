@@ -96,7 +96,6 @@ function listToSortedTree(array, sortKeys: string[]) {
 	return obj;
 }
 
-
 function makeTooltip(fullprogram, descrip, elig, condit, expend201819Ele, recip201819Ele, cases2019Ele, expend201718Ele, child2018Ele, baseFund2018Ele, recip2017Ele, expend2017Ele, budget2019Ele, expend2019Ele, recip2019Ele, recip201718Ele, recip2018Ele, expend2018Ele, expend2016Ele, recip201617Ele): string {
 	const tooltip =  `
 		<div>
@@ -125,7 +124,6 @@ function makeTooltip(fullprogram, descrip, elig, condit, expend201819Ele, recip2
 
 	return tooltip;
 }
-
 
 // FIXME: value should be pulled out and moved to a chart type specific function
 function treeToHierarchy(tree, obj: any = {levelofGovernment: "root", showName: false, value: 0, name: "root"}): any {
@@ -179,7 +177,6 @@ function treeToHierarchy(tree, obj: any = {levelofGovernment: "root", showName: 
 	return obj;
 }
 
-
 export function buildExpenditureChart(svgEle?: SVGElement) {
 	const sortKeys = [levelOfGovernment, programType, programName];
 	const sortData = listToSortedTree(ministryData, sortKeys);
@@ -200,4 +197,3 @@ export function buildExpenditureChart(svgEle?: SVGElement) {
 
 	return buildZoomableSunburstChart(sunburstChartData, svgEle);
 }
-
