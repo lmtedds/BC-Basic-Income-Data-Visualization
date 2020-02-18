@@ -16,7 +16,6 @@ export interface ID3HierarchyBase {
 	showName: boolean;
 	value: number;
 	ministry: string;
-	colour: string;
 
 	level: string; // FIXME: Should be moved higher
 	program?: string; // FIXME: Should be moved higher
@@ -88,10 +87,10 @@ export function buildZoomableSunburstChart(
 	// of the data. The colour is based on the parent and then the opacity is varied based on the depth.
 
 	const selectFillColour = (d: any) => { // FIXME: Type
-       		if(d.data.colour) return d.data.colour;
-        		while (d.depth >= 2) d = d.parent;
-        		return colour(d.data.name);
-   	 };	
+		if(d.data.colour) return d.data.colour;
+		while (d.depth >= 2) d = d.parent;
+		return d.data.colour;
+	};
 
 	const opacityInterpolate = (d: any) => {
 		const computed = (showDepthMax - 1 - d.y0) / (showDepthMax - 1 - showDepthMin) * (maxOpacity - minOpacity) + minOpacity;
