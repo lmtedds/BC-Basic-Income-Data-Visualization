@@ -6,6 +6,7 @@ import { scaleOrdinal, scalePow } from "d3-scale";
 import { interpolateRainbow } from "d3-scale-chromatic";
 import { create, select, Selection } from "d3-selection";
 import { arc } from "d3-shape";
+import "d3-transition";
 
 import { wrapTextTspanEach } from "~charts/d3/text_wrap";
 
