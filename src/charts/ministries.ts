@@ -1,4 +1,4 @@
-import { data as ministryData } from "~data/20200213_ministries";
+import { data as ministryData } from "~data/20200219_ministries";
 
 import { scaleOrdinal } from "d3-scale";
 
@@ -185,7 +185,7 @@ function treeToHierarchy(tree, obj: any = {ministry: "root", showName: false, va
 				showName: ele[showName] ? (ele[showName].toLowerCase() === "true") : false,
 				name: ele[programName] || ele[administeredBy] || ele[responsibleMinistry],
 				tooltip: makeTooltip(ele[fullProgramName], ele[description], ele[eligibility], ele[conditions], ele[expend201819], ele[recip201819], ele[cases2019], ele[expend201718], ele[child2018], ele[baseFund2018], ele[recip2017], ele[expend2017], ele[budget2019], ele[expend2019], ele[recip2019], ele[recip201718], ele[recip2018], ele[expend2018], ele[expend2016], ele[recip201617], ele[child] ),
-				colour: obj.colour,
+				colour: ele[colour3] || "black",
 			};
 		});
 	}
