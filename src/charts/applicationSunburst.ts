@@ -1,6 +1,8 @@
 import { data as applicationData } from "~data/20200109_application";
 
-import { buildZoomableSunburstChart, ISunburstChart } from "~charts/d3/cashInKindSunburst";
+import { scaleOrdinal } from "d3-scale";
+
+import { buildZoomableSunburstChart, ISunburstChart } from "~charts/d3/sunburst";
 
 const workingAgeData = applicationData.filter(function(workingAge) {
 	return workingAge.Age === "Working-Age";
@@ -75,7 +77,27 @@ function makeTooltip(fullprogram ): string {
 	return tooltip;
 }
 
-function treeToHierarchy(tree, obj: any = {adminEle: "root", value: 0,  name: "root"}): any {
+
+const colour = scaleOrdinal(["rgb(197, 27, 125)", "rgb(241, 182, 218)", "#762a83"]);
+
+const colour2 = scaleOrdinal(["rgb(84, 48, 5)", "rgb(140, 81, 10)" , "rgb(191, 129, 45)", "rgb(223, 194, 125)", "rgb(246, 232, 205)",  "rgb(199, 234, 229)", "rgb(128, 205, 193)", "rgb(53, 151, 143)" , "rgb(1, 102, 94)" ]);
+
+function eleToColour(key: string, level: number, parentColour: string): string {
+	if(level === 1) {
+		return colour(key);
+
+	} else if(level === 2) {
+		return colour2(key);
+	} else if(level === 3) {
+		return parentColour; 
+	} else {
+		console.error(`No colour mapping for level ${level}/${key}`);
+		return "red";
+	}
+}
+
+
+function treeToHierarchy(tree, obj: any = {level: "root", showName: false, value: 0, name: "root", depth: 1, colour: "black"}): any {
 	if(Array.isArray(tree)) {
 		return tree.map((ele: IApplication) => {
 			return {
@@ -88,6 +110,7 @@ function treeToHierarchy(tree, obj: any = {adminEle: "root", value: 0,  name: "r
 				value: 1,
 				name: ele[programName] || ele[applicationMethod] || ele[admin],
 				tooltip: makeTooltip(ele[fullProgramName]),
+				colour: obj.colour
 				};
 		});
 	}
@@ -97,7 +120,7 @@ function treeToHierarchy(tree, obj: any = {adminEle: "root", value: 0,  name: "r
 			obj.children = [];
 		}
 
-		const sub = treeToHierarchy(tree[key], {adminEle: key, value: 1,  name: key});
+		const sub = treeToHierarchy(tree[key], {level: key, ministry: key, admin: key,  value: 1, showName: true, name: key, depth: obj.depth + 1 , colour: eleToColour(key, obj.depth, obj.colour)});
 		if(Array.isArray(sub)) {
 			obj.children = obj.children.concat(sub);
 		} else {

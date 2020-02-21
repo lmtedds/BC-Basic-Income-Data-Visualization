@@ -33,6 +33,7 @@ const child = "ChildPrograms";
 const totalExpend = "Total Expenditures";
 const colour3 = "colour3";
 
+
 interface IMinistry {
 	[programName]: string;
 	[fullProgramName]: string;
@@ -62,7 +63,10 @@ interface IMinistry {
 	[child]: string;
 	[totalExpend]: string;
 	[colour3]: string;
+
 }
+
+
 
 function listToSortedTree(array, sortKeys: string[]) {
 	// Stuff into a object (used as a map) based on key
@@ -132,19 +136,43 @@ function makeTooltip(fullprogram, descrip, elig, condit, expend201819Ele, recip2
 	return tooltip;
 }
 
-const colour = scaleOrdinal(["rgb(197, 27, 125)", "rgb(241, 182, 218)", "rgb(253, 224, 239)"]);
+const colour = scaleOrdinal(["rgb(197, 27, 125)", "rgb(241, 182, 218)", "#762a83"]);
 
-const colour2 = scaleOrdinal(["#CCEBFF", "#B2E0FF", "#99D6FF", "#80CCFF", "#66C2FF", "#4DB8FF", "#33ADFF", "#19A3FF", "#d9d9d9", "#bc80bd", "#ccebc5", "#0099FF", "#008AE6" , "#007ACC" , "#006BB2" , "#005C99" , "#004C80" , "#003D66" , "#002E4C", "#001F33" , "#000F1A"]);
+const colour2 = scaleOrdinal(["#ab5c18", "#b16828", "#b87437", "#be8147", "#c48f57", "#ca9c67", "#cfa977", "#d3b686", "#d7c295", "#dacda3" , "#dcd9b2" ,"#fada5e", "#dee4c0" ,  "#29A28F","#44AE9D", "#5FB9AB", "#79C5B9", "#94D1C7", "#AFDCD5" , "#CAE8E3", "#E4F3F1","#762a83"]);
+
+const colourCRA = scaleOrdinal([ "#29A28F"]);
+
+const colourStudent = scaleOrdinal(["#b16828"]);
+
+const colourWorkSafe = scaleOrdinal(["#cfa977"]);
+
+const colourNGO = scaleOrdinal(["#fada5e"]);
+
+const colourMunicipal = scaleOrdinal(["#762a83"]);
+
+const colourThirdParty = scaleOrdinal(["#fed976"]);
 
 function eleToColour(key: string, level: number, parentColour: string): string {
 	if(level === 1) {
 		return colour(key);
-	} else if(level === 2 ) {
+	} else if(level === 2) {
 		return colour2(key);
+	} else if(level === 3 && key === "StudentAid BC"){
+		return colourStudent(key);
+	} else if(level === 3 && key === "Canada Revenue Agency"){
+		return colourCRA(key);
+	} else if(level === 3 && key === "WorkSafeBC"){
+		return colourWorkSafe(key);
+	} else if(level === 3 && key === "Municipality"){
+		return colourMunicipal(key);
+	} else if(level === 3 && key === "NGO"){
+		return colourNGO(key);
+	} else if(level === 3 && key === "Service provider" || level === 3 && key === "Financial Service provider"  ){
+		return colourThirdParty(key);
 	} else if(level === 3) {
-		return colour3[key];
+		return parentColour; 
 	} else if(level === 4) {
-		return parentColour;
+		return  parentColour;
 	} else {
 		console.error(`No colour mapping for level ${level}/${key}`);
 		return "red";
@@ -152,7 +180,7 @@ function eleToColour(key: string, level: number, parentColour: string): string {
 }
 
 // FIXME: value should be pulled out and moved to a chart type specific function
-function treeToHierarchy(tree, obj: any = {ministry: "root", showName: false, value: 0, name: "root", depth: 1, colour: "black"}): any {
+function treeToHierarchy(tree, obj: any = {level: "root", showName: false, value: 0, name: "root", depth: 1, colour: "black"}): any {
 	if(Array.isArray(tree)) {
 		return tree.map((ele: IMinistry) => {
 			return {
@@ -185,8 +213,7 @@ function treeToHierarchy(tree, obj: any = {ministry: "root", showName: false, va
 				showName: ele[showName] ? (ele[showName].toLowerCase() === "true") : false,
 				name: ele[programName] || ele[administeredBy] || ele[responsibleMinistry],
 				tooltip: makeTooltip(ele[fullProgramName], ele[description], ele[eligibility], ele[conditions], ele[expend201819], ele[recip201819], ele[cases2019], ele[expend201718], ele[child2018], ele[baseFund2018], ele[recip2017], ele[expend2017], ele[budget2019], ele[expend2019], ele[recip2019], ele[recip201718], ele[recip2018], ele[expend2018], ele[expend2016], ele[recip201617], ele[child] ),
-				colour: ele[colour3] || "black",
-			};
+				colour: obj.colour,			};
 		});
 	}
 
@@ -195,7 +222,7 @@ function treeToHierarchy(tree, obj: any = {ministry: "root", showName: false, va
 			obj.children = [];
 		}
 
-		const sub = treeToHierarchy(tree[key], {ministry: key, value: 1, showName: true, name: key, depth: obj.depth + 1, colour: eleToColour(key, obj.depth, obj.colour)});
+		const sub = treeToHierarchy(tree[key], {level: key, ministry: key, admin: key,  value: 1, showName: true, name: key, depth: obj.depth + 1 , colour: eleToColour(key, obj.depth, obj.colour)});
 		if(Array.isArray(sub)) {
 			obj.children = obj.children.concat(sub);
 		} else {

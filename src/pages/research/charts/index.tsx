@@ -2,7 +2,8 @@ import { app, Component } from "apprun";
 import { buildWorkingAgeApplicationSunburstChart } from "~charts/applicationSunburst.ts";
 import { buildCashInKindSunburstChart } from "~charts/cashInKind";
 import { buildCashSuppSunburstChart } from "~charts/cashInKindSupp";
-import { buildExpenditureChart } from "~charts/expenditure.ts";
+import { buildExpenditureMinistryChart } from "~charts/expenditure.ts";
+import { buildExpenditureTypeChart } from "~charts/expenditure.ts";
 import { buildMinistryComplexitySunburstChart } from "~charts/ministries";
 import { buildWorkingAgeTypeSunburstChart } from "~charts/workingAgeType.ts";
 import { buildTypeSunburstChart } from "~charts/workingAgeType.ts";
@@ -24,7 +25,9 @@ export default class ChartsComponent extends Component {
 	private readonly workingAgeTypeSvgEle: SVGElement;
 	private readonly typeSvgEle: SVGElement;
 	private readonly workingAgeApplicationSvgEle: SVGElement;
-	private readonly expenditureSvgEle: SVGElement;
+	private readonly expenditureMinistrySvgEle: SVGElement;
+	private readonly expenditureTypeSvgEle: SVGElement;
+
 
 	constructor() {
 		super();
@@ -35,7 +38,9 @@ export default class ChartsComponent extends Component {
 		this.workingAgeTypeSvgEle = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 		this.typeSvgEle = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 		this.workingAgeApplicationSvgEle = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-		this.expenditureSvgEle = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+		this.expenditureMinistrySvgEle = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+		this.expenditureTypeSvgEle = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+
 
 	}
 
@@ -55,7 +60,10 @@ export default class ChartsComponent extends Component {
 
 		const workingAgeApplicationSunburst = buildWorkingAgeApplicationSunburstChart(this.workingAgeApplicationSvgEle);
 
-		const expenditureSunburst = buildExpenditureChart(this.expenditureSvgEle);
+		const expenditureMinistrySunburst = buildExpenditureMinistryChart(this.expenditureMinistrySvgEle);
+
+		const expenditureTypeSunburst = buildExpenditureTypeChart(this.expenditureTypeSvgEle);
+
 
 		return <>
 			{/* <div class="row">
@@ -92,10 +100,18 @@ export default class ChartsComponent extends Component {
 
 			<div class="row">
 				<div className="img-fluid col-xl">
-					<h2 class="text-center"> By Expenditure </h2>
-					{this.expenditureSvgEle}
+					<h2 class="text-center"> By Expenditure and Ministry </h2>
+					{this.expenditureMinistrySvgEle}
 				</div>
 			</div>
+
+			<div class="row">
+				<div className="img-fluid col-xl">
+					<h2 class="text-center"> By Expenditure and Program Type </h2>
+					{this.expenditureTypeSvgEle}
+				</div>
+			</div>
+
 
 			<div class="row">
 				<div className="img-fluid col-xl">

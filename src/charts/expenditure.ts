@@ -1,5 +1,7 @@
 import { data as ministryData } from "~data/20200113_expenditure";
 
+import { scaleOrdinal } from "d3-scale";
+
 import { buildZoomableSunburstChart, ISunburstChart } from "~charts/d3/sunburst";
 
 const levelOfGovernment = "Level of Government";
@@ -28,6 +30,7 @@ const recip2018 = "Recipients (2018)";
 const expend2018 = "Expenditures (2018)";
 const expend2016 = "Expenditures (2016)";
 const recip201617 = "Recipients (2016/17)";
+const colour3 = "colour";
 
 interface IExpenditure {
 	[programSize]: string; // string represention a number
@@ -55,6 +58,7 @@ interface IExpenditure {
 	[expend2018]: string;
 	[expend2016]: string;
 	[recip201617]: string;
+	[colour3]: string;
 }
 
 function listToSortedTree(array, sortKeys: string[]) {
@@ -125,8 +129,64 @@ function makeTooltip(fullprogram, descrip, elig, condit, expend201819Ele, recip2
 	return tooltip;
 }
 
+const colour = scaleOrdinal(["rgb(197, 27, 125)", "rgb(241, 182, 218)", "#762a83"]);
+
+const colour2 = scaleOrdinal(["#8c510a", "#d8b365", "#f6e8c3",  "#c7eae5", "#5ab4ac", "#01665e" ]);
+
+const colourESD = scaleOrdinal(["#29A28F"]);
+
+const colourDfin = scaleOrdinal(["#5FB9AB"]);
+
+const colourSDPR = scaleOrdinal(["#ab5c18"]);
+
+const colourFin = scaleOrdinal(["#be8147"]);
+
+const colourMun = scaleOrdinal(["#b87437"]);
+
+const colourLab = scaleOrdinal(["#cfa977"]);
+
+const colourHealth = scaleOrdinal(["#d3b686"]);
+
+const colourChild = scaleOrdinal(["#ca9c67"]);
+
+const colourAdv = scaleOrdinal(["#b16828"]);
+
+function eleToColour(key: string, level: number, parentColour: string): string {
+	if(level === 1) {
+		return colour(key);
+	} else if(level === 2 && key === "Employment & Social Development"){
+		return colourESD(key);
+	} else if(level === 2 && key === "D.Finance"){
+		return colourDfin(key);
+	} else if(level === 2 && key === "Social Development & Poverty Reduction"){
+		return colourSDPR(key);
+	} else if(level === 2 && key === "Finance"){
+		return colourFin(key);
+	} else if(level === 2 && key === "Municipal Affairs & Housing"){
+		return colourMun(key);
+	} else if(level === 2 && key === "Labour"){
+		return colourLab(key);
+	} else if(level === 2 && key === "Health"){
+		return colourHealth(key);
+	} else if(level === 2 && key === "Children & Family Development"){
+		return colourHealth(key);
+	} else if(level === 2 && key === "Advanced Education, Skills & Training"){
+		return colourHealth(key);
+	} else if(level === 2) {
+		return colour2(key);
+	} else if(level === 3) {
+		return parentColour; 
+	} else if(level === 4) {
+		return parentColour; 
+	} else {
+		console.error(`No colour mapping for level ${level}/${key}`);
+		return "red";
+	}
+}
+
+
 // FIXME: value should be pulled out and moved to a chart type specific function
-function treeToHierarchy(tree, obj: any = {levelofGovernment: "root", showName: false, value: 0, name: "root"}): any {
+function treeToHierarchy(tree, obj: any = {level: "root", showName: false, value: 0, name: "root", depth: 1, colour: "black"}): any {
 	if(Array.isArray(tree)) {
 		return tree.map((ele: IExpenditure) => {
 			return {
@@ -157,6 +217,7 @@ function treeToHierarchy(tree, obj: any = {levelofGovernment: "root", showName: 
 				expend2016Ele: ele[expend2016],
 				recip201617Ele: ele[recip201617],
 				tooltip: makeTooltip(ele[fullProgramName], ele[description], ele[eligibility], ele[conditions], ele[expend201819], ele[recip201819], ele[cases2019], ele[expend201718], ele[child2018], ele[baseFund2018], ele[recip2017], ele[expend2017], ele[budget2019], ele[expend2019], ele[recip2019], ele[recip201718], ele[recip2018], ele[expend2018], ele[expend2016], ele[recip201617]),
+				colour: obj.colour,
 				};
 		});
 	}
@@ -166,7 +227,8 @@ function treeToHierarchy(tree, obj: any = {levelofGovernment: "root", showName: 
 			obj.children = [];
 		}
 
-		const sub = treeToHierarchy(tree[key], {levelofGovernment: key, value: 1, showName: false, name: key});
+	
+		const sub = treeToHierarchy(tree[key], {level: key, ministry: key, admin: key,  value: 1, showName: true, name: key, depth: obj.depth + 1 , colour: eleToColour(key, obj.depth, obj.colour)});
 		if(Array.isArray(sub)) {
 			obj.children = obj.children.concat(sub);
 		} else {
@@ -177,7 +239,31 @@ function treeToHierarchy(tree, obj: any = {levelofGovernment: "root", showName: 
 	return obj;
 }
 
-export function buildExpenditureChart(svgEle?: SVGElement) {
+//By Ministry
+export function buildExpenditureMinistryChart(svgEle?: SVGElement) {
+	const sortKeys = [levelOfGovernment, responsibleMinistry, administeredBy, programName];
+	const sortData = listToSortedTree(ministryData, sortKeys);
+	const sunburstChartData: ISunburstChart = treeToHierarchy(sortData);
+	// console.log(`hier: ${JSON.stringify(hierData, null, 4)}`);
+
+	sunburstChartData.setup = {
+		width: 1000,
+		margin: 10,
+
+		showDepth: 4,
+		radiusScaleExponent: 1.4,
+
+		textWrapPadding: 10,
+
+		honourShowName: false,
+	};
+
+	return buildZoomableSunburstChart(sunburstChartData, svgEle);
+}
+
+
+//By Program Type
+export function buildExpenditureTypeChart(svgEle?: SVGElement) {
 	const sortKeys = [levelOfGovernment, programType, programName];
 	const sortData = listToSortedTree(ministryData, sortKeys);
 	const sunburstChartData: ISunburstChart = treeToHierarchy(sortData);

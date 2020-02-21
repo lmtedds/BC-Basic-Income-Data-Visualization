@@ -1,6 +1,8 @@
 import { data as cashInKindData } from "~data/20191124_cashInKind";
 
-import { buildZoomableSunburstChart, ISunburstChart } from "~charts/d3/cashInKindSunburst";
+import { scaleOrdinal } from "d3-scale";
+
+import { buildZoomableSunburstChart, ISunburstChart } from "~charts/d3/sunburst";
 
 const dataFiltered = cashInKindData.filter(function(workingAge) {
 	return workingAge.Age === "Working-Age";
@@ -127,7 +129,34 @@ function makeTooltip(fullprogram, descrip, elig, condit, expend201819Ele, recip2
 	return tooltip;
 }
 
-function treeToHierarchy(tree, obj: any = {level: "root", value: 0,  name: "root"}): any {
+
+const colour = scaleOrdinal(["rgb(197, 27, 125)", "rgb(241, 182, 218)", "#762a83"]);
+
+const colour2 = scaleOrdinal([ "rgb(140, 81, 10)" , "rgb(191, 129, 45)", "rgb(223, 194, 125)", "rgb(246, 232, 205)",  "rgb(199, 234, 229)", "rgb(128, 205, 193)", "rgb(53, 151, 143)" , "rgb(1, 102, 94)" ]);
+
+
+const colourVS = scaleOrdinal(["rgb(84, 48, 5)"])
+
+
+function eleToColour(key: string, level: number, parentColour: string): string {
+	if(level === 1) {
+		return colour(key);
+	} else if(level === 2 && key === "Voluntary Savings"){
+		return colourVS(key);
+	} else if(level === 2) {
+		return colour2(key);
+	} else if(level === 3) {
+		return parentColour;
+	} else if(level === 4) {
+		return parentColour; 
+	} else {
+		console.error(`No colour mapping for level ${level}/${key}`);
+		return "red";
+	}
+}
+
+
+function treeToHierarchy(tree, obj: any = {level: "root", showName: false, value: 0, name: "root", depth: 1, colour: "black"}): any {
 	if(Array.isArray(tree)) {
 		return tree.map((ele: IInKind) => {
 			return {
@@ -158,6 +187,7 @@ function treeToHierarchy(tree, obj: any = {level: "root", value: 0,  name: "root
 				value: 1,
 				name: ele[programName] || ele[programType] || ele[spectrum],
 					tooltip: makeTooltip(ele[fullProgramName], ele[description], ele[eligibility], ele[conditions], ele[expend201819], ele[recip201819], ele[cases2019], ele[expend201718], ele[child2018], ele[baseFund2018], ele[recip2017], ele[expend2017], ele[budget2019], ele[expend2019], ele[recip2019], ele[recip201718], ele[recip2018], ele[expend2018], ele[expend2016], ele[recip201617] ),
+				colour: obj.colour,	
 				};
 		});
 	}
@@ -167,7 +197,8 @@ function treeToHierarchy(tree, obj: any = {level: "root", value: 0,  name: "root
 			obj.children = [];
 		}
 
-		const sub = treeToHierarchy(tree[key], {level: key, value: 1,  name: key});
+	
+		const sub = treeToHierarchy(tree[key], {level: key, ministry: key, admin: key,  value: 1, showName: true, name: key, depth: obj.depth + 1 , colour: eleToColour(key, obj.depth, obj.colour)});
 		if(Array.isArray(sub)) {
 			obj.children = obj.children.concat(sub);
 		} else {
@@ -179,7 +210,7 @@ function treeToHierarchy(tree, obj: any = {level: "root", value: 0,  name: "root
 }
 
 export function buildCashInKindSunburstChart(svgEle?: SVGElement) {
-	const sortKeys = [level, spectrum, programType, programName] ;
+	const sortKeys = [level, spectrum,programName] ;
 	const sortData = listToSortedTree(cashInKindData, sortKeys);
 	const sunburstChartData: ISunburstChart = treeToHierarchy(sortData);
 	// console.log(`hier: ${JSON.stringify(hierData, null, 4)}`);
@@ -187,7 +218,7 @@ export function buildCashInKindSunburstChart(svgEle?: SVGElement) {
 	sunburstChartData.setup = {
 		width: 1000,
 		margin: 10,
-		showDepth: 4,
+		showDepth: 3,
 		radiusScaleExponent: 1.4,
 		honourShowName: false,
 		textWrapPadding: 10,
