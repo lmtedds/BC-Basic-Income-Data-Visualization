@@ -89,8 +89,8 @@ export function buildZoomableSunburstChart(
 
 	const selectFillColour = (d: any) => { // FIXME: Type
 		if(d.data.colour) return d.data.colour;
-//		while (d.depth >= 2) d = d.parent;
-//		return d.data.colour;
+// 		while (d.depth >= 2) d = d.parent;
+// 		return d.data.colour;
 	};
 
 	const opacityInterpolate = (d: any) => {
@@ -104,7 +104,7 @@ export function buildZoomableSunburstChart(
 	const partition = (data) => {
 		const rooted = hierarchy(data)
 			.sum((d) => d.value);
-		//	.sort((a, b) => b.value - a.value);
+		// 	.sort((a, b) => b.value - a.value);
 
 		return d3partition()
 			.size([2 * Math.PI, rooted.height + 1])

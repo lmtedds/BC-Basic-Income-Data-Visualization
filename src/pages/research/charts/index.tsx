@@ -28,7 +28,6 @@ export default class ChartsComponent extends Component {
 	private readonly expenditureMinistrySvgEle: SVGElement;
 	private readonly expenditureTypeSvgEle: SVGElement;
 
-
 	constructor() {
 		super();
 
@@ -40,7 +39,6 @@ export default class ChartsComponent extends Component {
 		this.workingAgeApplicationSvgEle = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 		this.expenditureMinistrySvgEle = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 		this.expenditureTypeSvgEle = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-
 
 	}
 
@@ -63,7 +61,6 @@ export default class ChartsComponent extends Component {
 		const expenditureMinistrySunburst = buildExpenditureMinistryChart(this.expenditureMinistrySvgEle);
 
 		const expenditureTypeSunburst = buildExpenditureTypeChart(this.expenditureTypeSvgEle);
-
 
 		return <>
 			{/* <div class="row">
@@ -111,7 +108,6 @@ export default class ChartsComponent extends Component {
 					{this.expenditureTypeSvgEle}
 				</div>
 			</div>
-
 
 			<div class="row">
 				<div className="img-fluid col-xl">
