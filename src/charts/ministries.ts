@@ -135,7 +135,7 @@ function makeTooltip(fullprogram, descrip, elig, condit, expend201819Ele, recip2
 
 const colour = scaleOrdinal(["rgb(197, 27, 125)", "rgb(241, 182, 218)", "#762a83"]);
 
-const colour2 = scaleOrdinal(["#ab5c18", "#b16828", "#b87437", "#be8147", "#c48f57", "#ca9c67", "#cfa977", "#d3b686", "#d7c295", "#dacda3" , "#dcd9b2" ,"#dee4c0" , "#fada5e",   "#29A28F", "#44AE9D", "#5FB9AB", "#79C5B9", "#94D1C7", "#AFDCD5" , "#CAE8E3", "#E4F3F1", "#762a83"]);
+const colour2 = scaleOrdinal(["#ab5c18", "#b16828", "#b87437", "#be8147", "#c48f57", "#ca9c67", "#cfa977", "#d3b686", "#d7c295", "#dacda3" , "#dcd9b2" , "#dee4c0" , "#fada5e",   "#29A28F", "#44AE9D", "#5FB9AB", "#79C5B9", "#94D1C7", "#AFDCD5" , "#CAE8E3", "#E4F3F1", "#762a83"]);
 
 const colourCRA = scaleOrdinal([ "#29A28F"]);
 

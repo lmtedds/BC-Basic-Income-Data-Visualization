@@ -57,7 +57,6 @@ interface IExpenditure {
 	[expend2018]: string;
 	[expend2016]: string;
 	[recip201617]: string;
-	[colour3]: string;
 }
 
 function listToSortedTree(array, sortKeys: string[]) {
@@ -140,16 +139,15 @@ const colourSDPR = scaleOrdinal(["#ab5c18"]);
 
 const colourAdv = scaleOrdinal(["#d3b686"]);
 
-
 const colourMun = scaleOrdinal(["#b16828"]);
+
 const colourFin = scaleOrdinal(["#cfa977"]);
-const colourChild = scaleOrdinal("#be8147"]);
+
+const colourChild = scaleOrdinal(["#be8147"]);
 
 const colourLab = scaleOrdinal(["#ca9c67"]);
 
 const colourHealth = scaleOrdinal(["#b87437"]);
-
-
 
 function eleToColour(key: string, level: number, parentColour: string): string {
 	if(level === 1) {
