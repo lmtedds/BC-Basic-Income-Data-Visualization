@@ -1,4 +1,4 @@
-import { data as ministryData } from "~data/20200508_ministries";
+import { data as expenditureData } from "~data/20201117_expenditure";
 
 import { scaleOrdinal } from "d3-scale";
 
@@ -238,7 +238,7 @@ function treeToHierarchy(tree, obj: any = {level: "root", showName: false, value
 // By Ministry
 export function buildExpenditureMinistryChart(svgEle?: SVGElement) {
 	const sortKeys = [levelOfGovernment, responsibleMinistry, administeredBy, programName];
-	const sortData = listToSortedTree(ministryData, sortKeys);
+	const sortData = listToSortedTree(expenditureData, sortKeys);
 	const sunburstChartData: ISunburstChart = treeToHierarchy(sortData);
 	// console.log(`hier: ${JSON.stringify(hierData, null, 4)}`);
 
@@ -260,7 +260,7 @@ export function buildExpenditureMinistryChart(svgEle?: SVGElement) {
 // By Program Type
 export function buildExpenditureTypeChart(svgEle?: SVGElement) {
 	const sortKeys = [levelOfGovernment, programType, programName];
-	const sortData = listToSortedTree(ministryData, sortKeys);
+	const sortData = listToSortedTree(expenditureData, sortKeys);
 	const sunburstChartData: ISunburstChart = treeToHierarchy(sortData);
 	// console.log(`hier: ${JSON.stringify(hierData, null, 4)}`);
 
