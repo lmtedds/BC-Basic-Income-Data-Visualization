@@ -1,4 +1,4 @@
-import { data as ministryData } from "~data/20200508_ministries";
+import { data as ministryData } from "~data/20201117_ministries";
 
 import { scaleOrdinal } from "d3-scale";
 
