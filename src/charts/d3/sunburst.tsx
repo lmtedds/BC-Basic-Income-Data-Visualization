@@ -138,11 +138,11 @@ export function buildZoomableSunburstChart(
 				.attr("d", (d: any) => arcs(d.current)); // FIXME: Type
 
 	// Add tooltips as appropriate
-	const bubbleWidth = width / 3;
+	const bubbleWidth = width / 2;
 	const tooltipConfig: ITooltipConfig<any> = { // FIXME: type
-		rounded: true,
+		rounded: false,
 		bubbleWidth: bubbleWidth,
-		bubbleHeight: -1,
+		bubbleHeight: -10,
 		bubbleTip: {tipOffset: (3 / 4 * bubbleWidth / 9), h: 10, edgeOffset: bubbleWidth / 9},
 		chartWidth: width,
 		chartHeight: width,
