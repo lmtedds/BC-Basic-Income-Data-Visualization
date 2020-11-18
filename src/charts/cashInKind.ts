@@ -1,4 +1,4 @@
-import { data as cashInKindData } from "~data/20191124_cashInKind";
+import { data as cashInKindData } from "~data/20201117_cashInKind";
 
 import { scaleOrdinal } from "d3-scale";
 
