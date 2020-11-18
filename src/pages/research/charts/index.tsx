@@ -1,6 +1,7 @@
 import { app, Component } from "apprun";
 import { buildWorkingAgeApplicationSunburstChart } from "~charts/applicationSunburst.ts";
 import { buildCashInKindSunburstChart } from "~charts/cashInKind";
+import { buildCashInKindProgram } from "~charts/cashInKind";
 import { buildCashSuppSunburstChart } from "~charts/cashInKindSupp";
 import { buildExpenditureMinistryChart } from "~charts/expenditure.ts";
 import { buildExpenditureTypeChart } from "~charts/expenditure.ts";
@@ -21,6 +22,7 @@ export default class ChartsComponent extends Component {
 
 	private readonly ministryComplexitySunburstSvgEle: SVGElement;
 	private readonly cashInKindSunburstSvgEle: SVGElement;
+	private readonly cashInKindProgramSvgEle: SVGElement;
 	private readonly cashSuppSunburstSvgEle: SVGElement;
 	private readonly workingAgeTypeSvgEle: SVGElement;
 	private readonly typeSvgEle: SVGElement;
@@ -33,6 +35,7 @@ export default class ChartsComponent extends Component {
 
 		this.ministryComplexitySunburstSvgEle = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 		this.cashInKindSunburstSvgEle = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+		this.cashInKindProgramSvgEle = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 		this.cashSuppSunburstSvgEle = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 		this.workingAgeTypeSvgEle = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 		this.typeSvgEle = document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -48,7 +51,8 @@ export default class ChartsComponent extends Component {
 		// console.log(ministerySunburstChart);
 
 		const cashInKindSunburstChart = buildCashInKindSunburstChart(this.cashInKindSunburstSvgEle);
-		// console.log(cashInKindSunburstChart);
+
+		const cashInKindProgram = buildCashInKindProgram(this.cashInKindProgramSvgEle);
 
 		const cashSuppSunburstChart = buildCashSuppSunburstChart(this.cashSuppSunburstSvgEle);
 
@@ -132,6 +136,13 @@ export default class ChartsComponent extends Component {
 					<h2 class="text-center">B.C. General and Health Supplements</h2>
 					<p>This sunburst contains only those programs provided by the Government of B.C. to recipients of Income Assistance, Disability, and Hardship Assistance as either a General Supplement or a Disability Supplement.</p>
 					{this.cashSuppSunburstSvgEle}
+				</div>
+			</div>
+
+			<div class="row">
+				<div className="img-fluid col-xl">
+					<h2 class="text-center">Programs for Working-Age Persons</h2>
+					{this.cashInKindProgramSvgEle}
 				</div>
 			</div>
 

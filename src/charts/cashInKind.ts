@@ -218,6 +218,24 @@ export function buildCashInKindSunburstChart(svgEle?: SVGElement) {
 		honourShowName: false,
 		textWrapPadding: 10,
 	};
-
 	return buildZoomableSunburstChart(sunburstChartData, svgEle);
+
+}
+
+export function buildCashInKindProgram(svgEle?: SVGElement) {
+	const sortKeys = [levelGov, spectrum, programType, programName] ;
+	const sortData = listToSortedTree(cashInKindData, sortKeys);
+	const sunburstChartData: ISunburstChart = treeToHierarchy(sortData);
+	// console.log(`hier: ${JSON.stringify(hierData, null, 4)}`);
+
+	sunburstChartData.setup = {
+		width: 1000,
+		margin: 10,
+		showDepth: 4,
+		radiusScaleExponent: 1.4,
+		honourShowName: false,
+		textWrapPadding: 10,
+	};
+	return buildZoomableSunburstChart(sunburstChartData, svgEle);
+
 }
