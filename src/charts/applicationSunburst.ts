@@ -1,4 +1,4 @@
-import { data as applicationData } from "~data/20200109_application";
+import { data as applicationData } from "~data/20201117_application";
 
 import { scaleOrdinal } from "d3-scale";
 
@@ -15,7 +15,9 @@ const applicationMethod = "Application Method";
 const age = "Age";
 const programType = "Program Type/Target";
 const levelGov = "Level of Government";
-const admin = "Administrator";
+const description = "Description";
+const eligibility = "Eligbility";
+const conditions = "Conditions";
 
 interface IApplication {
 	[fullProgramName]: string;
@@ -25,7 +27,9 @@ interface IApplication {
 	[programName]: string;
 	[programType]: string;
 	[levelGov]: string;
-	[admin]: string;
+	[description]: string;
+	[eligibility]: string;
+	[conditions]: string;
 
 }
 
@@ -68,10 +72,14 @@ function listToSortedTree(array, sortKeys: string[]) {
 	return obj;
 }
 
-function makeTooltip(fullprogram ): string {
+function makeTooltip(fullprogram, descrip, elig, condit ): string {
 	const tooltip =  `
 		<div>
 			${fullprogram ? `<hr><p class="header">${fullprogram}</p><hr>` : ""}
+			${descrip ? `<p>${descrip}</p>` : ""}
+			${elig ? `<p class = "eligibility">${elig}</p>` : ""}
+			${condit ? `<p class = "condition">${condit}</p>` : ""}
+
 		</div>`;
 
 	return tooltip;
@@ -102,11 +110,13 @@ function treeToHierarchy(tree, obj: any = {levelGov: "root", showName: false, va
 				program: ele[programName],
 				levelEle: ele[levelGov],
 				programTypeEle: ele[programType],
-				adminEle: ele[admin],
 				appMethodEle: ele[applicationMethod],
+				descrip: ele[description],
+				elig: ele[eligibility],
+				condit: ele[conditions],
 				value: 1,
-				name: ele[programName] || ele[applicationMethod] || ele[admin],
-				tooltip: makeTooltip(ele[fullProgramName]),
+				name: ele[programName] || ele[applicationMethod],
+				tooltip: makeTooltip(ele[fullProgramName], ele[description], ele[eligibility], ele[conditions]),
 				colour: obj.colour,
 				};
 		});
