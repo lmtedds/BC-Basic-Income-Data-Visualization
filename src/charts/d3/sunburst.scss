@@ -190,6 +190,16 @@ svg.chart-sunburst-zoom g.tooltip-group div {
 		font-weight: normal
 	}
 
+	.expend201617::before {
+		content: "Expenditures (2016/17): ";
+		font-weight: bold
+	}
+
+	.expend201617 {
+		font-weight: normal
+	}
+
+
 	.recip201617::before {
 		content: "Recipients (2016/17): ";
 		font-weight: bold
@@ -200,6 +210,41 @@ svg.chart-sunburst-zoom g.tooltip-group div {
 		font-weight: normal;
 		text-indent: -3em;
 	}
+
+	.expend202021::before {
+		content: "Expendtitures (2020/21): ";
+		font-weight: bold
+	}
+
+	.expend202021 {
+		padding-left: 3em;
+		font-weight: normal;
+		text-indent: -3em;
+	}
+
+	.expend202122::before {
+		content: "Expenditures (2021/22): ";
+		font-weight: bold
+	}
+
+	.expend202122 {
+		padding-left: 3em;
+		font-weight: normal;
+		text-indent: -3em;
+	}
+		
+	.recip202122::before {
+		content: "Recipients (2021/22): ";
+		font-weight: bold
+	}
+
+	.recip202122 {
+		padding-left: 3em;
+		font-weight: normal;
+		text-indent: -3em;
+	}
+
+
 
 	.condition::before {
 		content: "Conditions: ";

@@ -1,0 +1,154 @@
+import { data as nunavutMinistryData } from "~data/nunavut_ministries";
+
+import { scaleOrdinal } from "d3-scale";
+
+import { buildZoomableSunburstChart, ISunburstChart } from "~charts/d3/sunburst";
+
+const levelOfGovernment = "Level Of Government";
+const responsibleMinistry = "Administering Agency";
+const administeredBy = "Delivery Agency";
+const programName = "Program Name";
+const description = "Brief Description";
+const eligibility = "Major Eligibility Conditions";
+const conditions = "Other Eligibility Conditions";
+const showName = "Show Name";
+
+interface InunavutMinistry {
+	[programName]: string;
+	[levelOfGovernment]: string;
+	[administeredBy]: string;
+	[responsibleMinistry]: string;
+	[description]: string;
+	[eligibility]: string;
+	[conditions]: string;
+	[showName]: string;
+
+}
+
+function listToSortedTree(array, sortKeys: string[]) {
+	// Stuff into a object (used as a map) based on key
+	const obj = {};
+
+	array.forEach((ele) => {
+		let subObj = obj;
+
+		// Iterate over all the sort keys until we encounter one that doesn't exist.
+		sortKeys.every((key, index) => {
+			const value = ele[key];
+
+			// If there is no value for the key, we should stop iterating keys here.
+			if(!value) return false;
+
+			// Last level of the hierarchy?
+			if(index === sortKeys.length - 1 ||
+				(ele[sortKeys[index + 1]] === "")) {
+				// Last level of hierarchy/search. Insert our new element.
+				if(subObj[value]) {
+					subObj[value].push(ele);
+				} else {
+					subObj[value] = [ele];
+				}
+			} else {
+				// Not last level of hierarchy. Just create the new level (if required)
+				if(!subObj[value]) {
+					subObj[value] = {};
+				}
+
+				subObj = subObj[value];
+			}
+
+			return true;
+		});
+	});
+
+	return obj;
+}
+
+function makeTooltip(program, descrip, elig, condit): string {
+	const tooltip =  `
+		<div>
+			${program ? `<hr><p class="header">${program}</p><hr>` : ""}
+			${descrip ? `<p>${descrip}</p>` : ""}
+			${elig ? `<p class = "eligibility">${elig}</p>` : ""}
+			${condit ? `<p class = "condition">${condit}</p>` : ""}
+		</div>`;
+
+	return tooltip;
+}
+
+const colour = scaleOrdinal(["rgb(197, 27, 125)", "rgb(241, 182, 218)", "#762a83"]);
+
+const colour2 = scaleOrdinal(["#ab5c18", "#b16828", "#b87437", "#be8147", "#c48f57", "#ca9c67", "#cfa977", "#d3b686", "#d7c295", "#dacda3" , "#dcd9b2" , "#dee4c0" , "#fada5e",   "#29A28F", "#44AE9D", "#5FB9AB", "#79C5B9", "#94D1C7", "#AFDCD5" , "#CAE8E3", "#E4F3F1", "#762a83"]);
+
+function eleToColour(key: string, level: number, parentColour: string): string {
+	if(level === 1) {
+		return colour(key);
+	} else if(level === 2) {
+		return colour2(key);
+	} else if(level === 3) {
+		return parentColour;
+	} else if(level === 4) {
+		return  parentColour;
+	} else {
+		console.error(`No colour mapping for level ${level}/${key}`);
+		return "red";
+	}
+}
+
+// FIXME: value should be pulled out and moved to a chart type specific function
+function treeToHierarchy(tree, obj: any = {level: "root", showName: false, value: 0, name: "root", depth: 1, colour: "black"}): any {
+	if(Array.isArray(tree)) {
+		return tree.map((ele: InunavutMinistry) => {
+			return {
+				program: ele[programName],
+				level: ele[levelOfGovernment],
+				ministry: ele[responsibleMinistry],
+				admin: ele[administeredBy],
+				descrip: ele[description],
+				elig: ele[eligibility],
+				condit: ele[conditions],
+				value: 1,
+				showName: ele[showName] ? (ele[showName].toLowerCase() === "true") : false,
+				name: ele[programName] || ele[administeredBy] || ele[responsibleMinistry],
+				tooltip: makeTooltip(ele[programName], ele[description], ele[eligibility], ele[conditions]),
+				colour: obj.colour			};
+		});
+	}
+
+	Object.keys(tree).forEach((key) => {
+		if(!obj.children) {
+			obj.children = [];
+		}
+
+		const sub = treeToHierarchy(tree[key], {level: key, ministry: key, admin: key,  value: 1, showName: true, name: key, depth: obj.depth + 1 , colour: eleToColour(key, obj.depth, obj.colour)});
+		if(Array.isArray(sub)) {
+			obj.children = obj.children.concat(sub);
+		} else {
+			obj.children.push(sub);
+		}
+	});
+
+	return obj;
+}
+
+export function buildNunavutMinistryComplexitySunburst(svgEle?: SVGElement) {
+	const sortKeys = [levelOfGovernment, responsibleMinistry, administeredBy, programName];
+	const sortData = listToSortedTree(nunavutMinistryData, sortKeys);
+	const sunburstChartData: ISunburstChart = treeToHierarchy(sortData);
+
+	console.log(`hier: ${JSON.stringify(sortData, null, 4)}`);
+
+	sunburstChartData.setup = {
+		width: 1000,
+		margin: 10,
+
+		showDepth: 4,
+		radiusScaleExponent: 1.4,
+
+		textWrapPadding: 10,
+
+		honourShowName: false,
+	};
+
+	return buildZoomableSunburstChart(sunburstChartData, svgEle);
+}

@@ -48,7 +48,7 @@ export default class ChartsComponent extends Component {
 	public view = (state) => {
 
 		const ministrySunburstChart = buildMinistryComplexitySunburstChart(this.ministryComplexitySunburstSvgEle);
-		// console.log(ministerySunburstChart);
+		console.log(ministrySunburstChart);
 
 		const cashInKindSunburstChart = buildCashInKindSunburstChart(this.cashInKindSunburstSvgEle);
 

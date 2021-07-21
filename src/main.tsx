@@ -8,6 +8,7 @@ import Cv from "~pages/cv";
 import Home from "~pages/home";
 import Research from "~pages/research";
 import Charts from "~pages/research/charts";
+import Nunavut from "~pages/research/Nunavutcharts";
 
 // Import components which aren't high level "pages" so they're in the build.
 import Footer from "~components/footer";
@@ -33,6 +34,7 @@ new Home().mount(appPagesElement);
 new Cv().mount(appPagesElement);
 new Research().mount(appPagesElement);
 new Charts().mount(appPagesElement);
+new Nunavut().mount(appPagesElement);
 
 // Error handler page
 new NoRoute().mount(appPagesElement);

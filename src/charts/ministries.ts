@@ -234,7 +234,8 @@ export function buildMinistryComplexitySunburstChart(svgEle?: SVGElement) {
 	const sortKeys = [levelOfGovernment, responsibleMinistry, administeredBy, programName];
 	const sortData = listToSortedTree(ministryData, sortKeys);
 	const sunburstChartData: ISunburstChart = treeToHierarchy(sortData);
-	// console.log(`hier: ${JSON.stringify(hierData, null, 4)}`);
+
+	console.log(`hier: ${JSON.stringify(sortData, null, 4)}`);
 
 	sunburstChartData.setup = {
 		width: 1000,
