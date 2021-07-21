@@ -40,6 +40,7 @@ svg.chart-sunburst-zoom g.tooltip-group div {
 	.eligibility:before {
 		content: "Major Eligibility Requirement: ";
 		font-weight: bold;
+		color: red;
 	}
 
 	.eligibility {
@@ -48,10 +49,58 @@ svg.chart-sunburst-zoom g.tooltip-group div {
 		text-indent: -3em;
 	}
 
+	.otherEligibility:before {
+		content: "Other Eligibility Requirements: ";
+		font-weight: bold;
+		color: red
+	}
+
+	.otherEligibility {
+		font-weight: normal;
+		padding-left: 3em;
+		text-indent: -3em;
+	}
+
+	.income:before {
+		content: "Income Tested? ";
+		font-weight: bold;
+		color: red
+	}
+
+	.income {
+		font-weight: normal;
+		padding-left: 3em;
+		text-indent: -3em;
+	}
+
+	.documents:before {
+		content: "Documents Required: ";
+		font-weight: bold;
+		color: red
+	}
+
+	.documents {
+		font-weight: normal;
+		padding-left: 3em;
+		text-indent: -3em;
+	}
+
+	.taxfiling:before {
+		content: "Is tax filing a requirement? ";
+		font-weight: bold;
+		color: red
+	}
+
+	.taxfiling {
+		font-weight: normal;
+		padding-left: 3em;
+		text-indent: -3em;
+	}
 
 	.expend201819:before{
 		content: "Expenditures (2018/19): ";
-		font-weight: bold
+		font-weight: bold;
+		color: red
 	}
 
 	.expend201819 {
@@ -60,7 +109,8 @@ svg.chart-sunburst-zoom g.tooltip-group div {
 
 	.recip201819::before {
 		content: "Recipients (2018/19): ";
-		font-weight: bold
+		font-weight: bold;
+		color: red
 	}
 
 	.recip201819 {
@@ -82,7 +132,8 @@ svg.chart-sunburst-zoom g.tooltip-group div {
 
 	.expend201718::before {
 		content: "Expenditures (2017/18): ";
-		font-weight: bold
+		font-weight: bold;
+		color: red
 	}
 
 	.expend201718 {
@@ -154,7 +205,8 @@ svg.chart-sunburst-zoom g.tooltip-group div {
 
 	.recip201718::before {
 		content: "Recipients (2017/18): ";
-		font-weight: bold
+		font-weight: bold;
+		color: red
 	}
 
 	.recip201718 {
@@ -192,7 +244,8 @@ svg.chart-sunburst-zoom g.tooltip-group div {
 
 	.expend201617::before {
 		content: "Expenditures (2016/17): ";
-		font-weight: bold
+		font-weight: bold;
+		color: red
 	}
 
 	.expend201617 {
@@ -202,7 +255,8 @@ svg.chart-sunburst-zoom g.tooltip-group div {
 
 	.recip201617::before {
 		content: "Recipients (2016/17): ";
-		font-weight: bold
+		font-weight: bold;
+		color: red
 	}
 
 	.recip2016 {
@@ -211,9 +265,34 @@ svg.chart-sunburst-zoom g.tooltip-group div {
 		text-indent: -3em;
 	}
 
+	.expend201920::before {
+		content: "Expendtitures (2019/20): ";
+		font-weight: bold;
+		color: red
+	}
+
+	.expend201920 {
+		padding-left: 3em;
+		font-weight: normal;
+		text-indent: -3em;
+	}
+
+	.recip201920::before {
+		content: "Recipients (2019/20): ";
+		font-weight: bold;
+		color: red
+	}
+
+	.recip201920 {
+		padding-left: 3em;
+		font-weight: normal;
+		text-indent: -3em;
+	}
+
 	.expend202021::before {
 		content: "Expendtitures (2020/21): ";
-		font-weight: bold
+		font-weight: bold;
+		color: red
 	}
 
 	.expend202021 {
@@ -224,7 +303,8 @@ svg.chart-sunburst-zoom g.tooltip-group div {
 
 	.expend202122::before {
 		content: "Expenditures (2021/22): ";
-		font-weight: bold
+		font-weight: bold;
+		color: red
 	}
 
 	.expend202122 {
@@ -235,7 +315,8 @@ svg.chart-sunburst-zoom g.tooltip-group div {
 		
 	.recip202122::before {
 		content: "Recipients (2021/22): ";
-		font-weight: bold
+		font-weight: bold;
+		color: red
 	}
 
 	.recip202122 {
