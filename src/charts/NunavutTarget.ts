@@ -1,12 +1,11 @@
-import { data as nunavutMinistryData } from "~data/nunavut_ministries";
+import { data as nunavutTargetData } from "~data/nunavut_target";
 
 import { scaleOrdinal } from "d3-scale";
 
 import { buildZoomableSunburstChart, ISunburstChart } from "~charts/d3/sunburst";
 
 const levelOfGovernment = "Level Of Government";
-const responsibleMinistry = "Administering Agency";
-const administeredBy = "Delivery Agency";
+const programTarget = "Program Type/Target";
 const programName = "Program Name";
 const fullProgramName = "Full Program Name";
 const description = "Brief Description";
@@ -28,12 +27,10 @@ const expend202122 = "2021/2022 budget";
 const recip202122 = "2021/2022 Recipients";
 const showName = "Show Name";
 
-interface InunavutMinistry {
+interface InunavutTarget {
 	[programName]: string;
 	[fullProgramName]: string;
 	[levelOfGovernment]: string;
-	[administeredBy]: string;
-	[responsibleMinistry]: string;
 	[description]: string;
 	[eligibility]: string;
 	[eligMinor]: string;
@@ -146,13 +143,12 @@ function eleToColour(key: string, level: number, parentColour: string): string {
 // FIXME: value should be pulled out and moved to a chart type specific function
 function treeToHierarchy(tree, obj: any = {level: "root", showName: false, value: 0, name: "root", depth: 1, colour: "black"}): any {
 	if(Array.isArray(tree)) {
-		return tree.map((ele: InunavutMinistry) => {
+		return tree.map((ele: InunavutTarget) => {
 			return {
 				program: ele[programName],
 				fullProgramNameEle: ele[fullProgramName],
 				level: ele[levelOfGovernment],
-				ministry: ele[responsibleMinistry],
-				admin: ele[administeredBy],
+				target: ele[programTarget],
 				descrip: ele[description],
 				elig: ele[eligibility],
 				eligMinorEle: ele[eligMinor],
@@ -172,7 +168,7 @@ function treeToHierarchy(tree, obj: any = {level: "root", showName: false, value
 				recip202122Ele: ele[recip202122],
 				value: 1,
 				showName: ele[showName] ? (ele[showName].toLowerCase() === "true") : false,
-				name: ele[programName] || ele[administeredBy] || ele[responsibleMinistry],
+				name: ele[programName] || ele[eligibility] || ele[programTarget],
 				tooltip: makeTooltip(ele[fullProgramName], ele[description], ele[eligibility], ele[eligMinor], ele[income], ele[documents], ele[taxfiling], ele[expend201617], ele[recip201617], ele[expend201718], ele[recip201718], ele[expend201819], ele[recip201819], ele[expend201920], ele[recip201920], ele[expend202021], ele[expend202122], ele[recip202122] ),
 				colour: obj.colour			};
 		});
@@ -183,7 +179,7 @@ function treeToHierarchy(tree, obj: any = {level: "root", showName: false, value
 			obj.children = [];
 		}
 
-		const sub = treeToHierarchy(tree[key], {level: key, ministry: key, admin: key,  value: 1, showName: true, name: key, depth: obj.depth + 1 , colour: eleToColour(key, obj.depth, obj.colour)});
+		const sub = treeToHierarchy(tree[key], {level: key, target: key, elig: key,  value: 1, showName: true, name: key, depth: obj.depth + 1 , colour: eleToColour(key, obj.depth, obj.colour)});
 		if(Array.isArray(sub)) {
 			obj.children = obj.children.concat(sub);
 		} else {
@@ -194,12 +190,12 @@ function treeToHierarchy(tree, obj: any = {level: "root", showName: false, value
 	return obj;
 }
 
-export function buildNunavutMinistryComplexitySunburst(svgEle?: SVGElement) {
-	const sortKeys = [levelOfGovernment, responsibleMinistry, administeredBy, programName];
-	const sortData = listToSortedTree(nunavutMinistryData, sortKeys);
+export function buildNunavutTargetSunburst(svgEle?: SVGElement) {
+	const sortKeys = [levelOfGovernment, programTarget, eligibility, programName];
+	const sortData = listToSortedTree(nunavutTargetData, sortKeys);
 	const sunburstChartData: ISunburstChart = treeToHierarchy(sortData);
 
-	/// console.log(`hier: ${JSON.stringify(sortData, null, 4)}`);
+	console.log(`hier: ${JSON.stringify(sortData, null, 4)}`);
 
 	sunburstChartData.setup = {
 		width: 1000,
