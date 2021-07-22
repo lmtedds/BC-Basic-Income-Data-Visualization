@@ -1,4 +1,5 @@
 import { app, Component } from "apprun";
+import { buildNunavutCashInKindSunburst } from "~charts/NunavutCashInKind";
 import { buildNunavutMinistryComplexitySunburst } from "~charts/NunavutMinistries";
 import { buildNunavutTargetSunburst } from "~charts/NunavutTarget";
 
@@ -15,12 +16,14 @@ export default class NunavutChartsComponent extends Component {
 
 	private readonly nunavutMinistryComplexitySunburstSvgEle: SVGElement;
 	private readonly nunavutTargetSunburstSvgEle: SVGElement;
+	private readonly nunavutCashInKindSunburstSvgEle: SVGElement;
 
 	constructor() {
 		super();
 
 		this.nunavutMinistryComplexitySunburstSvgEle = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 		this.nunavutTargetSunburstSvgEle = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+		this.nunavutCashInKindSunburstSvgEle = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 
 	}
 
@@ -28,6 +31,7 @@ export default class NunavutChartsComponent extends Component {
 
 		const nunavutMinistrySunburst = buildNunavutMinistryComplexitySunburst(this.nunavutMinistryComplexitySunburstSvgEle);
 		const nunavutTargetSunburst = buildNunavutTargetSunburst(this.nunavutTargetSunburstSvgEle);
+		const nunavutCashInKindSunburst = buildNunavutCashInKindSunburst(this.nunavutCashInKindSunburstSvgEle);
 
 		return <>
 
@@ -45,6 +49,14 @@ export default class NunavutChartsComponent extends Component {
 				<div className="img-fluid col-xl">
 					<h2 class="text-center">Program Targets</h2>
 					{this.nunavutTargetSunburstSvgEle}
+				</div>
+			</div>
+
+			<div class="row">
+
+				<div className="img-fluid col-xl">
+					<h2 class="text-center">Cash In-Kind Spectrum</h2>
+					{this.nunavutCashInKindSunburstSvgEle}
 				</div>
 			</div>
 
