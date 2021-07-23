@@ -48,6 +48,29 @@ export default class NunavutChartsComponent extends Component {
 
 				<div className="img-fluid col-xl">
 					<h2 class="text-center">Program Targets</h2>
+
+					<div  style="transform:translate(0px, 0px)">
+						<svg width="2000" height="50">
+							<rect x="10" y="0" width="20" height="20"  style="fill:#006600"/>
+							<rect x="210" y="0" width="20" height="20" style="fill:#7fb27f"/>
+							<rect x="430" y ="0" width="20" height="20" style="fill:#00aeef"/>
+							<rect x="660" y="0" width="20" height="20" style="fill:#66cef5"/>
+							<rect x="920" y="0" width="20" height="20" style="fill:#cceefb"/>
+							<rect x="10" y="25" width="20" height="20" style="fill:#992277"/>
+							<rect x="210" y="25" width="20" height="20" style="fill:#fec22d"/>
+							<rect x="430" y="25" width="20" height="20" style="fill:#7f6116"/>
+							<text x="35" y="17" font-size="large">Pure Cash Transfer</text>
+							<text x="235" y="17" font-size="large">Cash Geared to Cost</text>
+							<text x="455" y="17" font-size="large">Refundable Tax Credit</text>
+							<text x="685" y="17" font-size="large">Non-refundable Tax Credit</text>
+							<text x="945" y="17" font-size="large">Tax Deduction</text>
+							<text x="35" y="43" font-size="large">Pure In-Kind</text>
+							<text x="235" y="43" font-size="large">Service/Third Party</text>
+							<text x="455" y="43" font-size="large">Favorable Terms of Sale/Purchase</text>
+
+						</svg>
+
+					</div>
 					{this.nunavutTargetSunburstSvgEle}
 				</div>
 			</div>

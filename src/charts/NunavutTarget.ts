@@ -123,7 +123,21 @@ const colour = scaleOrdinal(["rgb(197, 27, 125)", "rgb(241, 182, 218)", "#762a83
 
 const colour2 = scaleOrdinal(["#8F9978", "#B3AF8B", "#D7D1AF", "#C9AE81", "#A98782", "#87788A"]);
 
-const colorCash = scaleOrdinal([ "#29A28F"]);
+const colorCash = scaleOrdinal(["#006600"]);
+
+const colorCashCost = scaleOrdinal(["#7fb27f"]);
+
+const colorKind = scaleOrdinal(["#992277"]);
+
+const colorRefundable = scaleOrdinal(["#00aeef"]);
+
+const colorNonRefundable = scaleOrdinal(["#66cef5"]);
+
+const colorDeduct = scaleOrdinal(["#cceefb"]);
+
+const colorService = scaleOrdinal(["#fec22d"]);
+
+const colorFavor = scaleOrdinal(["#7f6116"]);
 
 function eleToColour(key: string, level: number, parentColour: string): string {
 	if(level === 1) {
@@ -133,7 +147,23 @@ function eleToColour(key: string, level: number, parentColour: string): string {
 	} else if(level === 3) {
 		return parentColour;
 	} else if(level === 4) {
-		return  parentColour;
+		if(key === "IA" || key === "Senior Supp. Benefit" || key === "NEI" || key === "Workers Comp.: wages" || key === "Workers Comp.: disability" || key === "ACG" || key === "AIG" || key === "AIG-W" || key === "CESG" || key === "CESG-A" || key === "CLB" || key === "Disability Savings Grant" || key === "Disability Savings Bonds" || key === "OAS" || key === "Allowance" || key === "Allowance: Survivor" || key === "GIS" || key === "Disability Benefits" || key === "Income Support" || key === "CPP: Children" || key === "EI: maternity & Parental" || key === "Victims of Crime" || key === "EI: family supp." || key === "CPP: Disability" || key === "CPP: Death" || key === "CPP: Retirement" || key === "CPP: Survivor" || key === "Income Replacement" || key === "EI: Regular" || key === "EI: caregiving" || key === "EI: Sickness") {
+			return  colorCash(key);
+		} else if(key === "Cost of living credit: single parents" || key === "NUCB" || key === "Cost of living credit" || key === "TWS" || key === "CCB" || key === "Child Disability Benefit" || key === "GST/HST Credit" || key === "CWB: Disability Supp." || key === "CWB: general") {
+			return colorRefundable(key);
+		} else if(key === "FANS" || key === "ALTS" || key === "ERP" || key === "HOTRP" || key === "SPDPMP" || key === "SCHRP" || key === "Senior Fuel Subsidy" || key === "HRP" || key === "NDAP" || key === "PSSSP" || key === "Education & Training" || key === "Excise Gasoline Refund" || key === "New Housing Rebate" || key === "Post-Secondary Scholar." || key === "Skills & Employment Scholar." || key === "Community Hunt" || key === "Harvest Equipment") {
+			return colorCashCost(key);
+		} else if(key === "Daycare Subsidy" || key === "Young Parents Learning" || key === "G.R.E.A.T." || key === "EAS" || key === "Carbon Rebate" || key === "Public Housing" || key === "Electricity Subsidy" || key === "Senior & PwD's Property Tax Relief" || key === "Shelters" || key === "Family Violence Shelters" || key === "Transitional housing" || key === "EHB" || key === "Nunavut Health Care" || key === "ALOY" || key === "Canada Training Credit" || key === "Workers Comp.: medical" || key === "FTHBI" || key === "Home Buyer's Plan" || key === "IRS RHSP" || key === "NIHB") {
+			return colorKind(key);
+		} else if(key === "Healthy Children" || key === "TOJ" || key === "Adult Basic Education" || key === "PASS" || key === "SENS" || key === "TTI"  || key === "HIIFNIY" || key === "ILDP" || key === "YESS" || key === "Nutrition North" || key === "Harvesters Support") {
+			return colorService(key);
+		} else if(key === "Nunavut basic amount" || key === "DTC" || key === "Basic Personal Tax Credit" || key === "Medical Expense Credit") {
+			return colorNonRefundable(key);
+		} else if(key === "SPDHOP" || key === "TOP") {
+			return colorFavor(key);
+		} else if(key === "Northern Residents" || key === "Northern Residents: Travel") {
+			return colorDeduct(key);
+		}
 	} else {
 		console.error(`No colour mapping for level ${level}/${key}`);
 		return "red";
@@ -180,7 +210,7 @@ function treeToHierarchy(tree, obj: any = {level: "root", showName: false, value
 			obj.children = [];
 		}
 
-		const sub = treeToHierarchy(tree[key], {level: key, target: key, elig: key,  value: 1, showName: true, name: key, depth: obj.depth + 1 , colour: eleToColour(key, obj.depth, obj.colour)});
+		const sub = treeToHierarchy(tree[key], {level: key, target: key, elig: key, value: 1, showName: true, name: key, depth: obj.depth + 1 , colour: eleToColour(key, obj.depth, obj.colour)});
 		if(Array.isArray(sub)) {
 			obj.children = obj.children.concat(sub);
 		} else {
