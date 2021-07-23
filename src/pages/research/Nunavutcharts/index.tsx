@@ -1,4 +1,5 @@
 import { app, Component } from "apprun";
+import { buildNunavutApplicationSunburst } from "~charts/NunavutApplication";
 import { buildNunavutCashInKindSunburst } from "~charts/NunavutCashInKind";
 import { buildNunavutMinistryComplexitySunburst } from "~charts/NunavutMinistries";
 import { buildNunavutTargetSunburst } from "~charts/NunavutTarget";
@@ -19,6 +20,7 @@ export default class NunavutChartsComponent extends Component {
 	private readonly nunavutTargetSunburstSvgEle: SVGElement;
 	private readonly nunavutCashInKindSunburstSvgEle: SVGElement;
 	private readonly nunavutTargetCashSunburstSvgEle: SVGElement;
+	private readonly nunavutApplicationSunburstSvgEle: SVGElement;
 
 	constructor() {
 		super();
@@ -27,6 +29,7 @@ export default class NunavutChartsComponent extends Component {
 		this.nunavutTargetSunburstSvgEle = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 		this.nunavutCashInKindSunburstSvgEle = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 		this.nunavutTargetCashSunburstSvgEle = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+		this.nunavutApplicationSunburstSvgEle = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 
 	}
 
@@ -36,6 +39,7 @@ export default class NunavutChartsComponent extends Component {
 		const nunavutTargetSunburst = buildNunavutTargetSunburst(this.nunavutTargetSunburstSvgEle);
 		const nunavutCashInKindSunburst = buildNunavutCashInKindSunburst(this.nunavutCashInKindSunburstSvgEle);
 		const nunavutTargetCashSunburst = buildNunavutTargetCashSunburst(this.nunavutTargetCashSunburstSvgEle);
+		const nunavutApplicationSunburst = buildNunavutApplicationSunburst(this.nunavutApplicationSunburstSvgEle);
 
 		return <>
 
@@ -95,6 +99,14 @@ export default class NunavutChartsComponent extends Component {
 					</div>
 
 					{this.nunavutTargetCashSunburstSvgEle}
+				</div>
+			</div>
+
+			<div class="row">
+
+				<div className="img-fluid col-xl">
+					<h2 class="text-center">Programs by Method of Access</h2>
+					{this.nunavutApplicationSunburstSvgEle}
 				</div>
 			</div>
 
