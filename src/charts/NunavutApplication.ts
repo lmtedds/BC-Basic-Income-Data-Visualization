@@ -124,17 +124,17 @@ function makeTooltip(fullProgramNameEle, descrip, elig, eligMinorEle, incomeEle,
 
 const colour = scaleOrdinal(["rgb(197, 27, 125)", "rgb(241, 182, 218)", "#762a83"]);
 
-const colour2 = scaleOrdinal(["rgb(84, 48, 5)", "rgb(140, 81, 10)" , "rgb(191, 129, 45)", "rgb(223, 194, 125)", "rgb(246, 232, 205)",  "rgb(199, 234, 229)", "rgb(128, 205, 193)", "rgb(53, 151, 143)" , "rgb(1, 102, 94)" ]);
+const colour2 = scaleOrdinal(["rgb(84, 48, 5)", "rgb(140, 81, 10)" , "rgb(191, 129, 45)", "rgb(246, 232, 205)",  "rgb(199, 234, 229)", "rgb(128, 205, 193)", "rgb(53, 151, 143)" , "rgb(1, 102, 94)" ]);
 
-const colourCRA = scaleOrdinal([ "#29A28F"]);
+const colourAuto = scaleOrdinal([ "rgb(223, 194, 125)"]);
 
 function eleToColour(key: string, level: number, parentColour: string): string {
 	if(level === 1) {
 		return colour(key);
+	} else if(level === 2 && key === "Automatic with Other Self Initiated Application") {
+		return colourAuto(key);
 	} else if(level === 2) {
 		return colour2(key);
-	} else if(level === 3 && key === "CRA") {
-		return colourCRA(key);
 	} else if(level === 3) {
 		return parentColour;
 	} else if(level === 4) {
