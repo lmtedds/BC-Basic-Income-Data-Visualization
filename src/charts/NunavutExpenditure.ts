@@ -1,10 +1,12 @@
-import { data as nunavutCashInKindData } from "~data/nunavut_cashinkind";
+import { data as nunavutExpenditureData } from "~data/nunavut_expenditure";
 
 import { scaleOrdinal } from "d3-scale";
 
 import { buildZoomableSunburstChart, ISunburstChart } from "~charts/d3/sunburst";
 
 const levelOfGovernment = "Level Of Government";
+const responsibleMinistry = "Administering Agency";
+const administeredBy = "Delivery Agency";
 const programTarget = "Program Type/Target";
 const programName = "Program Name";
 const fullProgramName = "Full Program Name";
@@ -27,11 +29,14 @@ const expend202021 = "2020/2021 budget";
 const expend202122 = "2021/2022 budget";
 const recip202122 = "2021/2022 Recipients";
 const showName = "Show Name";
+const programSize = "Total Expenditures";
 
-interface InunavutCashInKind {
+interface INunavutExpenditure {
 	[programName]: string;
 	[fullProgramName]: string;
 	[levelOfGovernment]: string;
+	[administeredBy]: string;
+	[responsibleMinistry]: string;
 	[description]: string;
 	[cashinkind]: string;
 	[eligibility]: string;
@@ -51,7 +56,7 @@ interface InunavutCashInKind {
 	[expend202122]: string;
 	[recip202122]: string;
 	[showName]: string;
-
+	[programSize]: string;
 }
 
 function listToSortedTree(array, sortKeys: string[]) {
@@ -118,60 +123,27 @@ function makeTooltip(fullProgramNameEle, descrip, elig, eligMinorEle, incomeEle,
 
 	return tooltip;
 }
-
 const colour = scaleOrdinal(["rgb(197, 27, 125)", "rgb(241, 182, 218)", "#762a83"]);
 
-const colour2 = scaleOrdinal([ "rgb(140, 81, 10)" , "rgb(191, 129, 45)", "rgb(223, 194, 125)", "rgb(246, 232, 205)",  "rgb(199, 234, 229)", "rgb(128, 205, 193)", "rgb(53, 151, 143)" , "rgb(1, 102, 94)" ]);
+const colour2 = scaleOrdinal(["#ab5c18", "#b16828", "#b87437", "#be8147", "#c48f57", "#ca9c67", "#cfa977", "#d3b686", "#29A28F", "#44AE9D", "#5FB9AB", "#79C5B9", "#94D1C7", "#AFDCD5" , "#CAE8E3", "#E4F3F1", "#762a83"]);
 
-const colourCash = scaleOrdinal(["rgb(1, 102, 94)"]);
+const colourCRA = scaleOrdinal([ "#29A28F"]);
 
-const colourRefundable = scaleOrdinal(["rgb(53, 151, 143)"]);
+const colourFinancial = scaleOrdinal(["#fed976"]);
 
-const colourCashCost = scaleOrdinal(["rgb(128, 205, 193)"]);
-
-const colourCashCostLoan = scaleOrdinal(["rgb(199, 234, 229)"]);
-
-const colourBill = scaleOrdinal(["rgb(227, 255, 255)"]);
-
-const colourNonRefundable = scaleOrdinal(["rgb(246, 232, 205)"]);
-
-const colourDeduct = scaleOrdinal(["rgb(223, 194, 125)"]);
-
-const colourKind = scaleOrdinal(["rgb(191, 129, 45)"]);
-
-const colourService = scaleOrdinal(["rgb(140, 81, 10)"]);
-
-const colourSavings = scaleOrdinal(["rgb(84, 48, 5)"]);
-
-const colourFavour = scaleOrdinal(["#3c2204"]);
+const colourHealth = scaleOrdinal(["#c48f57"]);
 
 function eleToColour(key: string, level: number, parentColour: string): string {
 	if(level === 1) {
 		return colour(key);
-	} else if(level === 2 && key === "Pure Cash Transfer") {
-		return colourCash(key);
-	} else if(level === 2 && key === "Refundable tax credit") {
-		return colourRefundable(key);
-	} else if(level === 2 && key === "Cash Geared to Cost") {
-		return colourCashCost(key);
-	} else if(level === 2 && key === "Cash geared to cost OR Loan") {
-		return colourCashCostLoan(key);
-	} else if(level === 2 && key === "Bill Refund") {
-		return colourBill(key);
-	} else if(level === 2 && key === "Non-refundable tax credit") {
-		return colourNonRefundable(key);
-	} else if(level === 2 && key === "Tax Deduction") {
-		return colourDeduct(key);
-	} else if(level === 2 && key === "Pure In-Kind") {
-		return colourKind(key);
-	} else if(level === 2 && key === "Service") {
-		return colourService(key);
-	} else if(level === 2 && key === "Voluntary Savings") {
-		return colourSavings(key);
-	} else if(level === 2 && key === "Favorable purchase/sale terms") {
-		return colourFavour(key);
 	} else if(level === 2) {
 		return colour2(key);
+	} else if(level === 3 && key === "CRA") {
+		return colourCRA(key);
+	} else if(level === 3 && key === "Financial Service provider") {
+		return colourFinancial(key);
+	} else if(level === 3 && key === "First Nations Health Authority") {
+		return colourHealth(key);
 	} else if(level === 3) {
 		return parentColour;
 	} else if(level === 4) {
@@ -185,14 +157,14 @@ function eleToColour(key: string, level: number, parentColour: string): string {
 // FIXME: value should be pulled out and moved to a chart type specific function
 function treeToHierarchy(tree, obj: any = {level: "root", showName: false, value: 0, name: "root", depth: 1, colour: "black"}): any {
 	if(Array.isArray(tree)) {
-		return tree.map((ele: InunavutCashInKind) => {
+		return tree.map((ele: INunavutExpenditure) => {
 			return {
 				program: ele[programName],
 				fullProgramNameEle: ele[fullProgramName],
 				level: ele[levelOfGovernment],
-				target: ele[programTarget],
+				ministry: ele[responsibleMinistry],
+				admin: ele[administeredBy],
 				descrip: ele[description],
-				cashinkindEle: ele[cashinkind],
 				elig: ele[eligibility],
 				eligMinorEle: ele[eligMinor],
 				incomeEle: ele[income],
@@ -209,9 +181,9 @@ function treeToHierarchy(tree, obj: any = {level: "root", showName: false, value
 				expend202021Ele: ele[expend202021],
 				expend202122Ele: ele[expend202122],
 				recip202122Ele: ele[recip202122],
-				value: 1,
+				value: ele[programSize],
 				showName: ele[showName] ? (ele[showName].toLowerCase() === "true") : false,
-				name: ele[programName] || ele[cashinkind],
+				name: ele[programName] || ele[administeredBy] || ele[responsibleMinistry],
 				tooltip: makeTooltip(ele[fullProgramName], ele[description], ele[eligibility], ele[eligMinor], ele[income], ele[documents], ele[taxfiling], ele[expend201617], ele[recip201617], ele[expend201718], ele[recip201718], ele[expend201819], ele[recip201819], ele[expend201920], ele[recip201920], ele[expend202021], ele[expend202122], ele[recip202122] ),
 				colour: obj.colour			};
 		});
@@ -222,7 +194,7 @@ function treeToHierarchy(tree, obj: any = {level: "root", showName: false, value
 			obj.children = [];
 		}
 
-		const sub = treeToHierarchy(tree[key], {level: key, cashinkindEle: key,  value: 1, showName: true, name: key, depth: obj.depth + 1 , colour: eleToColour(key, obj.depth, obj.colour)});
+		const sub = treeToHierarchy(tree[key], {level: key, ministry: key, admin: key,  value: 1, showName: true, name: key, depth: obj.depth + 1 , colour: eleToColour(key, obj.depth, obj.colour)});
 		if(Array.isArray(sub)) {
 			obj.children = obj.children.concat(sub);
 		} else {
@@ -233,18 +205,18 @@ function treeToHierarchy(tree, obj: any = {level: "root", showName: false, value
 	return obj;
 }
 
-export function buildNunavutCashInKindSunburst(svgEle?: SVGElement) {
-	const sortKeys = [levelOfGovernment, cashinkind, programName];
-	const sortData = listToSortedTree(nunavutCashInKindData, sortKeys);
+// By Ministry
+export function buildNunavutExpenditureMinistry(svgEle?: SVGElement) {
+	const sortKeys = [levelOfGovernment, responsibleMinistry, administeredBy, programName];
+	const sortData = listToSortedTree(nunavutExpenditureData, sortKeys);
 	const sunburstChartData: ISunburstChart = treeToHierarchy(sortData);
-
-	// console.log(`hier: ${JSON.stringify(sortData, null, 4)}`);
+	// console.log(`hier: ${JSON.stringify(hierData, null, 4)}`);
 
 	sunburstChartData.setup = {
 		width: 1000,
 		margin: 10,
 
-		showDepth: 3,
+		showDepth: 4,
 		radiusScaleExponent: 1.4,
 
 		textWrapPadding: 10,

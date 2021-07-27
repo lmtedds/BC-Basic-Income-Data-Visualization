@@ -1,6 +1,7 @@
 import { app, Component } from "apprun";
 import { buildNunavutApplicationSunburst } from "~charts/NunavutApplication";
 import { buildNunavutCashInKindSunburst } from "~charts/NunavutCashInKind";
+import { buildNunavutExpenditureMinistry } from "~charts/NunavutExpenditure";
 import { buildNunavutMinistryComplexitySunburst } from "~charts/NunavutMinistries";
 import { buildNunavutTargetSunburst } from "~charts/NunavutTarget";
 import { buildNunavutTargetCashSunburst } from "~charts/NunavutTargetCash";
@@ -21,6 +22,7 @@ export default class NunavutChartsComponent extends Component {
 	private readonly nunavutCashInKindSunburstSvgEle: SVGElement;
 	private readonly nunavutTargetCashSunburstSvgEle: SVGElement;
 	private readonly nunavutApplicationSunburstSvgEle: SVGElement;
+	private readonly nunavutExpenditureSunburstSvgEle: SVGElement;
 
 	constructor() {
 		super();
@@ -30,6 +32,7 @@ export default class NunavutChartsComponent extends Component {
 		this.nunavutCashInKindSunburstSvgEle = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 		this.nunavutTargetCashSunburstSvgEle = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 		this.nunavutApplicationSunburstSvgEle = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+		this.nunavutExpenditureSunburstSvgEle = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 
 	}
 
@@ -40,6 +43,7 @@ export default class NunavutChartsComponent extends Component {
 		const nunavutCashInKindSunburst = buildNunavutCashInKindSunburst(this.nunavutCashInKindSunburstSvgEle);
 		const nunavutTargetCashSunburst = buildNunavutTargetCashSunburst(this.nunavutTargetCashSunburstSvgEle);
 		const nunavutApplicationSunburst = buildNunavutApplicationSunburst(this.nunavutApplicationSunburstSvgEle);
+		const nunavutExpenditureSunburst = buildNunavutExpenditureMinistry(this.nunavutExpenditureSunburstSvgEle);
 
 		return <>
 
@@ -55,6 +59,14 @@ export default class NunavutChartsComponent extends Component {
 			<div class="row">
 
 				<div className="img-fluid col-xl">
+					<h2 class="text-center">Programs by Expenditure</h2>
+					{this.nunavutExpenditureSunburstSvgEle}
+				</div>
+			</div>
+
+			<div class="row">
+
+				<div className="img-fluid col-xl">
 					<h2 class="text-center">Programs by Target and Eligiblity</h2>
 					{this.nunavutTargetSunburstSvgEle}
 				</div>
@@ -63,7 +75,7 @@ export default class NunavutChartsComponent extends Component {
 			<div class="row">
 
 				<div className="img-fluid col-xl">
-					<h2 class="text-center">Programs by Target and Cash In-Kind Spectrum</h2>
+					<h2 class="text-center">Programs by Cash In-Kind Spectrum</h2>
 					{this.nunavutCashInKindSunburstSvgEle}
 				</div>
 			</div>
