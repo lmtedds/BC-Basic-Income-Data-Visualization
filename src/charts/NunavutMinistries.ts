@@ -122,9 +122,13 @@ function makeTooltip(fullProgramNameEle, descrip, elig, eligMinorEle, incomeEle,
 
 const colour = scaleOrdinal(["rgb(197, 27, 125)", "rgb(241, 182, 218)", "#762a83"]);
 
-const colour2 = scaleOrdinal(["#ab5c18", "#b16828", "#b87437", "#be8147", "#c48f57", "#ca9c67", "#cfa977",    "#29A28F", "#44AE9D", "#5FB9AB", "#79C5B9", "#94D1C7", "#AFDCD5" , "#CAE8E3", "#E4F3F1", "#762a83"]);
+const colour2 = scaleOrdinal(["#ab5c18", "#b16828", "#b87437", "#be8147", "#c48f57", "#ca9c67", "#cfa977", "#d3b686", "#29A28F", "#44AE9D", "#5FB9AB", "#79C5B9", "#94D1C7", "#AFDCD5" , "#CAE8E3", "#E4F3F1", "#762a83"]);
 
 const colourCRA = scaleOrdinal([ "#29A28F"]);
+
+const colourFinancial = scaleOrdinal(["#fed976"]);
+
+const colourHealth = scaleOrdinal(["#c48f57"]);
 
 function eleToColour(key: string, level: number, parentColour: string): string {
 	if(level === 1) {
@@ -133,6 +137,10 @@ function eleToColour(key: string, level: number, parentColour: string): string {
 		return colour2(key);
 	} else if(level === 3 && key === "CRA") {
 		return colourCRA(key);
+	} else if(level === 3 && key === "Financial Service provider") {
+		return colourFinancial(key);
+	} else if(level === 3 && key === "First Nations Health Authority") {
+		return colourHealth(key);
 	} else if(level === 3) {
 		return parentColour;
 	} else if(level === 4) {

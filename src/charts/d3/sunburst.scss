@@ -325,7 +325,17 @@ svg.chart-sunburst-zoom g.tooltip-group div {
 		text-indent: -3em;
 	}
 
+	.modeAccess::before {
+		content: "Mode of Access: ";
+		font-weight: bold;
+		color: red
+	}
 
+	.modeAccess {
+		padding-left: 3em;
+		font-weight: normal;
+		text-indent: -3em;
+	}
 
 	.condition::before {
 		content: "Conditions: ";

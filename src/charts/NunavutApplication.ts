@@ -11,6 +11,7 @@ const programName = "Program Name";
 const fullProgramName = "Full Program Name";
 const description = "Brief Description";
 const application = "Method of Access";
+const mode = "Mode of Access";
 const eligibility = "Major Eligibility Conditions";
 const eligMinor = "Other Eligibility Conditions";
 const income = "Income Tested?";
@@ -37,6 +38,7 @@ interface InunavutApplication {
 	[responsibleMinistry]: string;
 	[description]: string;
 	[application]: string;
+	[mode]: string;
 	[eligibility]: string;
 	[eligMinor]: string;
 	[income]: string;
@@ -96,7 +98,7 @@ function listToSortedTree(array, sortKeys: string[]) {
 	return obj;
 }
 
-function makeTooltip(fullProgramNameEle, descrip, elig, eligMinorEle, incomeEle, documentsEle, taxfilingEle, expend201617Ele, recip201617Ele, expend201718Ele, recip201718Ele, expend201819Ele, recip201819Ele, expend201920Ele, recip201920Ele, expend202021Ele, expend202122Ele, recip202122Ele): string {
+function makeTooltip(fullProgramNameEle, descrip, elig, eligMinorEle, incomeEle, documentsEle, taxfilingEle, modeEle): string {
 	const tooltip =  `
 		<div>
 			${fullProgramNameEle ? `<hr><p class="header">${fullProgramNameEle}</p><hr>` : ""}
@@ -106,17 +108,7 @@ function makeTooltip(fullProgramNameEle, descrip, elig, eligMinorEle, incomeEle,
 			${incomeEle ? `<p class = "income">${incomeEle}</p>` : ""}
 			${documentsEle ? `<p class = "documents">${documentsEle}</p>` : ""}
 			${taxfilingEle ? `<p class = "taxfiling">${taxfilingEle}</p>` : ""}
-			${expend201617Ele ? `<p class = "expend201617">${expend201617Ele}</p>` : ""}
-			${recip201617Ele ? `<p class = "recip201617">${recip201617Ele}</p>` : ""}
-			${expend201718Ele ? `<p class = "expend201718">${expend201718Ele}</p>` : ""}
-			${recip201718Ele ? `<p class = "recip201718">${recip201718Ele}</p>` : ""}
-			${expend201819Ele ? `<p class = "expend201819">${expend201819Ele}</p>` : ""}
-			${recip201819Ele ? `<p class = "recip201819">${recip201819Ele}</p>` : ""}
-			${expend201920Ele ? `<p class = "expend201920">${expend201920Ele}</p>` : ""}
-			${recip201920Ele ? `<p class = "recip201920">${recip201920Ele}</p>` : ""}
-			${expend202021Ele ? `<p class = "expend202021">${expend202021Ele}</p>` : ""}
-			${expend202122Ele ? `<p class = "expend202122">${expend202122Ele}</p>` : ""}
-			${recip202122Ele ? `<p class = "recip202122">${recip202122Ele}</p>` : ""}
+			${modeEle ? `<p class = "modeAccess">${modeEle}</p>` : ""}
 		</div>`;
 
 	return tooltip;
@@ -162,21 +154,11 @@ function treeToHierarchy(tree, obj: any = {level: "root", showName: false, value
 				incomeEle: ele[income],
 				documentsEle: ele[documents],
 				taxfilingEle: ele[taxfiling],
-				expend201617Ele: ele[expend201617],
-				recip201617Ele: ele[recip201617],
-				expend201718Ele: ele[expend201718],
-				recip201718Ele: ele[recip201718],
-				expend201819Ele: ele[expend201819],
-				recip201818Ele: ele[recip201819],
-				expend201920Ele: ele[expend201920],
-				recip201920Ele: ele[recip201920],
-				expend202021Ele: ele[expend202021],
-				expend202122Ele: ele[expend202122],
-				recip202122Ele: ele[recip202122],
+				modeEle: ele[mode],
 				value: 1,
 				showName: ele[showName] ? (ele[showName].toLowerCase() === "true") : false,
 				name: ele[programName] || ele[application],
-				tooltip: makeTooltip(ele[fullProgramName], ele[description], ele[eligibility], ele[eligMinor], ele[income], ele[documents], ele[taxfiling], ele[expend201617], ele[recip201617], ele[expend201718], ele[recip201718], ele[expend201819], ele[recip201819], ele[expend201920], ele[recip201920], ele[expend202021], ele[expend202122], ele[recip202122] ),
+				tooltip: makeTooltip(ele[fullProgramName], ele[description], ele[eligibility], ele[eligMinor], ele[income], ele[documents], ele[taxfiling], ele[mode] ),
 				colour: obj.colour			};
 		});
 	}
